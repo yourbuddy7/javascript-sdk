@@ -1,0 +1,29 @@
+{
+    "name": "selz-js-sdk",
+    "version": "0.1.0",
+    "description": "JavaScript SDK for use with the Selz platform ",
+    "main": "dist/SelzClient.js",
+    "directories": {
+        "doc": "docs"
+    },
+    "scripts": {
+        "build": "webpack --progress --watch"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/Selz/js-sdk.git"
+    },
+    "keywords": ["Selz", "SDK", "JavaScript", "Store"],
+    "author": "Sam Potts <sam@selz.com>",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/Selz/js-sdk/issues"
+    },
+    "homepage": "https://github.com/Selz/js-sdk#readme",
+    "devDependencies": {
+        "babel-core": "^6.26.0",
+        "babel-loader": "^7.1.2",
+        "babel-preset-es2015-native-modules": "^6.9.4",
+        "webpack": "^3.8.1"
+    }
+}
