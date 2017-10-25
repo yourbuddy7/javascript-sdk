@@ -1,39 +1,35 @@
 import config from './config';
 
 class SelzClient {
-    constructor() {
-        this.test = 'test';
-        this.built = false;
+    constructor(props) {
+        this.config = Object.assign(
+            {
+                domain: 'selz.com',
+            },
+            props,
+        );
     }
 
-    build() {
-        this.built = true;
+    static version() {
+        return '0.1.0';
     }
 
     getProduct(url) {
-        if (!this.built) {
-            return;
-        }
-
-        console.warn('Loading...');
-
-        fetch(config.urls.product(url))
-            .then(response => {
-                response
-                    .json()
-                    .then(json => console.warn(json))
-                    .catch(error => {
-                        console.error('Failed to de-serialize response', error);
-                    });
-            })
-            .catch(e => {
-                console.error(e);
-            });
+        return new Promise((resolve, reject) => {
+            fetch(config.urls.product(this.config.domain, url))
+                .then(response => {
+                    response
+                        .json()
+                        .then(json => resolve(json))
+                        .catch(reject);
+                })
+                .catch(reject);
+        });
     }
 }
 
-const c = new SelzClient();
-
-c.build();
-
-c.getProduct('http://selz.co/1rvb96h');
+// Testing
+const c = new SelzClient({ domain: 'local.selz.com' });
+console.warn(SelzClient.version());
+const p = c.getProduct('http://selz.co/1rvb96h');
+p.then(json => console.log(json)).catch(error => console.error(error));
