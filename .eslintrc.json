@@ -1,8 +1,11 @@
 {
+    "parser": "babel-eslint",
     "extends": ["airbnb", "prettier"],
     "env": {
         "browser": true,
-        "es6": true
+        "es6": true,
+        "mocha": true,
+        "node": true
     },
     "globals": {},
     "rules": {
@@ -18,6 +21,14 @@
         "semi": [2, "always"],
         "eqeqeq": [2, "always"],
         "one-var": [2, "never"],
-        "comma-dangle": [2, "always-multiline"]
+        "comma-dangle": [2, "always-multiline"],
+        "import/extensions": [
+            "error",
+            "always",
+            {
+                "js": "never",
+                "mjs": "never"
+            }
+        ]
     }
 }

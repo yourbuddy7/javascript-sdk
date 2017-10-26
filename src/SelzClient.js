@@ -1,4 +1,5 @@
 import config from './config';
+import utils from './utils';
 
 class SelzClient {
     constructor(props) {
@@ -20,7 +21,7 @@ class SelzClient {
                 .then(response => {
                     response
                         .json()
-                        .then(json => resolve(json))
+                        .then(json => resolve(utils.deserializer(json)))
                         .catch(reject);
                 })
                 .catch(reject);
@@ -28,8 +29,4 @@ class SelzClient {
     }
 }
 
-// Testing
-const c = new SelzClient({ domain: 'local.selz.com' });
-console.warn(SelzClient.version());
-const p = c.getProduct('http://selz.co/1rvb96h');
-p.then(json => console.log(json)).catch(error => console.error(error));
+export default SelzClient;

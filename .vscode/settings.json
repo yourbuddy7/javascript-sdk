@@ -6,7 +6,8 @@
 
     // Exclude from search
     "search.exclude": {
-        "dist/": true
+        "dist/": true,
+        "**/node_modules": true
     },
 
     // Formatting
