@@ -6,9 +6,19 @@
 
     // Exclude from search
     "search.exclude": {
-        "dist/": true,
-        "**/node_modules": true
+        "dist/": true
     },
+
+    // Linting
+    "stylelint.enable": true,
+    "css.validate": false,
+    "scss.validate": false,
+    "javascript.validate.enable": false,
+
+    // Prettier
+    "prettier.eslintIntegration": true,
+    "prettier.cssEnable": ["css", "less"],
+    "prettier.stylelintIntegration": true,
 
     // Formatting
     "editor.tabSize": 4,
@@ -16,11 +26,5 @@
     "editor.formatOnSave": true,
 
     // Trim on save
-    "files.trimTrailingWhitespace": true,
-
-    // Prettier settings
-    "prettier.tabWidth": 4,
-    "prettier.eslintIntegration": true,
-    "prettier.printWidth": 160,
-    "prettier.cssEnable": ["css", "less", "scss"]
+    "files.trimTrailingWhitespace": true
 }

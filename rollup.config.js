@@ -1,6 +1,6 @@
 import babel from 'rollup-plugin-babel';
 import babelrc from 'babelrc-rollup';
-import istanbul from 'rollup-plugin-istanbul';
+// import istanbul from 'rollup-plugin-istanbul';
 import commonjs from 'rollup-plugin-commonjs';
 import resolve from 'rollup-plugin-node-resolve';
 import uglify from 'rollup-plugin-uglify';
@@ -21,16 +21,16 @@ const plugins = [
     uglify({}, minify),
 ];
 
-if (process.env.BUILD !== 'production') {
-    plugins.push(
-        istanbul({
-            exclude: ['test/**/*', 'node_modules/**/*'],
-        })
-    );
-}
+// if (process.env.BUILD !== 'production') {
+//   plugins.push(
+//        istanbul({
+//            exclude: ['test/**/*', 'node_modules/**/*'],
+//        }),
+//    );
+// }
 
 export default {
-    input: 'src/SelzClient.js',
+    input: 'src/index.js',
     plugins,
     external,
     output: [
