@@ -229,6 +229,7 @@ class Modal {
         const iframe = document.createElement('iframe');
         iframe.setAttribute('class', `${this.namespace}__iframe`);
         iframe.setAttribute('allowfullscreen', '');
+        iframe.setAttribute('allow', 'geolocation');
         iframe.setAttribute('hidden', '');
 
         // Prevent white flash
