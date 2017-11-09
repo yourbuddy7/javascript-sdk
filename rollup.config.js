@@ -10,14 +10,36 @@ const pkg = require('./package.json');
 
 const external = []; // Object.keys(pkg.dependencies);
 
-const plugins = [
+const browsers = legacy =>
+    legacy ? ['> 1%', 'last 2 versions', 'Firefox ESR'] : ['Chrome >= 60', 'Safari >= 10.1', 'iOS >= 10.3', 'Firefox >= 54', 'Edge >= 15'];
+
+// Babel config
+const config = browserlist => ({
+    presets: [
+        [
+            'env',
+            {
+                targets: {
+                    browsers: browserlist,
+                },
+                useBuiltIns: true,
+                modules: false,
+            },
+        ],
+    ],
+    plugins: ['external-helpers'],
+    babelrc: false,
+    exclude: 'node_modules/**',
+});
+
+const plugins = (legacy = false) => [
     resolve({
         jsnext: true,
         main: true,
         browser: true,
     }),
     commonjs(),
-    babel(babelrc()),
+    babel(babelrc({ config: config(browsers(legacy)) })),
     uglify({}, minify),
 ];
 
@@ -31,7 +53,7 @@ const plugins = [
 
 export default {
     input: 'src/index.js',
-    plugins,
+    plugins: plugins(),
     external,
     output: [
         {

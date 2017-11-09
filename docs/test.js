@@ -1,9 +1,8 @@
 document.addEventListener('DOMContentLoaded', () => {
-    /* global SelzClient */
-    const client = new SelzClient({ id: 13, env: 'local' });
     const output = document.getElementById('output');
 
     function log(label, json) {
+        // console.log(json);
         const details = document.createElement('details');
 
         const summary = document.createElement('summary');
@@ -18,27 +17,94 @@ document.addEventListener('DOMContentLoaded', () => {
         details.appendChild(contents);
 
         output.appendChild(details);
+
+        window.prettyPrint();
     }
 
-    function fail(label, json) {
-        return log(`${label} (Error)`, json);
+    function fail(label, errors) {
+        return log(`${label} (Error)`, errors);
     }
+
+    const storage = {
+        get(currency) {
+            let store = window.localStorage.getItem('carts');
+
+            if (store === null) {
+                if (typeof currency !== 'string') {
+                    return {};
+                }
+
+                return null;
+            }
+
+            store = JSON.parse(store);
+
+            if (typeof currency !== 'string') {
+                return store;
+            }
+
+            const key = currency.toLowerCase();
+
+            if (key in store) {
+                return store[key];
+            }
+
+            return null;
+        },
+        set(currency, id) {
+            const store = storage.get();
+            const key = currency.toLowerCase();
+
+            store[key] = id;
+
+            window.localStorage.setItem('carts', JSON.stringify(store));
+        },
+    };
+
+    const client = new SelzClient({ id: 13, env: 'local' });
 
     log('Config', client.config);
 
-    const p = client.getProduct('http://selz.co/1rvbhT6');
-    p.then(product => log('Product', product)).catch(error => fail('Product', error));
+    // Listen for messages
+    // window.addEventListener('message', event => console.warn(event), false);
 
-    const c1 = client.createCart('USD');
-    c1.then(cart1 => log('Cart #1', cart1)).catch(error => fail('Cart #1', error));
+    async function addToCart(product) {
+        let cartId = storage.get(product.currency_code);
 
-    const c2 = client.createCart('GBP');
-    c2
-        .then(cart2 => {
-            log('Cart #2', cart2);
+        if (cartId === null) {
+            await client
+                .createCart(product.currency_code)
+                .then(cart => {
+                    cartId = cart.id;
+                    storage.set(product.currency_code, cart.id);
+                })
+                .catch(errors => fail('Cart', errors));
+        }
 
-            const c3 = client.getCart(cart2.id);
-            c3.then(cart3 => log('Cart #2 (GET)', cart3)).catch(error => fail('Cart #2 (GET)', error));
+        client
+            .addToCart(cartId, {
+                id: product.id,
+                variant_id: product.variants[0].id,
+            })
+            .then(cart => {
+                log('Added', cart);
+                cart.checkout();
+            })
+            .catch(error => fail('Added', error));
+    }
+
+    client
+        .getProduct('http://selz.co/1rvbhT6')
+        .then(product => {
+            log('Product', product);
+
+            addToCart(product);
+
+            // product.buy();
+
+            // product.view();
         })
-        .catch(error => fail('Cart #2', error));
+        .catch(errors => fail('Product', errors));
+
+    window.client = client;
 });

@@ -1,13 +1,19 @@
 import config from './config';
 import http from './http';
+
+import Product from './models/product';
 import Cart from './models/cart';
+
+import Modal from './ui/modal';
 
 class SelzClient {
     constructor(props) {
         this.config = Object.assign(
             {
+                env: '',
                 domain: '',
                 id: -1,
+                colors: {},
             },
             props,
         );
@@ -15,6 +21,8 @@ class SelzClient {
         if (!this.isIdSet() && !this.isDomainSet()) {
             throw Error('user or domain are required');
         }
+
+        this.modal = new Modal(this.config);
     }
 
     isIdSet() {
@@ -29,7 +37,14 @@ class SelzClient {
      * @param {String} url - Short or full URL for a product
      */
     getProduct(url) {
-        return http.get(config.urls.product(this.config.env, url));
+        return new Promise((resolve, reject) => {
+            http
+                .get(config.urls.product(this.config.env, url))
+                .then(json => {
+                    resolve(new Product(this, json));
+                })
+                .catch(reject);
+        });
     }
 
     /**
@@ -69,9 +84,16 @@ class SelzClient {
     async createCart(currency, discount) {
         await this.getUser();
 
-        return http.post(config.urls.createCart(this.config.env, this.config.id), {
-            currency,
-            discount: typeof discount === 'string' && discount.length ? discount : null,
+        return new Promise((resolve, reject) => {
+            http
+                .post(config.urls.createCart(this.config.env, this.config.id), {
+                    currency,
+                    discount: typeof discount === 'string' && discount.length ? discount : null,
+                })
+                .then(json => {
+                    resolve(new Cart(this, json));
+                })
+                .catch(reject);
         });
     }
 
@@ -86,7 +108,24 @@ class SelzClient {
             http
                 .get(config.urls.getCart(this.config.env, id))
                 .then(json => {
-                    resolve(new Cart(json));
+                    resolve(new Cart(this, json));
+                })
+                .catch(reject);
+        });
+    }
+
+    /**
+     * Add a product to a cart
+     * @param {String} id - The shopping cart id
+     */
+    async addToCart(id, product) {
+        await this.getUser();
+
+        return new Promise((resolve, reject) => {
+            http
+                .post(config.urls.addToCart(this.config.env, id), product)
+                .then(json => {
+                    resolve(new Cart(this, json));
                 })
                 .catch(reject);
         });

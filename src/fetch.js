@@ -19,10 +19,10 @@ function CustomFetch(url, options) {
                     .then(data => {
                         const json = snakeCase(data);
 
-                        if (json.error === true) {
-                            reject(json.message);
+                        if (json.success) {
+                            resolve(json.data);
                         } else {
-                            resolve(json);
+                            reject(json.errors);
                         }
                     })
                     .catch(reject);

@@ -1,6 +1,11 @@
+import utils from './../utils';
+
+let client = null;
+
 class ProductUrls {
     constructor(urls) {
         this.full = urls.full;
+        this.store = urls.store;
         this.short = urls.short;
         this.checkout = urls.checkout;
     }
@@ -46,7 +51,7 @@ class ProductVariant {
         this.title = variant.title;
         this.sku = variant.sku;
         this.price = variant.price;
-        this.price_regular = variant.price_regular;
+        this.price_formatted = variant.price_formatted;
         this.quantity = variant.quantity;
         this.quantity_available = variant.quantity_available;
         this.options = variant.options;
@@ -69,7 +74,11 @@ class ProductVariantAttribute {
 }
 
 class Product {
-    constructor(product) {
+    constructor(instance, product) {
+        if (!utils.is.object(product)) {
+            return;
+        }
+
         this.id = product.id;
         this.title = product.title;
         this.description = product.description;
@@ -79,32 +88,84 @@ class Product {
         this.currency_symbol = product.currency_symbol;
         this.price = product.price;
         this.regular_price = product.regular_price;
-        this.display_price = product.display_price;
-        this.display_regular_price = product.display_regular_price;
+        this.price_formatted = product.price_formatted;
+        this.regular_price_formatted = product.regular_price_formatted;
 
         this.quantity = product.quantity;
         this.quantity_available = product.quantity_available;
 
-        this.urls = new ProductUrls(product.urls);
+        // Product URLs
+        if (utils.is.object(product.urls)) {
+            this.urls = new ProductUrls(product.urls);
+        }
 
-        this.media = new ProductMedia(product.media);
-        this.images = product.images.map(image => new ProductImage(image));
+        // Media (Video, YouTube, Vimeo, Audio)
+        if (utils.is.object(product.media)) {
+            this.media = new ProductMedia(product.media);
+        }
 
-        this.files = product.download_files.map(file => new ProductFile(file));
+        // Images
+        if (utils.is.array(product.images)) {
+            this.images = product.images.map(image => new ProductImage(image));
+        }
 
-        this.variants = product.variants.map(variant => new ProductVariant(variant));
-        this.variant_attributes = product.variant_attributes.map(attribute => new ProductVariantAttribute(attribute));
+        // Files for digital products
+        if (utils.is.array(product.download_files)) {
+            this.files = product.download_files.map(file => new ProductFile(file));
+        }
 
+        // Variants
+        if (utils.is.array(product.variants)) {
+            this.variants = product.variants.map(variant => new ProductVariant(variant));
+        }
+        if (utils.is.array(product.variant_attributes)) {
+            this.variant_attributes = product.variant_attributes.map(attribute => new ProductVariantAttribute(attribute));
+        }
+
+        this.cards_enabled = product.cards_enabled;
+        this.extra_cards_enabled = product.extra_cards_enabled;
+        this.paypal_enabled = product.pay_pal_enabled;
+
+        this.display_sku = product.display_sku;
+        this.display_quantity = product.display_quantity;
+        this.display_powered_by = product.display_powered_by;
+
+        this.created_by = product.created_by;
         this.created_time = product.created_time;
+        this.updated_by = product.updated_by;
         this.updated_time = product.updated_time;
+
+        client = instance;
     }
 
+    // eslint-disable-next-line camelcase
     get featured_image() {
         return this.images.find(image => image.featured);
     }
 
+    // eslint-disable-next-line camelcase
     get is_sold_out() {
         return this.quantity_available === 0;
+    }
+
+    buy(discount, colors) {
+        let url = this.urls.checkout;
+
+        if (utils.is.string(discount)) {
+            url = utils.addUrlQuery.call(url, 'code', discount);
+        }
+
+        client.modal.open(url, utils.is.object(colors) ? colors : client.config.colors);
+    }
+
+    view(discount, colors) {
+        let url = this.urls.full;
+
+        if (utils.is.string(discount)) {
+            url = utils.addUrlQuery.call(url, 'code', discount);
+        }
+
+        client.modal.open(url, utils.is.object(colors) ? colors : client.config.colors);
     }
 }
 

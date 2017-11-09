@@ -1,7 +1,7 @@
-// import URI from 'urijs';
+import utils from './utils';
 
 function getBase(env) {
-    return `https://${typeof env === 'string' && env.length ? `${env}.` : ''}selz.com/sdk/`;
+    return `https://${utils.is.string(env) && env.length ? `${env}.` : ''}selz.com/sdk/`;
 }
 
 const config = {
@@ -49,6 +49,15 @@ const config = {
          */
         getCart(env, id) {
             return `${getBase(env)}cart/${id}`;
+        },
+
+        /**
+         * Add product to cart
+         * @param {String} env - Environment (e.g. local, develop, release)
+         * @param {Number} id - Cart ID
+         */
+        addToCart(env, id) {
+            return `${getBase(env)}addtocart/${id}`;
         },
     },
 };

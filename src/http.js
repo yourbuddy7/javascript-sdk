@@ -1,3 +1,5 @@
+import pascalCase from 'pascalcase-keys';
+
 import CustomFetch from './fetch';
 import utils from './utils';
 
@@ -18,14 +20,11 @@ const http = {
     post(url, data) {
         const options = {
             method: 'POST',
-            body: new FormData(),
         };
 
         // Convert POST data to FormData for C#
         if (utils.is.object(data)) {
-            Object.keys(data).forEach(key => {
-                options.body.append(key, data[key]);
-            });
+            options.body = utils.buildFormData(pascalCase(data));
         }
 
         return new CustomFetch(url, options);
