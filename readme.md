@@ -37,6 +37,8 @@ client
     .catch(errors => console.error('Error getting product', errors));
 ```
 
+*Note:* Use async/await if you need to wait for the product info
+
 ## Create a cart
 
 ```javascript
@@ -51,6 +53,8 @@ client
     })
     .catch(errors => console.error('Error creating cart', errors));
 ```
+
+*Note:* Use async/await if you need to wait for the cart to be created
 
 ## Add to a cart
 
