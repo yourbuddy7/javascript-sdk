@@ -59,6 +59,15 @@ const config = {
         addToCart(env, id) {
             return `${getBase(env)}addtocart/${id}`;
         },
+
+        /**
+         * Remove product from cart
+         * @param {String} env - Environment (e.g. local, develop, release)
+         * @param {Number} id - Cart ID
+         */
+        removeFromCart(env, id) {
+            return `${getBase(env)}removefromcart/${id}`;
+        },
     },
 };
 

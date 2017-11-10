@@ -2,7 +2,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const output = document.getElementById('output');
 
     function log(label, json) {
-        // console.log(json);
         const details = document.createElement('details');
 
         const summary = document.createElement('summary');
@@ -26,8 +25,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const storage = {
+        get key() {
+            return 'carts';
+        },
         get(currency) {
-            let store = window.localStorage.getItem('carts');
+            let store = window.localStorage.getItem(this.key);
 
             if (store === null) {
                 if (typeof currency !== 'string') {
@@ -54,10 +56,15 @@ document.addEventListener('DOMContentLoaded', () => {
         set(currency, id) {
             const store = storage.get();
             const key = currency.toLowerCase();
-
             store[key] = id;
-
-            window.localStorage.setItem('carts', JSON.stringify(store));
+            window.localStorage.setItem(this.key, JSON.stringify(store));
+        },
+        remove(currency) {
+            const store = storage.get();
+            console.warn(store);
+            delete store[currency.toLowerCase()];
+            console.warn(store);
+            window.localStorage.setItem(this.key, JSON.stringify(store));
         },
     };
 
@@ -69,26 +76,57 @@ document.addEventListener('DOMContentLoaded', () => {
     // window.addEventListener('message', event => console.warn(event), false);
 
     async function addToCart(product) {
-        let cartId = storage.get(product.currency_code);
+        const id = storage.get(product.currency_code);
+        let cart;
 
-        if (cartId === null) {
+        if (typeof id === 'string' && id.length) {
             await client
-                .createCart(product.currency_code)
-                .then(cart => {
-                    cartId = cart.id;
-                    storage.set(product.currency_code, cart.id);
+                .getCart(id)
+                .then(c => {
+                    cart = c;
+                    log('Cart', cart);
                 })
                 .catch(errors => fail('Cart', errors));
         }
 
-        client
-            .addToCart(cartId, {
+        if (cart === null) {
+            await client
+                .createCart(product.currency_code)
+                .then(c => {
+                    cart = c;
+                    storage.set(product.currency_code, cart.id);
+                    log('Cart', cart);
+                })
+                .catch(errors => fail('Cart', errors));
+        }
+
+        cart
+            .add({
                 id: product.id,
                 variant_id: product.variants[0].id,
             })
-            .then(cart => {
+            .then(c => {
+                cart = c;
                 log('Added', cart);
                 cart.checkout();
+
+                // const item = cart.items.find(i => i.product.id === product.id && i.variant_id === product.variants[0].id);
+
+                // console.warn(cart.items);
+                // console.warn('index', item.index);
+
+                /* cart
+                    .remove(item.index)
+                    .then(updatedCart => {
+                        log('Removed', updatedCart);
+
+                        if (Object.keys(updatedCart).length) {
+                            updatedCart.checkout();
+                        } else {
+                            storage.remove(cart.currency_code);
+                        }
+                    })
+                    .catch(error => fail('Removed', error)); */
             })
             .catch(error => fail('Added', error));
     }

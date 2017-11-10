@@ -6,6 +6,8 @@ let client = null;
 
 class CartItem {
     constructor(item) {
+        this.index = item.index;
+
         this.product = new Product(client, item.product);
 
         this.variant_id = item.variant_id;
@@ -35,6 +37,12 @@ class CartItem {
 
 class Cart {
     constructor(instance, cart) {
+        if (cart === null) {
+            return;
+        }
+
+        client = instance;
+
         this.id = cart.id;
         this.seller_id = cart.seller_id;
         this.url = cart.url;
@@ -52,12 +60,34 @@ class Cart {
 
         this.created_time = cart.created_time;
         this.updated_time = cart.updated_time;
-
-        client = instance;
     }
 
+    /**
+     * Checkout a cart
+     * @param {Object} colors - Colors object for the modal
+     */
     checkout(colors) {
+        if (!utils.is.string(this.url)) {
+            return;
+        }
+
         client.modal.open(this.url, utils.is.object(colors) ? colors : client.config.colors);
+    }
+
+    /**
+     * Add a product to this cart
+     * @param {Object} product - The product details
+     */
+    add(product) {
+        return client.addToCart(this.id, product);
+    }
+
+    /**
+     * Remove a product from this cart
+     * @param {Guid} index
+     */
+    remove(index) {
+        return client.removeFromCart(this.id, index);
     }
 }
 

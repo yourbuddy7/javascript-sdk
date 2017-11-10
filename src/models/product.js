@@ -148,6 +148,11 @@ class Product {
         return this.quantity_available === 0;
     }
 
+    /**
+     * Buy product
+     * @param {String} discount - Discount code for the product
+     * @param {Object} colors - Colors object for the modal
+     */
     buy(discount, colors) {
         let url = this.urls.checkout;
 
@@ -158,6 +163,11 @@ class Product {
         client.modal.open(url, utils.is.object(colors) ? colors : client.config.colors);
     }
 
+    /**
+     * View product in modal
+     * @param {String} discount - Discount code for the product
+     * @param {Object} colors - Colors object for the modal
+     */
     view(discount, colors) {
         let url = this.urls.full;
 

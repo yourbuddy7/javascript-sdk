@@ -19,7 +19,7 @@ class SelzClient {
         );
 
         if (!this.isIdSet() && !this.isDomainSet()) {
-            throw Error('user or domain are required');
+            throw Error('User or domain are required');
         }
 
         this.modal = new Modal(this.config);
@@ -117,6 +117,7 @@ class SelzClient {
     /**
      * Add a product to a cart
      * @param {String} id - The shopping cart id
+     * @param {Object} product - The product details
      */
     async addToCart(id, product) {
         await this.getUser();
@@ -124,6 +125,24 @@ class SelzClient {
         return new Promise((resolve, reject) => {
             http
                 .post(config.urls.addToCart(this.config.env, id), product)
+                .then(json => {
+                    resolve(new Cart(this, json));
+                })
+                .catch(reject);
+        });
+    }
+
+    /**
+     * Remove a product from a cart
+     * @param {String} id - The shopping cart id
+     * @param {Guid} index - The shopping cart item guid
+     */
+    async removeFromCart(id, index) {
+        await this.getUser();
+
+        return new Promise((resolve, reject) => {
+            http
+                .post(config.urls.removeFromCart(this.config.env, id), { index })
                 .then(json => {
                     resolve(new Cart(this, json));
                 })
