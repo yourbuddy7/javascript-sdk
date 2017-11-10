@@ -61,9 +61,7 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         remove(currency) {
             const store = storage.get();
-            console.warn(store);
             delete store[currency.toLowerCase()];
-            console.warn(store);
             window.localStorage.setItem(this.key, JSON.stringify(store));
         },
     };
