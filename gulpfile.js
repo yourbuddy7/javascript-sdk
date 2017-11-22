@@ -5,7 +5,6 @@
 /* eslint no-console: "off" */
 
 const gulp = require('gulp');
-const path = require('path');
 const del = require('del');
 const gutil = require('gulp-util');
 const sass = require('gulp-sass');
@@ -63,38 +62,72 @@ const babelrc = {
     exclude: 'node_modules/**',
 };
 
+const tasks = {
+    clean: ['clean'],
+    js: [],
+    sass: ['sass'],
+};
+
 gulp.task('clean', () => del(['dist/**/*']));
 
 // JavaScript
-gulp.task('js', () => {
-    const format = 'umd';
+// Formats to build
+const formats = {
+    es: {
+        format: 'es',
+        ext: 'mjs',
+        polyfill: false,
+    },
+    umd: {
+        format: 'umd',
+        ext: 'js',
+        polyfill: false,
+    },
+    'umd-polyfilled': {
+        format: 'umd',
+        ext: 'js',
+        polyfill: true,
+    },
+};
 
-    return gulp
-        .src('./src/index.js')
-        .on('error', gutil.log)
-        .pipe(sourcemaps.init())
-        .pipe(
-            rollup(
-                {
-                    plugins: [
-                        resolve(),
-                        commonjs(),
-                        rollupReplace({
-                            exclude: 'node_modules/**',
-                            ENVIRONMENT: JSON.stringify(build),
-                            VERSION: JSON.stringify(pkg.version),
-                        }),
-                        babel(babelrc),
-                        uglify({}, minify),
-                    ],
-                },
-                { name: namespace, format },
-            ),
-        )
-        .pipe(rename({ basename: `client.${format}.polyfilled` }))
-        .pipe(size(sizeOptions))
-        .pipe(sourcemaps.write(''))
-        .pipe(gulp.dest('./dist/'));
+Object.keys(formats).forEach(key => {
+    const task = formats[key];
+    const name = `js:${key}`;
+    tasks.js.push(name);
+
+    gulp.task(name, () =>
+        gulp
+            .src(`./src/index${task.polyfill ? '.polyfilled' : ''}.js`)
+            .on('error', gutil.log)
+            .pipe(sourcemaps.init())
+            .pipe(
+                rollup(
+                    {
+                        plugins: [
+                            resolve(),
+                            commonjs(),
+                            rollupReplace({
+                                exclude: 'node_modules/**',
+                                ENVIRONMENT: JSON.stringify(build),
+                                VERSION: JSON.stringify(pkg.version),
+                            }),
+                            babel(babelrc),
+                            uglify({}, minify),
+                        ],
+                    },
+                    { name: namespace, format: task.format },
+                ),
+            )
+            .pipe(
+                rename({
+                    basename: `client.${task.format}${task.polyfill ? '.polyfilled' : ''}`,
+                    extname: `.${task.ext}`,
+                }),
+            )
+            .pipe(size(sizeOptions))
+            .pipe(sourcemaps.write(''))
+            .pipe(gulp.dest('./dist/')),
+    );
 });
 
 // SASS
@@ -112,13 +145,13 @@ gulp.task('sass', () =>
 
 // Watch for file changes
 gulp.task('watch', () => {
-    gulp.watch('./src/**/*.scss', ['sass']);
-    gulp.watch('./src/**/*.js', ['js']);
+    gulp.watch('./src/**/*.scss', tasks.sass);
+    gulp.watch('./src/**/*.js', tasks.js);
 });
 
 // Default gulp task
 gulp.task('default', () => {
-    run(['clean'], ['sass'], ['js'], 'watch');
+    run(tasks.clean, tasks.sass, tasks.js, 'watch');
 });
 
 // If aws is setup
@@ -165,6 +198,6 @@ if (Object.keys(aws).length) {
 
     // Do everything
     gulp.task('deploy', () => {
-        run(['clean'], ['sass'], ['js'], 'upload');
+        run(tasks.clean, tasks.sass, tasks.js, 'upload');
     });
 }
