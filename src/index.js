@@ -32,7 +32,8 @@ class SelzClient {
                     style.setAttribute('id', 'selz-client-styles');
                     document.head.appendChild(style);
                     style.textContent = css;
-                });
+                })
+                .catch(() => {});
         }
 
         this.modal = new Modal(this.config);
