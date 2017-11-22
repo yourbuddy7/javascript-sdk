@@ -68,6 +68,13 @@ const config = {
         removeFromCart(env, id) {
             return `${getBase(env)}removefromcart/${id}`;
         },
+
+        /**
+         * Get URL for stylesheet
+         */
+        stylesheet() {
+            return ENVIRONMENT === 'development' ? '../dist/styles.css' : `https://sdk.selzstatic.com/${VERSION}/styles.css`;
+        },
     },
 };
 

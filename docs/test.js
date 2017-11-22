@@ -33,7 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (store === null) {
                 if (typeof currency !== 'string') {
-                    return {};
+                    return null;
                 }
 
                 return null;
@@ -75,7 +75,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function addToCart(product) {
         const id = storage.get(product.currency_code);
-        let cart;
+        let cart = null;
 
         if (typeof id === 'string' && id.length) {
             await client

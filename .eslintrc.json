@@ -7,7 +7,7 @@
         "mocha": true,
         "node": true
     },
-    "globals": { "SelzClient": true },
+    "globals": { "SelzClient": false, "ENVIRONMENT": false, "VERSION": false },
     "rules": {
         "no-const-assign": 1,
         "no-this-before-super": 1,

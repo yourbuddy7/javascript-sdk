@@ -1,8 +1,10 @@
+import config from '../config';
 import support from '../support';
 import utils from '../utils';
+import http from '../http';
 
 class Modal {
-    constructor(config) {
+    constructor(options) {
         this.namespace = 'selz-modal';
 
         this.config = Object.assign(
@@ -24,7 +26,7 @@ class Modal {
                     },
                 },
             },
-            config,
+            options,
         );
 
         // Scroll position
@@ -218,7 +220,7 @@ class Modal {
         modal.setAttribute('class', this.namespace);
 
         // Add class if animations supported
-        utils.toggleClass.call(modal, 'cssanimations', support.animation);
+        utils.toggleClass.call(modal, 'supports-cssanimations', support.animation);
 
         // Loader
         const loader = document.createElement('div');

@@ -1,9 +1,10 @@
+import 'babel-polyfill';
+
 import config from './config';
 import http from './http';
 
 import Product from './models/product';
 import Cart from './models/cart';
-
 import Modal from './ui/modal';
 
 class SelzClient {
@@ -20,6 +21,18 @@ class SelzClient {
 
         if (!this.isIdSet() && !this.isDomainSet()) {
             throw Error('User or domain are required');
+        }
+
+        // Get the stylesheet
+        if (!document.getElementById('selz-client-styles')) {
+            fetch(config.urls.stylesheet())
+                .then(data => data.text())
+                .then(css => {
+                    const style = document.createElement('style');
+                    style.setAttribute('id', 'selz-client-styles');
+                    document.head.appendChild(style);
+                    style.textContent = css;
+                });
         }
 
         this.modal = new Modal(this.config);
