@@ -5,6 +5,8 @@
 /* eslint no-console: "off" */
 
 const gulp = require('gulp');
+const path = require('path');
+const del = require('del');
 const gutil = require('gulp-util');
 const sass = require('gulp-sass');
 const cleancss = require('gulp-clean-css');
@@ -19,9 +21,12 @@ const uglify = require('rollup-plugin-uglify');
 const { minify } = require('uglify-es');
 const commonjs = require('rollup-plugin-commonjs');
 const resolve = require('rollup-plugin-node-resolve');
-const replace = require('rollup-plugin-replace');
+const rollupReplace = require('rollup-plugin-replace');
+const replace = require('gulp-replace');
+const s3 = require('gulp-s3');
 
 const pkg = require('./package.json');
+const aws = require('./aws.json');
 
 // Build types
 const builds = {
@@ -58,10 +63,15 @@ const babelrc = {
     exclude: 'node_modules/**',
 };
 
+gulp.task('clean', () => del(['dist/**/*']));
+
 // JavaScript
-gulp.task('js', () =>
-    gulp
+gulp.task('js', () => {
+    const format = 'umd';
+
+    return gulp
         .src('./src/index.js')
+        .on('error', gutil.log)
         .pipe(sourcemaps.init())
         .pipe(
             rollup(
@@ -69,7 +79,7 @@ gulp.task('js', () =>
                     plugins: [
                         resolve(),
                         commonjs(),
-                        replace({
+                        rollupReplace({
                             exclude: 'node_modules/**',
                             ENVIRONMENT: JSON.stringify(build),
                             VERSION: JSON.stringify(pkg.version),
@@ -78,21 +88,21 @@ gulp.task('js', () =>
                         uglify({}, minify),
                     ],
                 },
-                { name: namespace, format: 'umd' },
+                { name: namespace, format },
             ),
         )
-        .pipe(rename({ basename: 'client' }))
+        .pipe(rename({ basename: `client.${format}.polyfilled` }))
         .pipe(size(sizeOptions))
         .pipe(sourcemaps.write(''))
-        .pipe(gulp.dest('./dist/')),
-);
+        .pipe(gulp.dest('./dist/'));
+});
 
 // SASS
 gulp.task('sass', () =>
     gulp
         .src('./src/ui/styles.scss')
-        .pipe(sass())
         .on('error', gutil.log)
+        .pipe(sass())
         .pipe(autoprefixer(browsers, { cascade: false }))
         .pipe(cleancss())
         .pipe(rename({ basename: 'styles' }))
@@ -108,5 +118,53 @@ gulp.task('watch', () => {
 
 // Default gulp task
 gulp.task('default', () => {
-    run(['sass'], ['js'], 'watch');
+    run(['clean'], ['sass'], ['js'], 'watch');
 });
+
+// If aws is setup
+if (Object.keys(aws).length) {
+    const regex = '(?:0|[1-9][0-9]*)\\.(?:0|[1-9][0-9]*).(?:0|[1-9][0-9]*)(?:-[\\da-z\\-]+(?:.[\\da-z\\-]+)*)?(?:\\+[\\da-z\\-]+(?:.[\\da-z\\-]+)*)?';
+    const cdnpath = new RegExp(`${aws.domain}/${regex}`, 'gi');
+    const paths = {
+        local: new RegExp('(../)?dist', 'gi'),
+        cdn: `https://${aws.domain}/${pkg.version}`,
+    };
+
+    // Upload options
+    const maxAge = 31536000; // 1 year
+    const options = {
+        headers: {
+            'Cache-Control': `max-age=${maxAge}`,
+            Vary: 'Accept-Encoding',
+        },
+        failOnError: true,
+    };
+
+    // Publish version to CDN bucket
+    gulp.task('upload', () => {
+        console.log(`Uploading ${pkg.version} to ${aws.domain}...`);
+
+        // Replace versioned files in readme.md
+        gulp
+            .src([`${__dirname}/readme.md`])
+            .pipe(replace(cdnpath, `${aws.domain}/${pkg.version}`))
+            .pipe(gulp.dest(__dirname));
+
+        // Upload to CDN
+        return gulp
+            .src('./dist/**')
+            .pipe(
+                rename(p => {
+                    // eslint-disable-next-line
+                    p.dirname = p.dirname.replace('.', pkg.version);
+                }),
+            )
+            .pipe(replace(paths.local, paths.cdn))
+            .pipe(s3(aws, options.cdn));
+    });
+
+    // Do everything
+    gulp.task('deploy', () => {
+        run(['clean'], ['sass'], ['js'], 'upload');
+    });
+}
