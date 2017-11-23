@@ -32,11 +32,11 @@ document.addEventListener('DOMContentLoaded', () => {
             let store = window.localStorage.getItem(this.key);
 
             if (store === null) {
-                if (typeof currency !== 'string') {
-                    return null;
+                if (typeof currency !== 'string' || !currency.length) {
+                    return {};
                 }
 
-                return null;
+                return {};
             }
 
             store = JSON.parse(store);
@@ -51,7 +51,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 return store[key];
             }
 
-            return null;
+            return {};
         },
         set(currency, id) {
             const store = storage.get();
@@ -66,7 +66,11 @@ document.addEventListener('DOMContentLoaded', () => {
         },
     };
 
-    const client = new SelzClient({ id: 13, env: 'local' });
+    const client = new SelzClient({
+        id: 13,
+        env: 'local',
+        colors: { buttons: { background: '#303e4c', text: '#97e66a' }, checkout: { background: '#303e4c', text: '#97e66a' } },
+    });
 
     log('Config', client.config);
 
@@ -84,7 +88,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     cart = c;
                     log('Cart', cart);
                 })
-                .catch(errors => fail('Cart', errors));
+                .catch(errors => fail('Get cart', errors));
         }
 
         if (cart === null) {
@@ -95,7 +99,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     storage.set(product.currency_code, cart.id);
                     log('Cart', cart);
                 })
-                .catch(errors => fail('Cart', errors));
+                .catch(errors => fail('Create cart', errors));
         }
 
         cart

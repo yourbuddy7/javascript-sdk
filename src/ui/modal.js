@@ -25,6 +25,16 @@ class Modal {
                         height: 600,
                     },
                 },
+                colors: {
+                    buttons: {
+                        background: null,
+                        text: null,
+                    },
+                    checkout: {
+                        background: null,
+                        text: null,
+                    },
+                },
             },
             options,
         );
@@ -74,6 +84,30 @@ class Modal {
         );
     }
 
+    // Get colors in weird format
+    get theme() {
+        const formatted = {};
+        const { colors } = this.config;
+
+        // Buttons
+        if (utils.is.hexColor(colors.buttons.background)) {
+            formatted.cb = colors.buttons.background;
+        }
+        if (utils.is.hexColor(colors.buttons.text)) {
+            formatted.ct = colors.buttons.text;
+        }
+
+        // Checkout
+        if (utils.is.hexColor(colors.checkout.background)) {
+            formatted.chbg = colors.checkout.background;
+        }
+        if (utils.is.hexColor(colors.checkout.text)) {
+            formatted.chtx = colors.checkout.text;
+        }
+
+        return formatted;
+    }
+
     // Receive postMessage from iframe
     messageHandler(event) {
         // Get data
@@ -92,11 +126,13 @@ class Modal {
 
             switch (json.key) {
                 case 'modal-theme':
+                    console.warn('colors...', this.theme);
+
                     // Send back the colors
                     event.source.postMessage(
                         JSON.stringify({
                             key: 'modal-theme',
-                            data: this.config.colors,
+                            data: this.theme,
                         }),
                         domain,
                     );
@@ -263,7 +299,7 @@ class Modal {
 
         // Store colors if passed
         if (utils.is.object(colors)) {
-            this.config.colors = colors;
+            Object.assign(this.config.colors, colors);
         }
 
         // Set frame type

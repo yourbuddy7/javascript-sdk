@@ -21,6 +21,10 @@ const utils = {
         nullOrEmpty(value) {
             return value === null || typeof value === 'undefined' || value === '';
         },
+        hexColor(input) {
+            const regex = new RegExp('^#(?:[0-9a-fA-F]{3}){1,2}$');
+            return this.string(input) && regex.test(input);
+        },
         getConstructor(input) {
             if (input === null || typeof input === 'undefined') {
                 return null;
