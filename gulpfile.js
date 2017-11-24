@@ -63,7 +63,7 @@ const babelrc = {
                 },
                 useBuiltIns: true,
                 modules: false,
-                debug: true,
+                // debug: true,
             },
         ],
     ],
