@@ -53,8 +53,6 @@ client
     .catch(errors => console.error('Error getting product', errors));
 ```
 
-_Note:_ Use async/await if you need to wait for the product info
-
 ## Display a product modal
 
 ```javascript
@@ -75,8 +73,6 @@ client
     })
     .catch(errors => console.error('Error creating cart', errors));
 ```
-
-_Note:_ Use async/await if you need to wait for the cart to be created
 
 ## Add to a cart
 

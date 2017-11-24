@@ -126,8 +126,6 @@ class Modal {
 
             switch (json.key) {
                 case 'modal-theme':
-                    console.warn('colors...', this.theme);
-
                     // Send back the colors
                     event.source.postMessage(
                         JSON.stringify({

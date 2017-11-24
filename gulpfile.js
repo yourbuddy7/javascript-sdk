@@ -32,16 +32,25 @@ const builds = {
     dev: 'development',
     prod: 'production',
 };
-const build = process.env.BUILD || builds.dev;
+
+// Set environment to production by default
+const build = process.env.BUILD || builds.prod;
+process.env.NODE_ENV = build;
 
 // Naming
 const namespace = 'SelzClient';
 
 // Browser list
-const browsers = ['> 1%', 'last 2 versions'];
+const browsers = ['> 1%'];
 
 // Size plugin
 const sizeOptions = { showFiles: true, gzip: true };
+
+const tasks = {
+    clean: ['clean'],
+    js: [],
+    sass: ['sass'],
+};
 
 // Babel config
 const babelrc = {
@@ -54,21 +63,14 @@ const babelrc = {
                 },
                 useBuiltIns: true,
                 modules: false,
+                debug: true,
             },
         ],
     ],
     plugins: ['external-helpers'],
     babelrc: false,
-    exclude: 'node_modules/**',
+    // exclude: 'node_modules/**',
 };
-
-const tasks = {
-    clean: ['clean'],
-    js: [],
-    sass: ['sass'],
-};
-
-gulp.task('clean', () => del(['dist/**/*']));
 
 // JavaScript
 // Formats to build
@@ -130,6 +132,31 @@ Object.keys(formats).forEach(key => {
     );
 });
 
+// Docs JS
+tasks.js.push('js:demo');
+gulp.task('js:demo', () =>
+    gulp
+        .src('./docs/scripts.js')
+        .on('error', gutil.log)
+        .pipe(sourcemaps.init())
+        .pipe(
+            rollup(
+                {
+                    plugins: [resolve(), commonjs(), babel(babelrc), uglify({}, minify)],
+                },
+                { format: 'es' },
+            ),
+        )
+        .pipe(
+            rename({
+                suffix: '.es5',
+            }),
+        )
+        .pipe(size(sizeOptions))
+        .pipe(sourcemaps.write(''))
+        .pipe(gulp.dest('./docs/')),
+);
+
 // SASS
 gulp.task('sass', () =>
     gulp
@@ -142,6 +169,9 @@ gulp.task('sass', () =>
         .pipe(size(sizeOptions))
         .pipe(gulp.dest('./dist/')),
 );
+
+// Clean out /dist
+gulp.task('clean', () => del(['dist/**/*']));
 
 // Watch for file changes
 gulp.task('watch', () => {

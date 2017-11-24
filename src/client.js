@@ -62,11 +62,11 @@ class SelzClient {
     /**
      * Get all products
      */
-    async getAllProducts() {
-        await this.getUser();
+    /* getAllProducts() {
+        this.getUser();
 
         return http.get(config.urls.products(this.config.env, this.config.id));
-    }
+    } */
 
     /**
      * Get the Store ID
@@ -93,19 +93,21 @@ class SelzClient {
      * @param {String} currency - ISO currency code
      * @param {String} discount - Discount code (optional)
      */
-    async createCart(currency, discount) {
-        await this.getUser();
-
+    createCart(currency, discount) {
         return new Promise((resolve, reject) => {
-            http
-                .post(config.urls.createCart(this.config.env, this.config.id), {
-                    currency,
-                    discount: typeof discount === 'string' && discount.length ? discount : null,
+            this.getUser()
+                .then(() => {
+                    http
+                        .post(config.urls.createCart(this.config.env, this.config.id), {
+                            currency,
+                            discount: typeof discount === 'string' && discount.length ? discount : null,
+                        })
+                        .then(json => {
+                            resolve(new Cart(this, json));
+                        })
+                        .catch(reject);
                 })
-                .then(json => {
-                    resolve(new Cart(this, json));
-                })
-                .catch(reject);
+                .catch(error => reject(error));
         });
     }
 
@@ -113,16 +115,18 @@ class SelzClient {
      * Get a shopping cart
      * @param {String} id - The shopping cart id
      */
-    async getCart(id) {
-        await this.getUser();
-
+    getCart(id) {
         return new Promise((resolve, reject) => {
-            http
-                .get(config.urls.getCart(this.config.env, id))
-                .then(json => {
-                    resolve(new Cart(this, json));
+            this.getUser()
+                .then(() => {
+                    http
+                        .get(config.urls.getCart(this.config.env, id))
+                        .then(json => {
+                            resolve(new Cart(this, json));
+                        })
+                        .catch(reject);
                 })
-                .catch(reject);
+                .catch(error => reject(error));
         });
     }
 
@@ -131,16 +135,18 @@ class SelzClient {
      * @param {String} id - The shopping cart id
      * @param {Object} product - The product details
      */
-    async addToCart(id, product) {
-        await this.getUser();
-
+    addToCart(id, product) {
         return new Promise((resolve, reject) => {
-            http
-                .post(config.urls.addToCart(this.config.env, id), product)
-                .then(json => {
-                    resolve(new Cart(this, json));
+            this.getUser()
+                .then(() => {
+                    http
+                        .post(config.urls.addToCart(this.config.env, id), product)
+                        .then(json => {
+                            resolve(new Cart(this, json));
+                        })
+                        .catch(reject);
                 })
-                .catch(reject);
+                .catch(error => reject(error));
         });
     }
 
@@ -149,16 +155,18 @@ class SelzClient {
      * @param {String} id - The shopping cart id
      * @param {Guid} index - The shopping cart item guid
      */
-    async removeFromCart(id, index) {
-        await this.getUser();
-
+    removeFromCart(id, index) {
         return new Promise((resolve, reject) => {
-            http
-                .post(config.urls.removeFromCart(this.config.env, id), { index })
-                .then(json => {
-                    resolve(new Cart(this, json));
+            this.getUser()
+                .then(() => {
+                    http
+                        .post(config.urls.removeFromCart(this.config.env, id), { index })
+                        .then(json => {
+                            resolve(new Cart(this, json));
+                        })
+                        .catch(reject);
                 })
-                .catch(reject);
+                .catch(error => reject(error));
         });
     }
 }
