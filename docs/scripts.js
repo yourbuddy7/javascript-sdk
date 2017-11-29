@@ -124,7 +124,6 @@ document.addEventListener('DOMContentLoaded', () => {
             log('Product', product);
 
             addToCart(product);
-
             // product.buy();
             // product.view();
         })
