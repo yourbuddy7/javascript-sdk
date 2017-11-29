@@ -32,11 +32,11 @@ document.addEventListener('DOMContentLoaded', () => {
             let store = window.localStorage.getItem(this.key);
 
             if (store === null) {
-                if (typeof currency !== 'string') {
+                if (typeof currency !== 'string' || !currency.length) {
                     return {};
                 }
 
-                return null;
+                return {};
             }
 
             store = JSON.parse(store);
@@ -51,7 +51,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 return store[key];
             }
 
-            return null;
+            return {};
         },
         set(currency, id) {
             const store = storage.get();
@@ -66,67 +66,56 @@ document.addEventListener('DOMContentLoaded', () => {
         },
     };
 
-    const client = new SelzClient({ id: 13, env: 'local' });
+    const client = new SelzClient({
+        id: 13,
+        env: 'local',
+        colors: { buttons: { background: '#303e4c', text: '#97e66a' }, checkout: { background: '#303e4c', text: '#97e66a' } },
+    });
 
     log('Config', client.config);
 
     // Listen for messages
     // window.addEventListener('message', event => console.warn(event), false);
 
-    async function addToCart(product) {
+    function getCart(product) {
         const id = storage.get(product.currency_code);
-        let cart;
 
-        if (typeof id === 'string' && id.length) {
-            await client
-                .getCart(id)
-                .then(c => {
-                    cart = c;
-                    log('Cart', cart);
-                })
-                .catch(errors => fail('Cart', errors));
-        }
-
-        if (cart === null) {
-            await client
-                .createCart(product.currency_code)
-                .then(c => {
-                    cart = c;
-                    storage.set(product.currency_code, cart.id);
-                    log('Cart', cart);
-                })
-                .catch(errors => fail('Cart', errors));
-        }
-
-        cart
-            .add({
-                id: product.id,
-                variant_id: product.variants[0].id,
-            })
-            .then(c => {
-                cart = c;
-                log('Added', cart);
-                cart.checkout();
-
-                // const item = cart.items.find(i => i.product.id === product.id && i.variant_id === product.variants[0].id);
-
-                // console.warn(cart.items);
-                // console.warn('index', item.index);
-
-                /* cart
-                    .remove(item.index)
-                    .then(updatedCart => {
-                        log('Removed', updatedCart);
-
-                        if (Object.keys(updatedCart).length) {
-                            updatedCart.checkout();
-                        } else {
-                            storage.remove(cart.currency_code);
-                        }
+        return new Promise((resolve, reject) => {
+            if (typeof id === 'string' && id.length) {
+                client
+                    .getCart(id)
+                    .then(cart => {
+                        log('Existing cart', cart);
+                        resolve(cart);
                     })
-                    .catch(error => fail('Removed', error)); */
+                    .catch(error => reject(error));
+            } else {
+                client
+                    .createCart(product.currency_code)
+                    .then(cart => {
+                        storage.set(product.currency_code, cart.id);
+                        resolve(cart);
+                    })
+                    .catch(error => reject(error));
+            }
+        });
+    }
+
+    function addToCart(product) {
+        getCart(product)
+            .then(cart => {
+                cart
+                    .add({
+                        id: product.id,
+                        variant_id: product.variants[0].id,
+                    })
+                    .then(updatedCart => {
+                        log('Added', updatedCart);
+                        updatedCart.checkout();
+                    })
+                    .catch(error => fail('Added', error));
             })
-            .catch(error => fail('Added', error));
+            .catch(error => fail('Get cart', error));
     }
 
     client
@@ -137,7 +126,6 @@ document.addEventListener('DOMContentLoaded', () => {
             addToCart(product);
 
             // product.buy();
-
             // product.view();
         })
         .catch(errors => fail('Product', errors));

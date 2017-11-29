@@ -1,8 +1,10 @@
+import config from '../config';
 import support from '../support';
 import utils from '../utils';
+import http from '../http';
 
 class Modal {
-    constructor(config) {
+    constructor(options) {
         this.namespace = 'selz-modal';
 
         this.config = Object.assign(
@@ -23,8 +25,18 @@ class Modal {
                         height: 600,
                     },
                 },
+                colors: {
+                    buttons: {
+                        background: null,
+                        text: null,
+                    },
+                    checkout: {
+                        background: null,
+                        text: null,
+                    },
+                },
             },
-            config,
+            options,
         );
 
         // Scroll position
@@ -72,6 +84,30 @@ class Modal {
         );
     }
 
+    // Get colors in weird format
+    get theme() {
+        const formatted = {};
+        const { colors } = this.config;
+
+        // Buttons
+        if (utils.is.hexColor(colors.buttons.background)) {
+            formatted.cb = colors.buttons.background;
+        }
+        if (utils.is.hexColor(colors.buttons.text)) {
+            formatted.ct = colors.buttons.text;
+        }
+
+        // Checkout
+        if (utils.is.hexColor(colors.checkout.background)) {
+            formatted.chbg = colors.checkout.background;
+        }
+        if (utils.is.hexColor(colors.checkout.text)) {
+            formatted.chtx = colors.checkout.text;
+        }
+
+        return formatted;
+    }
+
     // Receive postMessage from iframe
     messageHandler(event) {
         // Get data
@@ -94,7 +130,7 @@ class Modal {
                     event.source.postMessage(
                         JSON.stringify({
                             key: 'modal-theme',
-                            data: this.config.colors,
+                            data: this.theme,
                         }),
                         domain,
                     );
@@ -218,7 +254,7 @@ class Modal {
         modal.setAttribute('class', this.namespace);
 
         // Add class if animations supported
-        utils.toggleClass.call(modal, 'cssanimations', support.animation);
+        utils.toggleClass.call(modal, 'supports-cssanimations', support.animation);
 
         // Loader
         const loader = document.createElement('div');
@@ -261,7 +297,7 @@ class Modal {
 
         // Store colors if passed
         if (utils.is.object(colors)) {
-            this.config.colors = colors;
+            Object.assign(this.config.colors, colors);
         }
 
         // Set frame type

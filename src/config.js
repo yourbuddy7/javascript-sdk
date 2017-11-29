@@ -68,6 +68,13 @@ const config = {
         removeFromCart(env, id) {
             return `${getBase(env)}removefromcart/${id}`;
         },
+
+        /**
+         * Get URL for stylesheet
+         */
+        stylesheet() {
+            return '../dist/styles.css';
+        },
     },
 };
 

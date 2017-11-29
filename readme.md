@@ -1,6 +1,11 @@
+---
+Beware: The SDK is currently in beta and not production-ready
+---
+
 # Selz JavaScript SDK
 
-The Selz JavaScript SDK is a lightweight library to allow you to build ecommerce into any web application. You can query for product information, manage shopping carts, and checkout.
+The Selz JavaScript SDK is a lightweight library to allow you to build ecommerce into any web application. You can query for product information, manage
+shopping carts, and checkout.
 
 It is assumed you have knowledge of JavaScript to use this library.
 
@@ -15,7 +20,7 @@ npm install selz-js-sdk
 or using our CDN:
 
 ```html
-<script src="https://js.selzstatic.com/1.0.0/sdk.umd.polyfilled.js"></script>
+<script src="https://sdk.selzstatic.com/0.1.2/client.umd.polyfilled.js"></script>
 ```
 
 ## Creating a client
@@ -48,8 +53,6 @@ client
     .catch(errors => console.error('Error getting product', errors));
 ```
 
-*Note:* Use async/await if you need to wait for the product info
-
 ## Display a product modal
 
 ```javascript
@@ -70,8 +73,6 @@ client
     })
     .catch(errors => console.error('Error creating cart', errors));
 ```
-
-*Note:* Use async/await if you need to wait for the cart to be created
 
 ## Add to a cart
 
