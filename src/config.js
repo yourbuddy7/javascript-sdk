@@ -8,8 +8,8 @@ const config = {
     urls: {
         /**
          * Get URL for product data by URL
-         * @param {String} env - Environment (e.g. local, develop, release)
-         * @param {String} url - Short or full URL for a product
+         * @param {string} env - Environment (e.g. local, develop, release)
+         * @param {string} url - Short or full URL for a product
          */
         product(env, url) {
             return `${getBase(env)}product?url=${url}`;
@@ -17,8 +17,8 @@ const config = {
 
         /**
          * Get URL for all products by User ID
-         * @param {String} env - Environment (e.g. local, develop, release)
-         * @param {String} id - The User ID for the store
+         * @param {string} env - Environment (e.g. local, develop, release)
+         * @param {string} id - The User ID for the store
          */
         products(env, id) {
             return `${getBase(env)}products/${id}`;
@@ -26,8 +26,8 @@ const config = {
 
         /**
          * Get URL for User ID by domain
-         * @param {String} env - Environment (e.g. local, develop, release)
-         * @param {String} url - The URL for the store
+         * @param {string} env - Environment (e.g. local, develop, release)
+         * @param {string} url - The URL for the store
          */
         userId(env, url) {
             return `${getBase(env)}userid?domain=${url}`;
@@ -35,8 +35,8 @@ const config = {
 
         /**
          * Create a new cart
-         * @param {String} env - Environment (e.g. local, develop, release)
-         * @param {Number} id - Store ID
+         * @param {string} env - Environment (e.g. local, develop, release)
+         * @param {number} id - Store ID
          */
         createCart(env, id) {
             return `${getBase(env)}createcart/${id}`;
@@ -44,8 +44,8 @@ const config = {
 
         /**
          * Get cart from ID
-         * @param {String} env - Environment (e.g. local, develop, release)
-         * @param {Number} id - Cart ID
+         * @param {string} env - Environment (e.g. local, develop, release)
+         * @param {number} id - Cart ID
          */
         getCart(env, id) {
             return `${getBase(env)}cart/${id}`;
@@ -53,8 +53,8 @@ const config = {
 
         /**
          * Add product to cart
-         * @param {String} env - Environment (e.g. local, develop, release)
-         * @param {Number} id - Cart ID
+         * @param {string} env - Environment (e.g. local, develop, release)
+         * @param {number} id - Cart ID
          */
         addToCart(env, id) {
             return `${getBase(env)}addtocart/${id}`;
@@ -62,8 +62,8 @@ const config = {
 
         /**
          * Remove product from cart
-         * @param {String} env - Environment (e.g. local, develop, release)
-         * @param {Number} id - Cart ID
+         * @param {string} env - Environment (e.g. local, develop, release)
+         * @param {number} id - Cart ID
          */
         removeFromCart(env, id) {
             return `${getBase(env)}removefromcart/${id}`;

@@ -64,7 +64,7 @@ class Cart {
 
     /**
      * Checkout a cart
-     * @param {Object} colors - Colors object for the modal
+     * @param {object} colors - Colors object for the modal
      */
     checkout(colors) {
         if (!utils.is.string(this.url)) {
@@ -76,7 +76,7 @@ class Cart {
 
     /**
      * Add a product to this cart
-     * @param {Object} product - The product details
+     * @param {object} product - The product details
      */
     add(product) {
         return client.addToCart(this.id, product);
@@ -84,7 +84,7 @@ class Cart {
 
     /**
      * Remove a product from this cart
-     * @param {Guid} index
+     * @param {string} index
      */
     remove(index) {
         return client.removeFromCart(this.id, index);

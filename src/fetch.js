@@ -2,10 +2,10 @@ import snakeCase from 'snakecase-keys';
 
 /**
  * Custom fetch wrapper
- * @param {String} url - The URL of the endpoint
- * @param {Object} options - Object of options for the request
+ * @param {string} url - The URL of the endpoint
+ * @param {object} options - Object of options for the request
  */
-function CustomFetch(url, options) {
+const CustomFetch = (url, options) => {
     const defaults = {
         mode: 'cors',
         redirect: 'follow',
@@ -29,6 +29,6 @@ function CustomFetch(url, options) {
             })
             .catch(reject);
     });
-}
+};
 
 export default CustomFetch;

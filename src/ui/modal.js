@@ -1,7 +1,5 @@
-import config from '../config';
 import support from '../support';
 import utils from '../utils';
-import http from '../http';
 
 class Modal {
     constructor(options) {

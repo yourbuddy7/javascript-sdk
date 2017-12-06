@@ -24,89 +24,28 @@ document.addEventListener('DOMContentLoaded', () => {
         return log(`${label} (Error)`, errors);
     }
 
-    const storage = {
-        get key() {
-            return 'carts';
-        },
-        get(currency) {
-            let store = window.localStorage.getItem(this.key);
-
-            if (store === null) {
-                if (typeof currency !== 'string' || !currency.length) {
-                    return {};
-                }
-
-                return {};
-            }
-
-            store = JSON.parse(store);
-
-            if (typeof currency !== 'string') {
-                return store;
-            }
-
-            const key = currency.toLowerCase();
-
-            if (key in store) {
-                return store[key];
-            }
-
-            return {};
-        },
-        set(currency, id) {
-            const store = storage.get();
-            const key = currency.toLowerCase();
-            store[key] = id;
-            window.localStorage.setItem(this.key, JSON.stringify(store));
-        },
-        remove(currency) {
-            const store = storage.get();
-            delete store[currency.toLowerCase()];
-            window.localStorage.setItem(this.key, JSON.stringify(store));
-        },
-    };
-
     const client = new SelzClient({
         id: 13,
+        // domain: 'local.sampotts.me',
         env: 'local',
         colors: { buttons: { background: '#303e4c', text: '#97e66a' }, checkout: { background: '#303e4c', text: '#97e66a' } },
     });
+
+    // window.client = client;
 
     log('Config', client.config);
 
     // Listen for messages
     // window.addEventListener('message', event => console.warn(event), false);
 
-    function getCart(product) {
-        const id = storage.get(product.currency_code);
-
-        return new Promise((resolve, reject) => {
-            if (typeof id === 'string' && id.length) {
-                client
-                    .getCart(id)
-                    .then(cart => {
-                        log('Existing cart', cart);
-                        resolve(cart);
-                    })
-                    .catch(error => reject(error));
-            } else {
-                client
-                    .createCart(product.currency_code)
-                    .then(cart => {
-                        storage.set(product.currency_code, cart.id);
-                        resolve(cart);
-                    })
-                    .catch(error => reject(error));
-            }
-        });
-    }
-
     function addToCart(product) {
-        getCart(product)
+        client
+            .getCartByCurrency(product.currency_code)
             .then(cart => {
                 cart
                     .add({
                         id: product.id,
+                        quantity: 2,
                         variant_id: product.variants[0].id,
                     })
                     .then(updatedCart => {
@@ -124,6 +63,7 @@ document.addEventListener('DOMContentLoaded', () => {
             log('Product', product);
 
             addToCart(product);
+
             // product.buy();
             // product.view();
         })

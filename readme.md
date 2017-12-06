@@ -40,68 +40,99 @@ const client = new SelzClient({ id: 13, env: 'local' });
 }
 ```
 
-## Get product data
+## Products
+
+### `getProduct` - Get product data
 
 ```javascript
-const product = null;
 client
     .getProduct('http://selz.co/1rvbhT6')
-    .then(p => {
-        product = p;
+    .then(product => {
         console.log('Product', product);
     })
     .catch(errors => console.error('Error getting product', errors));
 ```
 
-## Display a product modal
+### `product.view()` Display a product modal
 
 ```javascript
 product.view(colors);
 ```
 
-## Create a cart
+### `product.buy()` Buy a product
+
+This will create a temporary cart and add the product to it, ready for checkout
 
 ```javascript
-const cart = null;
+product.buy(colors);
+```
+
+## Carts
+
+### Getting a cart
+
+_Note:_ If you try to get a cart by currency code and it doesn't exist, we'll create one for you anyway.
+
+```javascript
 client
-    .createCart(product.currency_code)
-    .then(c => {
-        cart = c;
-        // It's recommended to store the cart ID for the seller/currency
-        // in local storage for next time the user visits the page
+    .getCartByCurrency('USD')
+    .then(cart => {
+        console.log('Cart', cart);
+    })
+    .catch(errors => console.error('Error getting cart', errors));
+```
+
+You can also fetch by ObjectId (`cart.id`)...
+
+```javascript
+client
+    .getCartById(id)
+    .then(cart => {
+        console.log('Cart', cart);
+    })
+    .catch(errors => console.error('Error getting cart', errors));
+```
+
+### Creating a cart
+
+You can also manually create a cart yourself but you shouldn't need to in the majority of cases.
+
+```javascript
+client
+    .createCart('USD')
+    .then(cart => {
         console.log('Cart', cart);
     })
     .catch(errors => console.error('Error creating cart', errors));
 ```
 
-## Add to a cart
+### Add to a cart
 
 ```javascript
 cart
     .add({
         id: product.id,
+        quantity: 3,
         variant_id: product.variants[0].id,
     })
-    .then(c => {
-        cart = c;
-        console.log('Added', cart);
+    .then(updatedCart => {
+        console.log('Added', updatedCart);
     })
     .catch(errors => console.error('Error adding to cart', errors));
 ```
 
-## Remove from a cart
+### Remove from a cart
 
 ```javascript
 cart
-    .remove(item.index)
-    .then(c => {
-        cart = c;
-        console.log('Removed', cart);
+    .remove(cartItem.index)
+    .then(updatedCart => {
+        console.log('Removed', updatedCart);
     })
     .catch(errors => console.error('Error removing from cart', errors));
 ```
 
-## Checkout
+### Checkout
 
 This will launch the modal
 

@@ -1,10 +1,13 @@
 const utils = {
     is: {
-        array(arr) {
-            return Array.isArray(arr);
+        array(input) {
+            return !this.nullOrUndefined(input) && Array.isArray(input);
         },
         object(input) {
             return this.getConstructor(input) === Object;
+        },
+        number(input) {
+            return this.getConstructor(input) === Number && !Number.isNaN(input);
         },
         string(input) {
             return this.getConstructor(input) === String;
@@ -15,22 +18,35 @@ const utils = {
         function(input) {
             return this.getConstructor(input) === Function;
         },
-        htmlElement(element) {
-            return element instanceof HTMLElement;
+        htmlElement(input) {
+            return this.instanceof(input, HTMLElement);
         },
-        nullOrEmpty(value) {
-            return value === null || typeof value === 'undefined' || value === '';
+        nodeList(input) {
+            return this.instanceof(input, NodeList);
+        },
+        nullOrUndefined(input) {
+            return input === null || typeof input === 'undefined';
         },
         hexColor(input) {
             const regex = new RegExp('^#(?:[0-9a-fA-F]{3}){1,2}$');
             return this.string(input) && regex.test(input);
         },
+        objectId(input) {
+            const regex = new RegExp('^(?=[a-fd]{24}$)(d+[a-f]|[a-f]+d)', 'i');
+            return this.string(input) && regex.test(input);
+        },
+        empty(input) {
+            return (
+                this.nullOrUndefined(input) ||
+                ((this.string(input) || this.array(input) || this.nodeList(input)) && !input.length) ||
+                (this.object(input) && !Object.keys(input).length)
+            );
+        },
+        instanceof(input, constructor) {
+            return Boolean(input && constructor && input instanceof constructor);
+        },
         getConstructor(input) {
-            if (input === null || typeof input === 'undefined') {
-                return null;
-            }
-
-            return input.constructor;
+            return !this.nullOrUndefined(input) ? input.constructor : null;
         },
     },
 
@@ -257,6 +273,29 @@ const utils = {
         });
 
         return data;
+    },
+
+    // Deep extend destination object with N more objects
+    extend(target, ...sources) {
+        if (!sources.length) {
+            return target;
+        }
+        const source = sources.shift();
+
+        if (this.is.object(target) && this.is.object(source)) {
+            Object.keys(source).forEach(key => {
+                if (this.is.object(source[key])) {
+                    if (!target[key]) {
+                        Object.assign(target, { [key]: {} });
+                    }
+                    this.extend(target[key], source[key]);
+                } else {
+                    Object.assign(target, { [key]: source[key] });
+                }
+            });
+        }
+
+        return this.extend(target, ...sources);
     },
 };
 

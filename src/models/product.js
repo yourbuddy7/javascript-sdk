@@ -149,33 +149,31 @@ class Product {
     }
 
     /**
-     * Buy product
-     * @param {String} discount - Discount code for the product
-     * @param {Object} colors - Colors object for the modal
-     */
-    buy(discount, colors) {
-        let url = this.urls.checkout;
-
-        if (utils.is.string(discount)) {
-            url = utils.addUrlQuery.call(url, 'code', discount);
-        }
-
-        client.modal.open(url, utils.is.object(colors) ? colors : client.config.colors);
-    }
-
-    /**
      * View product in modal
-     * @param {String} discount - Discount code for the product
-     * @param {Object} colors - Colors object for the modal
+     * @param {string} discount - Discount code for the product
      */
-    view(discount, colors) {
+    view(discount) {
         let url = this.urls.full;
 
         if (utils.is.string(discount)) {
             url = utils.addUrlQuery.call(url, 'code', discount);
         }
 
-        client.modal.open(url, utils.is.object(colors) ? colors : client.config.colors);
+        client.modal.open(url, client.config.colors);
+    }
+
+    /**
+     * Buy product
+     * @param {string} [discount] - Discount code for the product
+     */
+    buy(discount) {
+        let url = this.urls.checkout;
+
+        if (utils.is.string(discount)) {
+            url = utils.addUrlQuery.call(url, 'code', discount);
+        }
+
+        client.modal.open(url, client.config.colors);
     }
 }
 

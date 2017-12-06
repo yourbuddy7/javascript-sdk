@@ -6,7 +6,7 @@ import utils from './utils';
 const http = {
     /**
      * GET remote URL and parse as JSON
-     * @param {String} url - The endpoint URL
+     * @param {string} url - The endpoint URL
      */
     get(url) {
         return new CustomFetch(url);
@@ -14,8 +14,8 @@ const http = {
 
     /**
      * POST to remote URL and parse as JSON
-     * @param {String} url - The endpoint URL
-     * @param {Object} data - The POST data payload
+     * @param {string} url - The endpoint URL
+     * @param {object} data - The POST data payload
      */
     post(url, data) {
         const options = {
