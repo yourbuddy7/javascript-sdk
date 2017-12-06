@@ -1,6 +1,6 @@
 {
     "name": "selz-js-sdk",
-    "version": "0.1.2",
+    "version": "0.1.3",
     "description": "JavaScript SDK for use with the Selz platform.",
     "main": "dist/client.umd.js",
     "module": "dist/client.es.mjs",
@@ -17,21 +17,13 @@
         "type": "git",
         "url": "git+https://github.com/Selz/javascript-sdk.git"
     },
-    "keywords": [
-        "Selz",
-        "SDK",
-        "JavaScript",
-        "Store"
-    ],
+    "keywords": ["Selz", "SDK", "JavaScript", "Store"],
     "author": "Sam Potts <sam@selz.com>",
     "license": "MIT",
     "bugs": {
         "url": "https://github.com/Selz/javascript-sdk/issues"
     },
-    "files": [
-        "dist",
-        "src"
-    ],
+    "files": ["dist", "src"],
     "homepage": "https://github.com/Selz/javascript-sdk#readme",
     "dependencies": {
         "babel-polyfill": "^6.26.0",

@@ -227,7 +227,7 @@ if (Object.keys(aws).length) {
     });
 
     // Do everything
-    gulp.task('deploy', () => {
+    gulp.task('publish', () => {
         run(tasks.clean, tasks.sass, tasks.js, 'upload');
     });
 }
