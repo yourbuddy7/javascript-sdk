@@ -1,5 +1,6 @@
 // ==========================================================================
 // Local storage wrapper
+// TODO: methods should return promises?
 // ==========================================================================
 
 import utils from './utils';
@@ -79,7 +80,7 @@ class Storage {
         window.localStorage.setItem(this.keys.root, JSON.stringify(data));
     }
 
-    getCart(seller, currency) {
+    getCarts(seller) {
         const data = this.get(this.keys.carts) || {};
 
         // If no carts
@@ -88,22 +89,51 @@ class Storage {
         }
 
         // Get all carts
-        if (!utils.is.string(seller) && !utils.is.string(currency)) {
+        if (!utils.is.number(seller)) {
             return data;
         }
 
-        // Get all for a seller
-        if (utils.is.string(seller) && !utils.is.string(currency)) {
-            return data[seller];
+        // Seller not found
+        if (!Object.keys(data).includes(seller.toString())) {
+            return null;
         }
 
-        return data[seller][currency.toUpperCase()];
+        // Get all for a seller
+        return data[seller.toString()];
     }
 
-    setCart(seller, currency, id) {
+    getCart(seller, currency) {
+        const carts = this.getCarts(seller);
+
+        // No carts
+        if (utils.is.empty(carts)) {
+            return null;
+        }
+
+        // Get all for a seller
+        if (!utils.is.string(currency)) {
+            return carts;
+        }
+
+        // Currency not found
+        if (!Object.keys(carts).includes(currency.toUpperCase())) {
+            return null;
+        }
+
+        return carts[currency.toUpperCase()];
+    }
+
+    setCart(seller, currency, cart) {
         const update = {};
         update[seller] = {};
-        update[seller][currency.toUpperCase()] = id;
+        update[seller][currency.toUpperCase()] = { id: cart.id };
+
+        this.set(this.keys.carts, update);
+    }
+
+    setCarts(seller, carts = {}) {
+        const update = {};
+        update[seller] = carts;
 
         this.set(this.keys.carts, update);
     }

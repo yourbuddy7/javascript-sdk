@@ -1,5 +1,3 @@
-import snakeCase from 'snakecase-keys';
-
 /**
  * Custom fetch wrapper
  * @param {string} url - The URL of the endpoint
@@ -16,9 +14,7 @@ const CustomFetch = (url, options) => {
             .then(response => {
                 response
                     .json()
-                    .then(data => {
-                        const json = snakeCase(data);
-
+                    .then(json => {
                         if (json.success) {
                             resolve(json.data);
                         } else {

@@ -49,30 +49,6 @@ class SelzClient {
     }
 
     /**
-     * Get product data
-     * @param {string} url - Short or full URL for a product
-     */
-    getProduct(url) {
-        return new Promise((resolve, reject) => {
-            http
-                .get(config.urls.product(this.config.env, url))
-                .then(json => {
-                    resolve(new Product(this, json));
-                })
-                .catch(reject);
-        });
-    }
-
-    /**
-     * Get all products
-     */
-    /* getAllProducts() {
-        this.getUser();
-
-        return http.get(config.urls.products(this.config.env, this.config.id));
-    } */
-
-    /**
      * Get the Store ID
      * TODO: Queue this somehow?
      */
@@ -104,6 +80,39 @@ class SelzClient {
     }
 
     /**
+     * Get product data
+     * @param {string} url - Short or full URL for a product
+     */
+    getProduct(url) {
+        return new Promise((resolve, reject) => {
+            http
+                .get(config.urls.product(this.config.env, url))
+                .then(json => {
+                    resolve(new Product(this, json));
+                })
+                .catch(reject);
+        });
+    }
+
+    /**
+     * Get all products
+     */
+    getProducts(query = '', page = 1) {
+        return new Promise((resolve, reject) => {
+            this.getUser()
+                .then(() => {
+                    http
+                        .get(config.urls.products(this.config.env, this.config.id, query, page < 1 ? 1 : page))
+                        .then(json => {
+                            resolve(json.map(p => new Product(this, p)));
+                        })
+                        .catch(reject);
+                })
+                .catch(error => reject(error));
+        });
+    }
+
+    /**
      * Create a new shopping cart
      * @param {string} currency - ISO currency code
      * @param {string} [discount] - Discount code
@@ -121,7 +130,7 @@ class SelzClient {
                             const cart = new Cart(this, json);
 
                             // Store reference to cart id for later
-                            this.storage.setCart(this.config.id, currency, cart.id);
+                            this.storage.setCart(this.config.id, currency, cart);
 
                             resolve(cart);
                         })
@@ -139,15 +148,15 @@ class SelzClient {
         return new Promise((resolve, reject) => {
             this.getUser()
                 .then(() => {
-                    const id = this.storage.getCart(this.config.id, currency);
+                    const currentCart = this.storage.getCart(this.config.id, currency);
 
                     // Create cart if it doesn't exist
-                    if (utils.is.empty(id)) {
+                    if (utils.is.empty(currentCart)) {
                         this.createCart(currency)
                             .then(cart => resolve(cart.id))
                             .catch(error => reject(error));
                     } else {
-                        resolve(id);
+                        resolve(currentCart.id);
                     }
                 })
                 .catch(error => reject(error));
@@ -175,7 +184,7 @@ class SelzClient {
 
     /**
      * Get a shopping cart
-     * @param {string} currency - The shopping cart id
+     * @param {string} currency - The shopping cart currency
      */
     getCartByCurrency(currency) {
         return new Promise((resolve, reject) => {
@@ -196,6 +205,102 @@ class SelzClient {
     }
 
     /**
+     * Get all current carts
+     */
+    getCarts() {
+        return new Promise((resolve, reject) => {
+            this.getUser()
+                .then(() => {
+                    const carts = this.storage.getCarts(this.config.id);
+
+                    if (utils.is.empty(carts)) {
+                        resolve(null);
+                        return;
+                    }
+
+                    resolve(carts);
+                })
+                .catch(error => reject(error));
+        });
+    }
+
+    /**
+     * Set the active cart based on currency
+     * @param {string} currency - The shopping cart currency
+     */
+    setActiveCart(currency) {
+        return new Promise((resolve, reject) => {
+            this.getUser()
+                .then(() => {
+                    this.getCarts().then(c => {
+                        const carts = c;
+
+                        // No carts
+                        if (utils.is.empty(carts)) {
+                            resolve();
+                            return;
+                        }
+
+                        const currencies = Object.keys(carts);
+
+                        // Unset active
+                        currencies.forEach(currencyCode => {
+                            delete carts[currencyCode].active;
+                        });
+
+                        // Bail if not included
+                        if (!currencies.includes(currency)) {
+                            reject(new Error(`No carts for ${currency}`));
+                            return;
+                        }
+
+                        // Set true
+                        carts[currency].active = true;
+
+                        // Store again
+                        this.storage.setCarts(this.config.id, carts);
+
+                        resolve();
+                    });
+                })
+                .catch(error => reject(error));
+        });
+    }
+
+    /**
+     * Get the current active cart
+     */
+    getActiveCart(fetch = true) {
+        return new Promise((resolve, reject) => {
+            this.getUser()
+                .then(() => {
+                    const carts = this.storage.getCarts(this.config.id);
+
+                    if (!Object.keys(carts).length) {
+                        resolve(null);
+                    }
+
+                    const actives = Object.keys(carts).filter(c => carts[c].active);
+
+                    if (!actives.length) {
+                        resolve(null);
+                    }
+
+                    const active = carts[actives[0]];
+
+                    if (!fetch) {
+                        resolve(active.id);
+                    }
+
+                    this.getCartById(active.id)
+                        .then(cart => resolve(cart))
+                        .catch(error => reject(error));
+                })
+                .catch(error => reject(error));
+        });
+    }
+
+    /**
      * Add a product to a cart
      * @param {string} id - The cart ID
      * @param {object} product - The product details
@@ -207,7 +312,12 @@ class SelzClient {
                     http
                         .post(config.urls.addToCart(this.config.env, id), product)
                         .then(json => {
-                            resolve(new Cart(this, json));
+                            const cart = new Cart(this, json);
+
+                            // Set the active cart
+                            this.setActiveCart(cart.currency_code);
+
+                            resolve(cart);
                         })
                         .catch(reject);
                 })
@@ -227,7 +337,12 @@ class SelzClient {
                     http
                         .post(config.urls.removeFromCart(this.config.env, id), { index })
                         .then(json => {
-                            resolve(new Cart(this, json));
+                            const cart = new Cart(this, json);
+
+                            // Set the active cart
+                            this.setActiveCart(cart.currency_code);
+
+                            resolve(cart);
                         })
                         .catch(reject);
                 })

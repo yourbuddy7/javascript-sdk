@@ -11,7 +11,7 @@ const config = {
          * @param {string} env - Environment (e.g. local, develop, release)
          * @param {string} url - Short or full URL for a product
          */
-        product(env, url) {
+        product(env, url = '') {
             return `${getBase(env)}product?url=${url}`;
         },
 
@@ -19,9 +19,11 @@ const config = {
          * Get URL for all products by User ID
          * @param {string} env - Environment (e.g. local, develop, release)
          * @param {string} id - The User ID for the store
+         * @param {string} query - Search query
+         * @param {number} page - Page to fetch
          */
-        products(env, id) {
-            return `${getBase(env)}products/${id}`;
+        products(env, id, query = '', page = 1) {
+            return `${getBase(env)}products/${id}?q=${query}&p=${page}`;
         },
 
         /**
@@ -29,7 +31,7 @@ const config = {
          * @param {string} env - Environment (e.g. local, develop, release)
          * @param {string} url - The URL for the store
          */
-        userId(env, url) {
+        userId(env, url = '') {
             return `${getBase(env)}userid?domain=${url}`;
         },
 
@@ -38,7 +40,7 @@ const config = {
          * @param {string} env - Environment (e.g. local, develop, release)
          * @param {number} id - Store ID
          */
-        createCart(env, id) {
+        createCart(env, id = '') {
             return `${getBase(env)}createcart/${id}`;
         },
 
@@ -47,7 +49,7 @@ const config = {
          * @param {string} env - Environment (e.g. local, develop, release)
          * @param {number} id - Cart ID
          */
-        getCart(env, id) {
+        getCart(env, id = '') {
             return `${getBase(env)}cart/${id}`;
         },
 
@@ -56,7 +58,7 @@ const config = {
          * @param {string} env - Environment (e.g. local, develop, release)
          * @param {number} id - Cart ID
          */
-        addToCart(env, id) {
+        addToCart(env, id = '') {
             return `${getBase(env)}addtocart/${id}`;
         },
 
@@ -65,7 +67,7 @@ const config = {
          * @param {string} env - Environment (e.g. local, develop, release)
          * @param {number} id - Cart ID
          */
-        removeFromCart(env, id) {
+        removeFromCart(env, id = '') {
             return `${getBase(env)}removefromcart/${id}`;
         },
 

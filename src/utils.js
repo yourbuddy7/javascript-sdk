@@ -276,26 +276,30 @@ const utils = {
     },
 
     // Deep extend destination object with N more objects
-    extend(target, ...sources) {
+    extend(target = {}, ...sources) {
         if (!sources.length) {
             return target;
         }
+
         const source = sources.shift();
 
-        if (this.is.object(target) && this.is.object(source)) {
-            Object.keys(source).forEach(key => {
-                if (this.is.object(source[key])) {
-                    if (!target[key]) {
-                        Object.assign(target, { [key]: {} });
-                    }
-                    this.extend(target[key], source[key]);
-                } else {
-                    Object.assign(target, { [key]: source[key] });
-                }
-            });
+        if (!utils.is.object(source)) {
+            return target;
         }
 
-        return this.extend(target, ...sources);
+        Object.keys(source).forEach(key => {
+            if (utils.is.object(source[key])) {
+                if (!Object.keys(target).includes(key)) {
+                    Object.assign(target, { [key]: {} });
+                }
+
+                utils.extend(target[key], source[key]);
+            } else {
+                Object.assign(target, { [key]: source[key] });
+            }
+        });
+
+        return utils.extend(target, ...sources);
     },
 };
 

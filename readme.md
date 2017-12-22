@@ -42,7 +42,20 @@ const client = new SelzClient({ id: 13, env: 'local' });
 
 ## Products
 
-### `getProduct` - Get product data
+### Get products list
+
+First argument (optional) is a search term, second argument is the page (starting at 1). Products are returned 50 per page.
+
+```javascript
+client
+    .getProducts('Tee', 1)
+    .then(products => {
+        console.log('Products', products);
+    })
+    .catch(errors => console.error('Error getting products', errors));
+```
+
+### Get single product data
 
 ```javascript
 client
@@ -53,13 +66,13 @@ client
     .catch(errors => console.error('Error getting product', errors));
 ```
 
-### `product.view()` Display a product modal
+### Display a product modal
 
 ```javascript
 product.view(colors);
 ```
 
-### `product.buy()` Buy a product
+### Buy a product
 
 This will create a temporary cart and add the product to it, ready for checkout
 
@@ -69,7 +82,33 @@ product.buy(colors);
 
 ## Carts
 
-### Getting a cart
+### Get all carts
+
+```javascript
+client
+    .getCarts()
+    .then(carts => {
+        console.log('Carts', carts);
+    })
+    .catch(errors => console.error('Error getting carts', errors));
+```
+
+### Get active cart
+
+The cart that has the last interaction (added to or removed from).
+
+```javascript
+client
+    .getActiveCart()
+    .then(cart => {
+        console.log('Cart', cart);
+    })
+    .catch(errors => console.error('Error getting active cart', errors));
+```
+
+If you don't want to fetch the whole cart, you can pass an bool argument of `false` to just return the basic cart details.
+
+### Getting a cart by currency
 
 _Note:_ If you try to get a cart by currency code and it doesn't exist, we'll create one for you anyway.
 
@@ -81,6 +120,8 @@ client
     })
     .catch(errors => console.error('Error getting cart', errors));
 ```
+
+### Getting a cart by ID
 
 You can also fetch by ObjectId (`cart.id`)...
 
@@ -130,6 +171,19 @@ cart
         console.log('Removed', updatedCart);
     })
     .catch(errors => console.error('Error removing from cart', errors));
+```
+
+### Set active cart
+
+If you're building your own UI and wish to set the last active cart (for when you want to call `.getActiveCart` later).
+
+```javascript
+client
+    .setActiveCart(cart.id)
+    .then(cart => {
+        console.log('Set active cart', cart);
+    })
+    .catch(errors => console.error('Error setting active cart', errors));
 ```
 
 ### Checkout
