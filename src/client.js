@@ -121,16 +121,18 @@ class SelzClient {
         return new Promise((resolve, reject) => {
             this.getUser()
                 .then(() => {
+                    const currencyCode = currency.toUpperCase();
+
                     http
                         .post(config.urls.createCart(this.config.env, this.config.id), {
-                            currency,
+                            currencyCode,
                             discount: typeof discount === 'string' && discount.length ? discount : null,
                         })
                         .then(json => {
                             const cart = new Cart(this, json);
 
                             // Store reference to cart id for later
-                            this.storage.setCart(this.config.id, currency, cart);
+                            this.storage.setCart(this.config.id, currencyCode, cart);
 
                             resolve(cart);
                         })
@@ -142,17 +144,18 @@ class SelzClient {
 
     /**
      * Get a shopping cart or create one if needed
-     * @param {string} currency - The shopping cart currency
+     * @param {string} currency - The shopping cart ISO currency code
      */
     getCartId(currency) {
         return new Promise((resolve, reject) => {
             this.getUser()
                 .then(() => {
-                    const currentCart = this.storage.getCart(this.config.id, currency);
+                    const currencyCode = currency.toUpperCase();
+                    const currentCart = this.storage.getCart(this.config.id, currencyCode);
 
                     // Create cart if it doesn't exist
                     if (utils.is.empty(currentCart)) {
-                        this.createCart(currency)
+                        this.createCart(currencyCode)
                             .then(cart => resolve(cart.id))
                             .catch(error => reject(error));
                     } else {
@@ -184,15 +187,17 @@ class SelzClient {
 
     /**
      * Get a shopping cart
-     * @param {string} currency - The shopping cart currency
+     * @param {string} currency - The shopping cart ISO currency code
      */
     getCartByCurrency(currency) {
         return new Promise((resolve, reject) => {
             this.getUser()
                 .then(() => {
-                    this.getCartId(currency).then(id => {
+                    const currencyCode = currency.toUpperCase();
+
+                    this.getCartId(currencyCode).then(id => {
                         if (utils.is.empty(id)) {
-                            reject(new Error(`Could not find matching cart for currency '${currency.toUpperCase()}'`));
+                            reject(new Error(`Could not find matching cart for currency '${currencyCode}'`));
                         }
 
                         this.getCartById(id)
@@ -226,7 +231,7 @@ class SelzClient {
 
     /**
      * Set the active cart based on currency
-     * @param {string} currency - The shopping cart currency
+     * @param {string} currency - The shopping cart ISO currency code
      */
     setActiveCart(currency) {
         return new Promise((resolve, reject) => {
@@ -234,6 +239,7 @@ class SelzClient {
                 .then(() => {
                     this.getCarts().then(c => {
                         const carts = c;
+                        const currencyCode = currency.toUpperCase();
 
                         // No carts
                         if (utils.is.empty(carts)) {
@@ -244,18 +250,18 @@ class SelzClient {
                         const currencies = Object.keys(carts);
 
                         // Unset active
-                        currencies.forEach(currencyCode => {
-                            delete carts[currencyCode].active;
+                        currencies.forEach(c => {
+                            delete carts[c].active;
                         });
 
                         // Bail if not included
-                        if (!currencies.includes(currency)) {
-                            reject(new Error(`No carts for ${currency}`));
+                        if (!currencies.includes(currencyCode)) {
+                            reject(new Error(`No carts for ${currencyCode}`));
                             return;
                         }
 
                         // Set true
-                        carts[currency].active = true;
+                        carts[currencyCode].active = true;
 
                         // Store again
                         this.storage.setCarts(this.config.id, carts);

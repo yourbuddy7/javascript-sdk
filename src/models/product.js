@@ -175,8 +175,6 @@ class Product {
             url = utils.addUrlQuery.call(url, 'code', discount);
         }
 
-        console.warn(client.config);
-
         client.modal.open(url, utils.is.object(colors) ? colors : client.config.colors);
     }
 }
