@@ -295,7 +295,7 @@ class Modal {
 
         // Store colors if passed
         if (utils.is.object(colors)) {
-            Object.assign(this.config.colors, colors);
+            Object.assign(this.config, { colors });
         }
 
         // Set frame type

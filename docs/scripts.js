@@ -62,9 +62,11 @@ document.addEventListener('DOMContentLoaded', () => {
         .then(product => {
             log('Product', product);
 
-            addToCart(product);
+            window.product = product;
 
-            // product.buy();
+            // addToCart(product);
+
+            product.buy();
             // product.view();
         })
         .catch(errors => fail('Product', errors));

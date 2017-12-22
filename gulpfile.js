@@ -176,7 +176,7 @@ gulp.task('clean', () => del(['dist/**/*']));
 // Watch for file changes
 gulp.task('watch', () => {
     gulp.watch('./src/**/*.scss', tasks.sass);
-    gulp.watch('./src/**/*.js', tasks.js);
+    gulp.watch(['./src/**/*.js', './docs/scripts.js'], tasks.js);
 });
 
 // Default gulp task
