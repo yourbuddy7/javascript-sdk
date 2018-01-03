@@ -38,23 +38,51 @@ document.addEventListener('DOMContentLoaded', () => {
     // Listen for messages
     // window.addEventListener('message', event => console.warn(event), false);
 
-    function addToCart(product) {
-        client
-            .getCartByCurrency(product.currency_code)
-            .then(cart => {
-                log('Get cart', cart);
+    function getCart(currency) {
+        return new Promise((resolve, reject) => {
+            if (window.cart) {
+                resolve(window.cart);
+                return;
+            }
 
-                const variant = product.variants && product.variants.length ? product.variants[0].id : null;
+            client
+                .getCartByCurrency(currency)
+                .then(cart => {
+                    log('Get cart', cart);
+
+                    window.cart = cart;
+
+                    resolve(cart);
+                })
+                .catch(error => reject(error));
+        });
+    }
+
+    function addToCart(product, checkout = false) {
+        getCart(product.currency_code)
+            .then(cart => {
+                let variant = null;
+
+                if (typeof product.variant === 'string' && product.variant.length) {
+                    variant = product.variant; //eslint-disable-line
+                } else if (product.variants && product.variants.length) {
+                    variant = product.variants[0].id;
+                }
 
                 cart
                     .add({
                         id: product.id,
-                        quantity: 2,
+                        quantity: product.quantity || 2,
                         variant_id: variant,
                     })
                     .then(updatedCart => {
                         log('Add to cart', updatedCart);
-                        updatedCart.checkout();
+
+                        window.cart = updatedCart;
+
+                        if (checkout) {
+                            updatedCart.checkout();
+                        }
                     })
                     .catch(error => fail('Add to cart', error));
             })
@@ -67,18 +95,33 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     client
-        .getProduct(products.GBP)
+        .getProduct(products.USD)
         .then(product => {
             log('Product', product);
 
+            // Expose
             window.product = product;
 
-            addToCart(product);
+            // addToCart(product, true);
 
             // product.buy();
-            // product.view();
+
+            product.view();
         })
         .catch(errors => fail('Product', errors));
 
+    // Expose
     window.client = client;
+
+    // Listen for messages from parent
+    window.addEventListener('message', event => {
+        // console.warn(event.data);
+        const json = JSON.parse(event.data);
+
+        if (json.key !== 'add-to-cart') {
+            return;
+        }
+
+        addToCart(json.data);
+    });
 });
