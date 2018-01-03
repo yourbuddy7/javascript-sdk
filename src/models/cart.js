@@ -36,7 +36,7 @@ class CartItem {
 }
 
 class Cart {
-    constructor(instance, cart) {
+    constructor(instance, cart, active = false) {
         if (cart === null) {
             return;
         }
@@ -44,6 +44,7 @@ class Cart {
         client = instance;
 
         this.id = cart.id;
+        this.active = active;
         this.seller_id = cart.seller_id;
         this.url = cart.url;
 

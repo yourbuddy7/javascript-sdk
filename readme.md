@@ -99,14 +99,14 @@ The cart that has the last interaction (added to or removed from).
 
 ```javascript
 client
-    .getActiveCart()
+    .getActiveCart(true)
     .then(cart => {
         console.log('Cart', cart);
     })
     .catch(errors => console.error('Error getting active cart', errors));
 ```
 
-If you don't want to fetch the whole cart, you can pass an bool argument of `false` to just return the basic cart details.
+If you don't want to fetch the whole cart, you can pass an bool argument of `false` to just return the basic cart details which will be faster.
 
 ### Getting a cart by currency
 

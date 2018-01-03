@@ -177,7 +177,8 @@ class SelzClient {
                     http
                         .get(config.urls.getCart(this.config.env, id))
                         .then(json => {
-                            resolve(new Cart(this, json));
+                            const activeId = this.getActiveCart();
+                            resolve(new Cart(this, json, json.id === activeId));
                         })
                         .catch(error => reject(error));
                 })
@@ -198,6 +199,7 @@ class SelzClient {
                     this.getCartId(currencyCode).then(id => {
                         if (utils.is.empty(id)) {
                             reject(new Error(`Could not find matching cart for currency '${currencyCode}'`));
+                            return;
                         }
 
                         this.getCartById(id)
@@ -237,8 +239,8 @@ class SelzClient {
         return new Promise((resolve, reject) => {
             this.getUser()
                 .then(() => {
-                    this.getCarts().then(c => {
-                        const carts = c;
+                    this.getCarts().then(data => {
+                        const carts = data;
                         const currencyCode = currency.toUpperCase();
 
                         // No carts
@@ -249,19 +251,16 @@ class SelzClient {
 
                         const currencies = Object.keys(carts);
 
-                        // Unset active
-                        currencies.forEach(c => {
-                            delete carts[c].active;
-                        });
-
                         // Bail if not included
                         if (!currencies.includes(currencyCode)) {
                             reject(new Error(`No carts for ${currencyCode}`));
                             return;
                         }
 
-                        // Set true
-                        carts[currencyCode].active = true;
+                        // Set active
+                        currencies.forEach(code => {
+                            carts[code].active = code === currencyCode;
+                        });
 
                         // Store again
                         this.storage.setCarts(this.config.id, carts);
@@ -276,26 +275,29 @@ class SelzClient {
     /**
      * Get the current active cart
      */
-    getActiveCart(fetch = true) {
+    getActiveCart(fetch = false) {
         return new Promise((resolve, reject) => {
             this.getUser()
                 .then(() => {
                     const carts = this.storage.getCarts(this.config.id);
 
                     if (!Object.keys(carts).length) {
-                        resolve(null);
+                        resolve();
+                        return;
                     }
 
                     const actives = Object.keys(carts).filter(c => carts[c].active);
 
                     if (!actives.length) {
-                        resolve(null);
+                        resolve();
+                        return;
                     }
 
                     const active = carts[actives[0]];
 
                     if (!fetch) {
                         resolve(active.id);
+                        return;
                     }
 
                     this.getCartById(active.id)
@@ -318,7 +320,7 @@ class SelzClient {
                     http
                         .post(config.urls.addToCart(this.config.env, id), product)
                         .then(json => {
-                            const cart = new Cart(this, json);
+                            const cart = new Cart(this, json, true);
 
                             // Set the active cart
                             this.setActiveCart(cart.currency_code);
@@ -343,7 +345,7 @@ class SelzClient {
                     http
                         .post(config.urls.removeFromCart(this.config.env, id), { index })
                         .then(json => {
-                            const cart = new Cart(this, json);
+                            const cart = new Cart(this, json, true);
 
                             // Set the active cart
                             this.setActiveCart(cart.currency_code);

@@ -21,7 +21,7 @@ class Storage {
 
     // Check for actual support (see if we can use it)
     static get supported() {
-        if (!('localStorage' in window)) {
+        if (!window.localStorage) {
             return false;
         }
 
@@ -77,7 +77,11 @@ class Storage {
         }
 
         // Update storage
-        window.localStorage.setItem(this.keys.root, JSON.stringify(data));
+        try {
+            window.localStorage.setItem(this.keys.root, JSON.stringify(data));
+        } catch (e) {
+            // Do nothing
+        }
     }
 
     getCarts(seller) {
@@ -126,7 +130,10 @@ class Storage {
     setCart(seller, currency, cart) {
         const update = {};
         update[seller] = {};
-        update[seller][currency.toUpperCase()] = { id: cart.id };
+        update[seller][currency.toUpperCase()] = {
+            id: cart.id,
+            active: cart.active,
+        };
 
         this.set(this.keys.carts, update);
     }

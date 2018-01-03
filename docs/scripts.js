@@ -21,7 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function fail(label, errors) {
-        return log(`${label} (Error)`, errors);
+        return log(`${label} (failed)`, errors);
     }
 
     const client = new SelzClient({
@@ -42,23 +42,32 @@ document.addEventListener('DOMContentLoaded', () => {
         client
             .getCartByCurrency(product.currency_code)
             .then(cart => {
+                log('Get cart', cart);
+
+                const variant = product.variants && product.variants.length ? product.variants[0].id : null;
+
                 cart
                     .add({
                         id: product.id,
                         quantity: 2,
-                        variant_id: product.variants[0].id,
+                        variant_id: variant,
                     })
                     .then(updatedCart => {
-                        log('Added', updatedCart);
+                        log('Add to cart', updatedCart);
                         updatedCart.checkout();
                     })
-                    .catch(error => fail('Added', error));
+                    .catch(error => fail('Add to cart', error));
             })
             .catch(error => fail('Get cart', error));
     }
 
+    const products = {
+        GBP: 'http://selz.co/1MaSYRU',
+        USD: 'http://selz.co/1rvbhT6',
+    };
+
     client
-        .getProduct('http://selz.co/1rvbhT6')
+        .getProduct(products.GBP)
         .then(product => {
             log('Product', product);
 
