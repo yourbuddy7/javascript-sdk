@@ -125,7 +125,7 @@ class SelzClient {
 
                     http
                         .post(config.urls.createCart(this.config.env, this.config.id), {
-                            currencyCode,
+                            currency: currencyCode,
                             discount: typeof discount === 'string' && discount.length ? discount : null,
                         })
                         .then(json => {
