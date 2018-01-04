@@ -175,11 +175,11 @@ cart
 
 ### Set active cart
 
-If you're building your own UI and wish to set the last active cart (for when you want to call `.getActiveCart` later).
+If you're building your own UI and wish to set the last active cart (for when you want to call `.getActiveCart` later). The argument passed can be either a card ID or a currency code.
 
 ```javascript
 client
-    .setActiveCart(cart.id)
+    .setActiveCart('USD')
     .then(cart => {
         console.log('Set active cart', cart);
     })

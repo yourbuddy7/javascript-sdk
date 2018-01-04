@@ -233,15 +233,15 @@ class SelzClient {
 
     /**
      * Set the active cart based on currency
-     * @param {string} currency - The shopping cart ISO currency code
+     * @param {string} input - The shopping cart ISO currency code or cart ID
      */
-    setActiveCart(currency) {
+    setActiveCart(input) {
         return new Promise((resolve, reject) => {
             this.getUser()
                 .then(() => {
                     this.getCarts().then(data => {
                         const carts = data;
-                        const currencyCode = currency.toUpperCase();
+                        const isCurrency = input.length === 3;
 
                         // No carts
                         if (utils.is.empty(carts)) {
@@ -249,18 +249,27 @@ class SelzClient {
                             return;
                         }
 
-                        const currencies = Object.keys(carts);
+                        if (isCurrency) {
+                            const currencyCode = input.toUpperCase();
+                            const currencies = Object.keys(carts);
 
-                        // Bail if not included
-                        if (!currencies.includes(currencyCode)) {
-                            reject(new Error(`No carts for ${currencyCode}`));
-                            return;
+                            // Bail if not included
+                            if (!currencies.includes(currencyCode)) {
+                                reject(new Error(`No carts for ${currencyCode}`));
+                                return;
+                            }
+
+                            // Set active
+                            currencies.forEach(code => {
+                                carts[code].active = code === currencyCode;
+                            });
+                        } else {
+                            // Set active
+                            Object.keys(carts).forEach(code => {
+                                const cart = carts[code];
+                                cart.active = cart.id === input;
+                            });
                         }
-
-                        // Set active
-                        currencies.forEach(code => {
-                            carts[code].active = code === currencyCode;
-                        });
 
                         // Store again
                         this.storage.setCarts(this.config.id, carts);
