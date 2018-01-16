@@ -17,13 +17,21 @@
         "type": "git",
         "url": "git+https://github.com/Selz/javascript-sdk.git"
     },
-    "keywords": ["Selz", "SDK", "JavaScript", "Store"],
+    "keywords": [
+        "Selz",
+        "SDK",
+        "JavaScript",
+        "Store"
+    ],
     "author": "Sam Potts <sam@selz.com>",
     "license": "MIT",
     "bugs": {
         "url": "https://github.com/Selz/javascript-sdk/issues"
     },
-    "files": ["dist", "src"],
+    "files": [
+        "dist",
+        "src"
+    ],
     "homepage": "https://github.com/Selz/javascript-sdk#readme",
     "dependencies": {
         "babel-polyfill": "^6.26.0",
@@ -56,6 +64,7 @@
         "rollup-plugin-babel": "^3.0.3",
         "rollup-plugin-commonjs": "^8.2.6",
         "rollup-plugin-node-resolve": "^3.0.0",
+        "rollup-plugin-postcss": "^1.2.1",
         "rollup-plugin-replace": "^2.0.0",
         "rollup-plugin-uglify": "^2.0.1",
         "run-sequence": "^2.2.0",

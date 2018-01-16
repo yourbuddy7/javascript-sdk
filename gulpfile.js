@@ -7,6 +7,7 @@
 const gulp = require('gulp');
 const del = require('del');
 const gutil = require('gulp-util');
+const postcss = require('rollup-plugin-postcss');
 const sass = require('gulp-sass');
 const cleancss = require('gulp-clean-css');
 const run = require('run-sequence');
@@ -25,7 +26,13 @@ const replace = require('gulp-replace');
 const s3 = require('gulp-s3');
 
 const pkg = require('./package.json');
-const aws = require('./aws.json');
+
+let aws = {};
+try {
+    aws = require('./aws.json');
+} catch (e) {
+    // Do nothing
+}
 
 // Build types
 const builds = {
@@ -106,6 +113,11 @@ Object.keys(formats).forEach(key => {
                 rollup(
                     {
                         plugins: [
+                            postcss({
+                                plugins: [],
+                                minimize: true,
+                                use: ['sass'],
+                            }),
                             resolve(),
                             commonjs(),
                             rollupReplace({

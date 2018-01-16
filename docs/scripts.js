@@ -25,7 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const client = new SelzClient({
-        id: 13,
+        id: 1,
         // domain: 'local.sampotts.me',
         env: 'local',
         colors: { buttons: { background: '#303e4c', text: '#97e66a' }, checkout: { background: '#303e4c', text: '#97e66a' } },
@@ -90,23 +90,22 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const products = {
-        GBP: 'http://selz.co/1MaSYRU',
-        USD: 'http://selz.co/1rvbhT6',
+        USD: 'http://selz.co/EyQVaNOW4',
     };
 
     client
-        .getProduct(products.GBP)
+        .getProduct(products.USD)
         .then(product => {
             log('Product', product);
 
             // Expose
             window.product = product;
 
-            // addToCart(product, true);
+            addToCart(product, true);
 
             // product.buy();
 
-            product.view();
+            // product.view();
         })
         .catch(errors => fail('Product', errors));
 
