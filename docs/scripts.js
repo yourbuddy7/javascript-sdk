@@ -25,7 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const client = new SelzClient({
-        id: 1,
+        id: 13,
         // domain: 'local.sampotts.me',
         env: 'local',
         colors: { buttons: { background: '#303e4c', text: '#97e66a' }, checkout: { background: '#303e4c', text: '#97e66a' } },
