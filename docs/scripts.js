@@ -90,7 +90,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const products = {
-        USD: 'http://selz.co/EyQVaNOW4',
+        GBP: 'http://selz.co/1MaSYRU',
+        USD: 'http://selz.co/1rvbhT6',
     };
 
     client
