@@ -95,18 +95,18 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     client
-        .getProduct(products.GBP)
+        .getProduct(products.USD)
         .then(product => {
             log('Product', product);
 
             // Expose
             window.product = product;
 
-            // addToCart(product, true);
+            addToCart(product, true);
 
             // product.buy();
 
-            product.view();
+            // product.view();
         })
         .catch(errors => fail('Product', errors));
 
