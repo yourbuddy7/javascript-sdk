@@ -119,6 +119,11 @@ class SelzClient {
      */
     createCart(currency, discount) {
         return new Promise((resolve, reject) => {
+            if (utils.is.empty(currency)) {
+                reject(new Error('currency is required'));
+                return;
+            }
+
             this.getUser()
                 .then(() => {
                     const currencyCode = currency.toUpperCase();
@@ -148,6 +153,11 @@ class SelzClient {
      */
     getCartId(currency) {
         return new Promise((resolve, reject) => {
+            if (utils.is.empty(currency)) {
+                reject(new Error('currency is required'));
+                return;
+            }
+
             this.getUser()
                 .then(() => {
                     const currencyCode = currency.toUpperCase();
@@ -172,6 +182,11 @@ class SelzClient {
      */
     getCartById(id) {
         return new Promise((resolve, reject) => {
+            if (utils.is.empty(id)) {
+                reject(new Error('id is required'));
+                return;
+            }
+
             this.getUser()
                 .then(() => {
                     http
@@ -192,6 +207,10 @@ class SelzClient {
      */
     getCartByCurrency(currency) {
         return new Promise((resolve, reject) => {
+            if (utils.is.empty(currency)) {
+                reject(new Error('currency is required'));
+            }
+
             this.getUser()
                 .then(() => {
                     const currencyCode = currency.toUpperCase();
@@ -237,6 +256,11 @@ class SelzClient {
      */
     setActiveCart(input) {
         return new Promise((resolve, reject) => {
+            if (utils.is.empty(input)) {
+                reject(new Error('currency or cart id are required'));
+                return;
+            }
+
             this.getUser()
                 .then(() => {
                     this.getCarts().then(data => {
@@ -324,6 +348,15 @@ class SelzClient {
      */
     addToCart(id, product) {
         return new Promise((resolve, reject) => {
+            if (utils.is.empty(id)) {
+                reject(new Error('id is required'));
+                return;
+            }
+            if (utils.is.empty(product)) {
+                reject(new Error('product is required'));
+                return;
+            }
+
             this.getUser()
                 .then(() => {
                     http
@@ -349,6 +382,15 @@ class SelzClient {
      */
     removeFromCart(id, index) {
         return new Promise((resolve, reject) => {
+            if (utils.is.empty(id)) {
+                reject(new Error('id is required'));
+                return;
+            }
+            if (utils.is.empty(index)) {
+                reject(new Error('index is required'));
+                return;
+            }
+
             this.getUser()
                 .then(() => {
                     http
