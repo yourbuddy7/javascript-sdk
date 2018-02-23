@@ -7,10 +7,9 @@
 const gulp = require('gulp');
 const del = require('del');
 const gutil = require('gulp-util');
-const sass = require('gulp-sass');
-const cleancss = require('gulp-clean-css');
+const postcss = require('rollup-plugin-postcss');
 const run = require('run-sequence');
-const autoprefixer = require('gulp-autoprefixer');
+const autoprefixer = require('autoprefixer');
 const rename = require('gulp-rename');
 const size = require('gulp-size');
 const rollup = require('gulp-better-rollup');
@@ -25,7 +24,13 @@ const replace = require('gulp-replace');
 const s3 = require('gulp-s3');
 
 const pkg = require('./package.json');
-const aws = require('./aws.json');
+
+let aws = {};
+try {
+    aws = require('./aws.json'); // eslint-disable-line
+} catch (e) {
+    // Do nothing
+}
 
 // Build types
 const builds = {
@@ -49,7 +54,6 @@ const sizeOptions = { showFiles: true, gzip: true };
 const tasks = {
     clean: ['clean'],
     js: [],
-    sass: ['sass'],
 };
 
 // Babel config
@@ -106,6 +110,11 @@ Object.keys(formats).forEach(key => {
                 rollup(
                     {
                         plugins: [
+                            postcss({
+                                plugins: [autoprefixer],
+                                minimize: true,
+                                use: ['sass'],
+                            }),
                             resolve(),
                             commonjs(),
                             rollupReplace({
@@ -157,31 +166,18 @@ gulp.task('js:demo', () =>
         .pipe(gulp.dest('./docs/')),
 );
 
-// SASS
-gulp.task('sass', () =>
-    gulp
-        .src('./src/ui/styles.scss')
-        .on('error', gutil.log)
-        .pipe(sass())
-        .pipe(autoprefixer(browsers, { cascade: false }))
-        .pipe(cleancss())
-        .pipe(rename({ basename: 'styles' }))
-        .pipe(size(sizeOptions))
-        .pipe(gulp.dest('./dist/')),
-);
-
 // Clean out /dist
 gulp.task('clean', () => del(['dist/**/*']));
 
 // Watch for file changes
 gulp.task('watch', () => {
-    gulp.watch('./src/**/*.scss', tasks.sass);
+    gulp.watch('./src/**/*.scss', tasks.js);
     gulp.watch(['./src/**/*.js', './docs/scripts.js'], tasks.js);
 });
 
 // Default gulp task
 gulp.task('default', () => {
-    run(tasks.clean, tasks.sass, tasks.js, 'watch');
+    run(tasks.clean, tasks.js, 'watch');
 });
 
 // If aws is setup
@@ -228,6 +224,6 @@ if (Object.keys(aws).length) {
 
     // Do everything
     gulp.task('publish', () => {
-        run(tasks.clean, tasks.sass, tasks.js, 'upload');
+        run(tasks.clean, tasks.js, 'upload');
     });
 }

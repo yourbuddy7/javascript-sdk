@@ -17,19 +17,28 @@
         "type": "git",
         "url": "git+https://github.com/Selz/javascript-sdk.git"
     },
-    "keywords": ["Selz", "SDK", "JavaScript", "Store"],
+    "keywords": [
+        "Selz",
+        "SDK",
+        "JavaScript",
+        "Store"
+    ],
     "author": "Sam Potts <sam@selz.com>",
     "license": "MIT",
     "bugs": {
         "url": "https://github.com/Selz/javascript-sdk/issues"
     },
-    "files": ["dist", "src"],
+    "files": [
+        "dist",
+        "src"
+    ],
     "homepage": "https://github.com/Selz/javascript-sdk#readme",
     "dependencies": {
         "babel-polyfill": "^6.26.0",
         "pascalcase-keys": "^1.0.1"
     },
     "devDependencies": {
+        "autoprefixer": "^8.0.0",
         "babel-core": "^6.26.0",
         "babel-eslint": "^8.2.2",
         "babel-plugin-external-helpers": "^6.22.0",
@@ -42,26 +51,25 @@
         "eslint-plugin-jsx-a11y": "^6.0.3",
         "eslint-plugin-react": "^7.7.0",
         "gulp": "^3.9.1",
-        "gulp-autoprefixer": "^4.1.0",
         "gulp-better-rollup": "^3.0.0",
-        "gulp-clean-css": "^3.9.2",
         "gulp-concat": "^2.6.1",
         "gulp-rename": "^1.2.2",
         "gulp-replace": "^0.6.1",
         "gulp-s3": "^0.11.0",
-        "gulp-sass": "^3.1.0",
         "gulp-size": "^3.0.0",
         "gulp-sourcemaps": "^2.6.4",
         "gulp-util": "^3.0.8",
+        "node-sass": "^4.7.2",
         "rollup-plugin-babel": "^3.0.3",
         "rollup-plugin-commonjs": "^8.3.0",
         "rollup-plugin-node-resolve": "^3.0.3",
+        "rollup-plugin-postcss": "^1.2.9",
         "rollup-plugin-replace": "^2.0.0",
         "rollup-plugin-uglify": "^3.0.0",
         "run-sequence": "^2.2.1",
         "stylelint": "^9.1.1",
         "stylelint-config-prettier": "^2.1.0",
-        "stylelint-config-standard": "^18.1.0",
+        "stylelint-config-recommended": "^2.1.0",
         "uglify-es": "^3.3.9"
     }
 }

@@ -7,6 +7,8 @@ import Product from './models/product';
 import Cart from './models/cart';
 import Modal from './ui/modal';
 
+import './ui/styles.scss';
+
 class SelzClient {
     constructor(props) {
         this.config = Object.assign(
@@ -21,19 +23,6 @@ class SelzClient {
 
         if (!this.isIdSet() && !this.isDomainSet()) {
             throw Error('User or domain are required');
-        }
-
-        // Get the stylesheet
-        if (!document.getElementById('selz-client-styles')) {
-            fetch(config.urls.stylesheet())
-                .then(data => data.text())
-                .then(css => {
-                    const style = document.createElement('style');
-                    style.setAttribute('id', 'selz-client-styles');
-                    document.head.appendChild(style);
-                    style.textContent = css;
-                })
-                .catch(() => {});
         }
 
         this.storage = new Storage();
