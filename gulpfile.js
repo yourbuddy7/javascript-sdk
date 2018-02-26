@@ -112,8 +112,7 @@ Object.keys(formats).forEach(key => {
                         plugins: [
                             postcss({
                                 plugins: [autoprefixer],
-                                minimize: true,
-                                use: ['sass'],
+                                minimize: { zindex: false, discardUnused: false },
                             }),
                             resolve(),
                             commonjs(),
