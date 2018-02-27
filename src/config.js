@@ -47,16 +47,25 @@ const config = {
         /**
          * Get cart from ID
          * @param {string} env - Environment (e.g. local, develop, release)
-         * @param {number} id - Cart ID
+         * @param {string} id - Cart ID
          */
         getCart(env, id = '') {
             return `${getBase(env)}cart/${id}`;
         },
 
         /**
+         * Check carts still exist server side
+         * @param {string} env - Environment (e.g. local, develop, release)
+         * @param {number} id - Cart IDs
+         */
+        checkCarts(env, ids = '') {
+            return `${getBase(env)}checkcarts?ids=${ids}`;
+        },
+
+        /**
          * Add product to cart
          * @param {string} env - Environment (e.g. local, develop, release)
-         * @param {number} id - Cart ID
+         * @param {string} id - Cart ID
          */
         addToCart(env, id = '') {
             return `${getBase(env)}addtocart/${id}`;
@@ -65,7 +74,7 @@ const config = {
         /**
          * Remove product from cart
          * @param {string} env - Environment (e.g. local, develop, release)
-         * @param {number} id - Cart ID
+         * @param {string} id - Cart ID
          */
         removeFromCart(env, id = '') {
             return `${getBase(env)}removefromcart/${id}`;

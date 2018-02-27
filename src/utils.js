@@ -32,8 +32,10 @@ const utils = {
             return this.string(input) && regex.test(input);
         },
         objectId(input) {
-            const regex = new RegExp('^(?=[a-fd]{24}$)(d+[a-f]|[a-f]+d)', 'i');
-            return this.string(input) && regex.test(input);
+            return this.string(input) && /^[a-f\d]{24}$/i.test(input);
+        },
+        currencyCode(input) {
+            return this.string(input) && /^[A-z]{3}$/.test(input);
         },
         empty(input) {
             return (

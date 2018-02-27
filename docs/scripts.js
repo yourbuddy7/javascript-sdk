@@ -31,7 +31,8 @@ document.addEventListener('DOMContentLoaded', () => {
         colors: { buttons: { background: '#303e4c', text: '#97e66a' }, checkout: { background: '#303e4c', text: '#97e66a' } },
     });
 
-    // window.client = client;
+    // Expose
+    window.client = client;
 
     log('Config', client.config);
 
@@ -46,7 +47,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             client
-                .getCartByCurrency(currency)
+                .getCart(currency)
                 .then(cart => {
                     log('Get cart', cart);
 
@@ -72,7 +73,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 cart
                     .add({
                         id: product.id,
-                        quantity: product.quantity || 2,
+                        quantity: 2,
                         variant_id: variant,
                     })
                     .then(updatedCart => {
@@ -109,9 +110,6 @@ document.addEventListener('DOMContentLoaded', () => {
             // product.view();
         })
         .catch(errors => fail('Product', errors));
-
-    // Expose
-    window.client = client;
 
     // Listen for messages from parent
     window.addEventListener('message', event => {
