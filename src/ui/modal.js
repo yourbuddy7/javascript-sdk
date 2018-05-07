@@ -1,5 +1,6 @@
 import support from '../support';
 import utils from '../utils';
+import './styles.scss';
 
 class Modal {
     constructor(options) {
@@ -110,7 +111,7 @@ class Modal {
     messageHandler(event) {
         // Get data
         const message = event.data;
-        const domain = `https://${utils.is.string(this.config.env) && this.config.env.length ? `${this.config.env}.` : ''}selz.com`;
+        const domain = `https://${utils.is.string(this.config.env) && this.config.env.length ? `${this.config.env}-` : ''}selz.com`;
 
         // Make sure we consume only selz messages
         // Bail if it's not a string
@@ -123,6 +124,10 @@ class Modal {
             const json = JSON.parse(message);
 
             switch (json.key) {
+                case 'modal-loaded':
+                    this.show();
+                    break;
+
                 case 'modal-theme':
                     // Send back the colors
                     event.source.postMessage(
@@ -136,10 +141,6 @@ class Modal {
 
                 case 'modal-reloading':
                     this.loading();
-                    break;
-
-                case 'modal-loaded':
-                    this.show();
                     break;
 
                 // Close modal

@@ -30,7 +30,8 @@
                 "js": "never",
                 "mjs": "never"
             }
-        ]
+        ],
+        "no-underscore-dangle": 0
     },
     "parserOptions": {
         "sourceType": "module"

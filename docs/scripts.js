@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     const output = document.getElementById('output');
 
-    function log(label, json) {
+    function log(label, data) {
         const details = document.createElement('details');
 
         const summary = document.createElement('summary');
@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const contents = document.createElement('div');
         const pre = document.createElement('pre');
         pre.classList.add('prettyprint');
-        pre.innerHTML = JSON.stringify(json, null, 4);
+        pre.innerHTML = JSON.stringify(data, null, 4);
         contents.appendChild(pre);
         details.appendChild(contents);
 
@@ -21,6 +21,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function fail(label, errors) {
+        if (errors instanceof Error) {
+            console.error(errors);
+            return log(`${label} (error)`, { error: errors.toString() });
+        }
+
         return log(`${label} (failed)`, errors);
     }
 

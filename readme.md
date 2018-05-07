@@ -26,16 +26,15 @@ or using our CDN:
 ## Creating a client
 
 ```javascript
-const client = new SelzClient({ id: 13, env: 'local' });
+const client = new SelzClient({ id: 12345 });
 ```
 
 ### Options
 
 ```javascript
 {
-    env: '', // The environment - e.g. local, develop, release (this is for development only)
-    domain: '', // The store domain (if the user is not known) - e.g. local.sampotts.me
-    id: -1, // The user ID for the store - e.g. 13
+    domain: '', // The store domain (if the user is not known) - e.g. store.example.com
+    id: -1,     // The user ID for the store - e.g. 123456
     colors: {}, // Colors object for the modal
 }
 ```
@@ -160,6 +159,25 @@ cart
         console.log('Added', updatedCart);
     })
     .catch(errors => console.error('Error adding to cart', errors));
+```
+
+### Update cart item quantity
+
+There are two ways to update the quantity of an item in the shopping cart. Firstly, using the method:
+
+```javascript
+client
+    .updateCartItemQuantity(cart.id, cartItem.index, 2)
+    .then(updatedCart => {
+        console.log('Updated', updatedCart);
+    })
+    .catch(errors => console.error('Error updating quantity', errors));
+```
+
+...or the easier option using a simple setter on the `CartItem` itself:
+
+```javascript
+cart.items.find(i => i.product.id === '544de566b7987209f0406100').quantity = 2;
 ```
 
 ### Remove from a cart

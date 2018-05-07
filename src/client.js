@@ -1,13 +1,10 @@
 import config from './config';
 import http from './http';
-import utils from './utils';
-
+import Cart from './models/Cart';
+import Product from './models/Product';
 import Storage from './storage';
-import Product from './models/product';
-import Cart from './models/cart';
-import Modal from './ui/modal';
-
-import './ui/styles.scss';
+import Modal from './ui/Modal';
+import utils from './utils';
 
 class SelzClient {
     constructor(props) {
@@ -365,6 +362,7 @@ class SelzClient {
                 reject(new Error('A valid id is required'));
                 return;
             }
+
             if (utils.is.empty(product)) {
                 reject(new Error('A valid product is required'));
                 return;
@@ -374,6 +372,42 @@ class SelzClient {
                 .then(() => {
                     http
                         .post(config.urls.addToCart(this.config.env, id), product)
+                        .then(json => {
+                            const cart = new Cart(this, json, true);
+
+                            // Set the active cart
+                            this.setActiveCart(cart.currency_code);
+
+                            resolve(cart);
+                        })
+                        .catch(reject);
+                })
+                .catch(error => reject(error));
+        });
+    }
+
+    /**
+     * Update an items quantity in the shopping cart
+     * @param {string} id - The shopping cart ID
+     * @param {string} index - The shopping cart item quid
+     * @param {number} quantity - Desired quantity
+     */
+    updateCartItemQuantity(id, index, quantity = 1) {
+        return new Promise((resolve, reject) => {
+            if (!utils.is.objectId(id)) {
+                reject(new Error('A valid id is required'));
+                return;
+            }
+
+            if (utils.is.empty(index)) {
+                reject(new Error('A valid index is required'));
+                return;
+            }
+
+            this.getUser()
+                .then(() => {
+                    http
+                        .post(config.urls.updateCartItemQuantity(this.config.env, id), { index, quantity })
                         .then(json => {
                             const cart = new Cart(this, json, true);
 
@@ -399,6 +433,7 @@ class SelzClient {
                 reject(new Error('A valid id is required'));
                 return;
             }
+
             if (utils.is.empty(index)) {
                 reject(new Error('A valid index is required'));
                 return;

@@ -46,7 +46,7 @@ class ProductFile {
 }
 
 class ProductVariant {
-    constructor(variant) {
+    constructor(variant, selected = '') {
         this.id = variant.id;
         this.title = variant.title;
         this.sku = variant.sku;
@@ -55,6 +55,7 @@ class ProductVariant {
         this.quantity = variant.quantity;
         this.quantity_available = variant.quantity_available;
         this.options = variant.options;
+        this.selected = variant.id === selected;
     }
 }
 
@@ -74,7 +75,7 @@ class ProductVariantAttribute {
 }
 
 class Product {
-    constructor(instance, product) {
+    constructor(instance, product, variantId = '') {
         if (!utils.is.object(product)) {
             return;
         }
@@ -115,10 +116,11 @@ class Product {
         }
 
         // Variants
-        if (utils.is.array(product.variants)) {
-            this.variants = product.variants.map(variant => new ProductVariant(variant));
+        if (utils.is.array(product.variants) && product.variants.length) {
+            const selected = !utils.is.empty(variantId) ? variantId : product.variants[0].id;
+            this.variants = product.variants.map(variant => new ProductVariant(variant, selected));
         }
-        if (utils.is.array(product.variant_attributes)) {
+        if (utils.is.array(product.variant_attributes) && product.variant_attributes.length) {
             this.variant_attributes = product.variant_attributes.map(attribute => new ProductVariantAttribute(attribute));
         }
 
@@ -146,6 +148,15 @@ class Product {
     // eslint-disable-next-line camelcase
     get is_sold_out() {
         return this.quantity_available === 0;
+    }
+
+    // eslint-disable-next-line camelcase
+    get selected_variant() {
+        if (utils.is.empty(this.variants)) {
+            return null;
+        }
+
+        return this.variants.find(variant => variant.selected);
     }
 
     /**

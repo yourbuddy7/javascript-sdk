@@ -96,9 +96,8 @@ const formats = {
     },
 };
 
-Object.keys(formats).forEach(key => {
-    const task = formats[key];
-    const name = `js:${key}`;
+Object.entries(formats).forEach(([format, task]) => {
+    const name = `js:${format}`;
     tasks.js.push(name);
 
     gulp.task(name, () =>
@@ -122,7 +121,7 @@ Object.keys(formats).forEach(key => {
                                 VERSION: JSON.stringify(pkg.version),
                             }),
                             babel(babelrc),
-                            uglify({}, minify),
+                            // uglify({}, minify),
                         ],
                     },
                     { name: namespace, format: task.format },
@@ -171,7 +170,7 @@ gulp.task('clean', () => del(['dist/**/*']));
 // Watch for file changes
 gulp.task('watch', () => {
     gulp.watch('./src/**/*.scss', tasks.js);
-    gulp.watch(['./src/**/*.js', './docs/scripts.js'], tasks.js);
+    return gulp.watch(['./src/**/*.js', './docs/scripts.js'], tasks.js);
 });
 
 // Default gulp task

@@ -97,8 +97,8 @@
         width: 24px;
         height: 24px;
         border: 2px solid currentColor;
-        border-left-color: rgba(255, 255, 255, 0.1);
-        border-bottom-color: rgba(255, 255, 255, 0.1);
+        border-left-color: transparent;
+        border-bottom-color: transparent;
         animation: 'selz-spin' 0.5s infinite linear;
         transform-origin: 50%;
         border-radius: 50%;
