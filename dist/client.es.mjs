@@ -767,6 +767,7 @@ var ProductUrls = function ProductUrls(urls) {
     this.store = urls.store;
     this.short = urls.short;
     this.checkout = urls.checkout;
+    this.media = urls.media;
 };
 
 var ProductImage = function ProductImage(image) {
