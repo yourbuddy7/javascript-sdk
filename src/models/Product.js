@@ -8,6 +8,7 @@ class ProductUrls {
         this.store = urls.store;
         this.short = urls.short;
         this.checkout = urls.checkout;
+        this.media = urls.media;
     }
 }
 
