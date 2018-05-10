@@ -5,26 +5,13 @@ let client = null;
 
 class CartItem {
     constructor(item, cartId) {
-        this.index = item.index;
         this.cartId = cartId;
 
+        // Take all properties by default
+        Object.assign(this, item);
+
+        // Map product
         this.product = new Product(client, item.product, item.variant_id);
-
-        this.price = item.price;
-        this.price_formatted = item.price_formatted;
-
-        this.has_buyers_price = item.has_buyers_price;
-        this.buyers_price = item.buyers_price;
-        this.buyers_price_formatted = item.buyers_price_formatted;
-
-        this.has_discount = item.has_discount;
-        this.discount_code = item.discount_code;
-        this.dicount_name = item.discount_name;
-        this.total_discount = item.total_discount;
-        this.total_discount_formatted = item.total_discount_formatted;
-
-        this.sub_total = item.sub_total;
-        this.sub_total_formatted = item.sub_total_formatted;
 
         // Semi private for quantity updates so we can bind to getters/setters
         let _quantity = item.quantity;
@@ -52,23 +39,14 @@ class Cart {
 
         client = instance;
 
-        this.id = cart.id;
+        // Take all properties by default
+        Object.assign(this, cart);
+
+        // Set active state
         this.active = active;
-        this.seller_id = cart.seller_id;
-        this.url = cart.url;
 
-        this.channel = cart.channel;
-        this.tracking_id = cart.tracking_id;
-
+        // Map items
         this.items = Array.from(cart.items).map(item => new CartItem(item, cart.id));
-
-        this.currency_symbol = cart.currency_symbol;
-        this.currency_code = cart.currency_code;
-        this.total = cart.total;
-        this.total_formatted = cart.total_formatted;
-
-        this.created_time = cart.created_time;
-        this.updated_time = cart.updated_time;
     }
 
     /**

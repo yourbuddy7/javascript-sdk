@@ -5771,20 +5771,23 @@ var Product = function () {
             return;
         }
 
-        this.id = product.id;
+        Object.assign(this, product);
+
+        /* this.id = product.id;
         this.title = product.title;
         this.description = product.description;
         this.sku = product.sku;
-
-        this.currency_code = product.currency_code;
+         this.currency_code = product.currency_code;
         this.currency_symbol = product.currency_symbol;
         this.price = product.price;
-        this.regular_price = product.regular_price;
         this.price_formatted = product.price_formatted;
+        this.price_display = product.price_display;
+        this.regular_price = product.regular_price;
         this.regular_price_formatted = product.regular_price_formatted;
-
-        this.quantity = product.quantity;
+        this.regular_price_display = product.regular_price_display;
+         this.quantity = product.quantity;
         this.quantity_available = product.quantity_available;
+        this.quantity_unit = product.quantity_unit; */
 
         // Product URLs
         if (utils.is.object(product.urls)) {
@@ -5823,18 +5826,17 @@ var Product = function () {
             });
         }
 
-        this.cards_enabled = product.cards_enabled;
+        /* this.cards_enabled = product.cards_enabled;
         this.extra_cards_enabled = product.extra_cards_enabled;
         this.paypal_enabled = product.pay_pal_enabled;
-
-        this.display_sku = product.display_sku;
+         this.display_sku = product.display_sku;
         this.display_quantity = product.display_quantity;
         this.display_powered_by = product.display_powered_by;
-
-        this.created_by = product.created_by;
+        this.display_currency_code = product.display_currency_code;
+         this.created_by = product.created_by;
         this.created_time = product.created_time;
         this.updated_by = product.updated_by;
-        this.updated_time = product.updated_time;
+        this.updated_time = product.updated_time; */
 
         client = instance;
     }

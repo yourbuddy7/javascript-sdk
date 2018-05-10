@@ -4,37 +4,24 @@ let client = null;
 
 class ProductUrls {
     constructor(urls) {
-        this.full = urls.full;
-        this.store = urls.store;
-        this.short = urls.short;
-        this.checkout = urls.checkout;
-        this.media = urls.media;
+        // Take all properties by default
+        Object.assign(this, urls);
     }
 }
 
 class ProductImage {
     constructor(image) {
-        this.pico = image.pico;
-        this.icon = image.icon;
-        this.thumb = image.thumb;
-        this.small = image.small;
-        this.compact = image.compact;
-        this.medium = image.medium;
-        this.large = image.large;
-        this.grande = image.grande;
-        this.mucho_grande = image.mucho_grande;
-        this.huge = image.huge;
-        this.original = image.original;
-        this.featured = image.is_featured;
-        this.default = image.is_default;
+        // Take all properties by default
+        Object.assign(this, image);
     }
 }
 
 class ProductMedia {
     constructor(media) {
-        this.type = media.type;
-        this.state = media.state;
-        this.url = media.url;
+        // Take all properties by default
+        Object.assign(this, media);
+
+        // Map cover image
         this.cover = new ProductImage(media.cover);
     }
 }
@@ -48,14 +35,9 @@ class ProductFile {
 
 class ProductVariant {
     constructor(variant, selected = '') {
-        this.id = variant.id;
-        this.title = variant.title;
-        this.sku = variant.sku;
-        this.price = variant.price;
-        this.price_formatted = variant.price_formatted;
-        this.quantity = variant.quantity;
-        this.quantity_available = variant.quantity_available;
-        this.options = variant.options;
+        // Take all properties by default
+        Object.assign(this, variant);
+
         this.selected = variant.id === selected;
     }
 }
@@ -69,8 +51,10 @@ class ProductVariantAttributeOption {
 
 class ProductVariantAttribute {
     constructor(variant) {
-        this.id = variant.id;
-        this.name = variant.name;
+        // Take all properties by default
+        Object.assign(this, variant);
+
+        // Map options
         this.options = Object.keys(variant.options).map(id => new ProductVariantAttributeOption(id, variant.options[id]));
     }
 }
@@ -81,20 +65,8 @@ class Product {
             return;
         }
 
-        this.id = product.id;
-        this.title = product.title;
-        this.description = product.description;
-        this.sku = product.sku;
-
-        this.currency_code = product.currency_code;
-        this.currency_symbol = product.currency_symbol;
-        this.price = product.price;
-        this.regular_price = product.regular_price;
-        this.price_formatted = product.price_formatted;
-        this.regular_price_formatted = product.regular_price_formatted;
-
-        this.quantity = product.quantity;
-        this.quantity_available = product.quantity_available;
+        // Take all properties by default
+        Object.assign(this, product);
 
         // Product URLs
         if (utils.is.object(product.urls)) {
@@ -124,19 +96,6 @@ class Product {
         if (utils.is.array(product.variant_attributes) && product.variant_attributes.length) {
             this.variant_attributes = product.variant_attributes.map(attribute => new ProductVariantAttribute(attribute));
         }
-
-        this.cards_enabled = product.cards_enabled;
-        this.extra_cards_enabled = product.extra_cards_enabled;
-        this.paypal_enabled = product.pay_pal_enabled;
-
-        this.display_sku = product.display_sku;
-        this.display_quantity = product.display_quantity;
-        this.display_powered_by = product.display_powered_by;
-
-        this.created_by = product.created_by;
-        this.created_time = product.created_time;
-        this.updated_by = product.updated_by;
-        this.updated_time = product.updated_time;
 
         client = instance;
     }
