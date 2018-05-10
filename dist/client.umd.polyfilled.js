@@ -5689,37 +5689,24 @@ var client = null;
 var ProductUrls = function ProductUrls(urls) {
     classCallCheck(this, ProductUrls);
 
-    this.full = urls.full;
-    this.store = urls.store;
-    this.short = urls.short;
-    this.checkout = urls.checkout;
-    this.media = urls.media;
+    // Take all properties by default
+    Object.assign(this, urls);
 };
 
 var ProductImage = function ProductImage(image) {
     classCallCheck(this, ProductImage);
 
-    this.pico = image.pico;
-    this.icon = image.icon;
-    this.thumb = image.thumb;
-    this.small = image.small;
-    this.compact = image.compact;
-    this.medium = image.medium;
-    this.large = image.large;
-    this.grande = image.grande;
-    this.mucho_grande = image.mucho_grande;
-    this.huge = image.huge;
-    this.original = image.original;
-    this.featured = image.is_featured;
-    this.default = image.is_default;
+    // Take all properties by default
+    Object.assign(this, image);
 };
 
 var ProductMedia = function ProductMedia(media) {
     classCallCheck(this, ProductMedia);
 
-    this.type = media.type;
-    this.state = media.state;
-    this.url = media.url;
+    // Take all properties by default
+    Object.assign(this, media);
+
+    // Map cover image
     this.cover = new ProductImage(media.cover);
 };
 
@@ -5734,14 +5721,9 @@ var ProductVariant = function ProductVariant(variant) {
     var selected = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
     classCallCheck(this, ProductVariant);
 
-    this.id = variant.id;
-    this.title = variant.title;
-    this.sku = variant.sku;
-    this.price = variant.price;
-    this.price_formatted = variant.price_formatted;
-    this.quantity = variant.quantity;
-    this.quantity_available = variant.quantity_available;
-    this.options = variant.options;
+    // Take all properties by default
+    Object.assign(this, variant);
+
     this.selected = variant.id === selected;
 };
 
@@ -5755,8 +5737,10 @@ var ProductVariantAttributeOption = function ProductVariantAttributeOption(id, l
 var ProductVariantAttribute = function ProductVariantAttribute(variant) {
     classCallCheck(this, ProductVariantAttribute);
 
-    this.id = variant.id;
-    this.name = variant.name;
+    // Take all properties by default
+    Object.assign(this, variant);
+
+    // Map options
     this.options = Object.keys(variant.options).map(function (id) {
         return new ProductVariantAttributeOption(id, variant.options[id]);
     });
@@ -5771,23 +5755,8 @@ var Product = function () {
             return;
         }
 
+        // Take all properties by default
         Object.assign(this, product);
-
-        /* this.id = product.id;
-        this.title = product.title;
-        this.description = product.description;
-        this.sku = product.sku;
-         this.currency_code = product.currency_code;
-        this.currency_symbol = product.currency_symbol;
-        this.price = product.price;
-        this.price_formatted = product.price_formatted;
-        this.price_display = product.price_display;
-        this.regular_price = product.regular_price;
-        this.regular_price_formatted = product.regular_price_formatted;
-        this.regular_price_display = product.regular_price_display;
-         this.quantity = product.quantity;
-        this.quantity_available = product.quantity_available;
-        this.quantity_unit = product.quantity_unit; */
 
         // Product URLs
         if (utils.is.object(product.urls)) {
@@ -5825,18 +5794,6 @@ var Product = function () {
                 return new ProductVariantAttribute(attribute);
             });
         }
-
-        /* this.cards_enabled = product.cards_enabled;
-        this.extra_cards_enabled = product.extra_cards_enabled;
-        this.paypal_enabled = product.pay_pal_enabled;
-         this.display_sku = product.display_sku;
-        this.display_quantity = product.display_quantity;
-        this.display_powered_by = product.display_powered_by;
-        this.display_currency_code = product.display_currency_code;
-         this.created_by = product.created_by;
-        this.created_time = product.created_time;
-        this.updated_by = product.updated_by;
-        this.updated_time = product.updated_time; */
 
         client = instance;
     }
@@ -5921,26 +5878,13 @@ var CartItem = function () {
 
         classCallCheck(this, CartItem);
 
-        this.index = item.index;
         this.cartId = cartId;
 
+        // Take all properties by default
+        Object.assign(this, item);
+
+        // Map product
         this.product = new Product(client$1, item.product, item.variant_id);
-
-        this.price = item.price;
-        this.price_formatted = item.price_formatted;
-
-        this.has_buyers_price = item.has_buyers_price;
-        this.buyers_price = item.buyers_price;
-        this.buyers_price_formatted = item.buyers_price_formatted;
-
-        this.has_discount = item.has_discount;
-        this.discount_code = item.discount_code;
-        this.dicount_name = item.discount_name;
-        this.total_discount = item.total_discount;
-        this.total_discount_formatted = item.total_discount_formatted;
-
-        this.sub_total = item.sub_total;
-        this.sub_total_formatted = item.sub_total_formatted;
 
         // Semi private for quantity updates so we can bind to getters/setters
         var _quantity = item.quantity;
@@ -5978,25 +5922,16 @@ var Cart = function () {
 
         client$1 = instance;
 
-        this.id = cart.id;
+        // Take all properties by default
+        Object.assign(this, cart);
+
+        // Set active state
         this.active = active;
-        this.seller_id = cart.seller_id;
-        this.url = cart.url;
 
-        this.channel = cart.channel;
-        this.tracking_id = cart.tracking_id;
-
+        // Map items
         this.items = Array.from(cart.items).map(function (item) {
             return new CartItem(item, cart.id);
         });
-
-        this.currency_symbol = cart.currency_symbol;
-        this.currency_code = cart.currency_code;
-        this.total = cart.total;
-        this.total_formatted = cart.total_formatted;
-
-        this.created_time = cart.created_time;
-        this.updated_time = cart.updated_time;
     }
 
     /**
