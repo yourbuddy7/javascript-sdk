@@ -340,7 +340,7 @@ class Modal {
                 const { width, height } = this.config.popup.checkout;
                 utils.popup(url, width, height);
             } else {
-                // Strip URL queryssss
+                // Strip frame URL query
                 url = utils.removeUrlQuery.call(url, 'frame');
 
                 // Open window
@@ -355,6 +355,9 @@ class Modal {
         if (this.elements.modal === null) {
             this.build(label);
         }
+
+        // Show modal incase it's been hidden
+        this.elements.modal.removeAttribute('hidden');
 
         // Set loading state
         this.loading(true);

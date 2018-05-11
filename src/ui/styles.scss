@@ -94,8 +94,8 @@
 
     &.supports-cssanimations &__loader::before {
         content: '';
-        width: 24px;
-        height: 24px;
+        width: 20px;
+        height: 20px;
         border: 2px solid currentColor;
         border-left-color: transparent;
         border-bottom-color: transparent;

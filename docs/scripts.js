@@ -108,7 +108,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // Expose
             window.product = product;
 
-            addToCart(product, true);
+            // addToCart(product);
 
             // product.buy();
 

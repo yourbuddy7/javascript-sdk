@@ -6189,7 +6189,7 @@ function styleInject(css, ref) {
   }
 }
 
-var css = "@-webkit-keyframes selz-fade-in{0%{opacity:0}to{opacity:1}}@keyframes selz-fade-in{0%{opacity:0}to{opacity:1}}@-webkit-keyframes selz-spin{0%{-webkit-transform:rotate(0deg);transform:rotate(0deg)}to{-webkit-transform:rotate(1turn);transform:rotate(1turn)}}@keyframes selz-spin{0%{-webkit-transform:rotate(0deg);transform:rotate(0deg)}to{-webkit-transform:rotate(1turn);transform:rotate(1turn)}}@font-face{font-family:Selz;src:url(https://cdn.selzstatic.com/fonts/circular/circular-book-custom.woff2) format(\"woff2\"),url(https://cdn.selzstatic.com/fonts/circular/circular-book-custom.woff) format(\"woff\");font-weight:400;font-display:swap}.selz-modal,.selz-modal__body,.selz-modal__iframe{width:100%;height:100%}.selz-modal{box-sizing:border-box;-webkit-overflow-scrolling:touch;overflow:auto;position:fixed;z-index:999999999;top:0;left:0;right:0;bottom:0;background:rgba(46,52,61,.85);-webkit-animation:\"selz-fade-in\" .2s cubic-bezier(.4,0,.2,1);animation:\"selz-fade-in\" .2s cubic-bezier(.4,0,.2,1);font:400 16px/1.5 Selz,Circular,Circular-Std,Avenir,Avenir Next,sans-serif;-moz-osx-font-smoothing:grayscale;-webkit-font-smoothing:antialiased}.selz-modal *,.selz-modal :after,.selz-modal :before{box-sizing:inherit}.selz-modal[hidden],.selz-modal [hidden]{display:none}.selz-modal__body{position:relative;text-align:center}.selz-modal__iframe{display:block;border:0;-webkit-animation:\"selz-fade-in\" .2s cubic-bezier(.4,0,.2,1);animation:\"selz-fade-in\" .2s cubic-bezier(.4,0,.2,1)}.selz-modal--is-loading .selz-modal__iframe{display:none}.selz-modal--is-loading .selz-modal__loader{display:block}.selz-modal__loader{display:none;position:absolute;top:50%;left:50%;width:120px;-webkit-transform:translate(-60px,-50%);transform:translate(-60px,-50%);color:#fff;text-shadow:0 1px 1px rgba(0,0,0,.1);text-align:center;line-height:1}.selz-modal.supports-cssanimations .selz-modal__loader:before{content:\"\";width:24px;height:24px;border:2px solid currentColor;border-left-color:transparent;border-bottom-color:transparent;-webkit-animation:\"selz-spin\" .5s infinite linear;animation:\"selz-spin\" .5s infinite linear;-webkit-transform-origin:50%;transform-origin:50%;border-radius:50%;display:block;margin:0 auto 15px}";
+var css = "@-webkit-keyframes selz-fade-in{0%{opacity:0}to{opacity:1}}@keyframes selz-fade-in{0%{opacity:0}to{opacity:1}}@-webkit-keyframes selz-spin{0%{-webkit-transform:rotate(0deg);transform:rotate(0deg)}to{-webkit-transform:rotate(1turn);transform:rotate(1turn)}}@keyframes selz-spin{0%{-webkit-transform:rotate(0deg);transform:rotate(0deg)}to{-webkit-transform:rotate(1turn);transform:rotate(1turn)}}@font-face{font-family:Selz;src:url(https://cdn.selzstatic.com/fonts/circular/circular-book-custom.woff2) format(\"woff2\"),url(https://cdn.selzstatic.com/fonts/circular/circular-book-custom.woff) format(\"woff\");font-weight:400;font-display:swap}.selz-modal,.selz-modal__body,.selz-modal__iframe{width:100%;height:100%}.selz-modal{box-sizing:border-box;-webkit-overflow-scrolling:touch;overflow:auto;position:fixed;z-index:999999999;top:0;left:0;right:0;bottom:0;background:rgba(46,52,61,.85);-webkit-animation:\"selz-fade-in\" .2s cubic-bezier(.4,0,.2,1);animation:\"selz-fade-in\" .2s cubic-bezier(.4,0,.2,1);font:400 16px/1.5 Selz,Circular,Circular-Std,Avenir,Avenir Next,sans-serif;-moz-osx-font-smoothing:grayscale;-webkit-font-smoothing:antialiased}.selz-modal *,.selz-modal :after,.selz-modal :before{box-sizing:inherit}.selz-modal[hidden],.selz-modal [hidden]{display:none}.selz-modal__body{position:relative;text-align:center}.selz-modal__iframe{display:block;border:0;-webkit-animation:\"selz-fade-in\" .2s cubic-bezier(.4,0,.2,1);animation:\"selz-fade-in\" .2s cubic-bezier(.4,0,.2,1)}.selz-modal--is-loading .selz-modal__iframe{display:none}.selz-modal--is-loading .selz-modal__loader{display:block}.selz-modal__loader{display:none;position:absolute;top:50%;left:50%;width:120px;-webkit-transform:translate(-60px,-50%);transform:translate(-60px,-50%);color:#fff;text-shadow:0 1px 1px rgba(0,0,0,.1);text-align:center;line-height:1}.selz-modal.supports-cssanimations .selz-modal__loader:before{content:\"\";width:20px;height:20px;border:2px solid currentColor;border-left-color:transparent;border-bottom-color:transparent;-webkit-animation:\"selz-spin\" .5s infinite linear;animation:\"selz-spin\" .5s infinite linear;-webkit-transform-origin:50%;transform-origin:50%;border-radius:50%;display:block;margin:0 auto 15px}";
 styleInject(css);
 
 var Modal = function () {
@@ -6523,7 +6523,7 @@ var Modal = function () {
 
                     utils.popup(url, width, height);
                 } else {
-                    // Strip URL queryssss
+                    // Strip frame URL query
                     url = utils.removeUrlQuery.call(url, 'frame');
 
                     // Open window
@@ -6538,6 +6538,9 @@ var Modal = function () {
             if (this.elements.modal === null) {
                 this.build(label);
             }
+
+            // Show modal incase it's been hidden
+            this.elements.modal.removeAttribute('hidden');
 
             // Set loading state
             this.loading(true);
