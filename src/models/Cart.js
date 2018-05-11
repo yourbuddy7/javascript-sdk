@@ -57,7 +57,7 @@ class Cart {
             return;
         }
 
-        client.modal.open(this.url, utils.is.object(colors) ? colors : client.config.colors);
+        client.modal.open(this.url, Object.assign(client.config.colors, colors));
     }
 
     /**

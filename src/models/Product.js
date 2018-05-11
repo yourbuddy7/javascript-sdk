@@ -131,7 +131,7 @@ class Product {
             url = utils.addUrlQuery.call(url, 'code', discount);
         }
 
-        client.modal.open(url, utils.is.object(colors) ? colors : client.config.colors);
+        client.modal.open(url, Object.assign(client.config.colors, colors));
     }
 
     /**
@@ -146,7 +146,7 @@ class Product {
             url = utils.addUrlQuery.call(url, 'code', discount);
         }
 
-        client.modal.open(url, utils.is.object(colors) ? colors : client.config.colors);
+        client.modal.open(url, Object.assign(client.config.colors, colors));
     }
 }
 

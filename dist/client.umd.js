@@ -897,7 +897,7 @@ var Product = function () {
                 url = utils.addUrlQuery.call(url, 'code', discount);
             }
 
-            client.modal.open(url, utils.is.object(colors) ? colors : client.config.colors);
+            client.modal.open(url, Object.assign(client.config.colors, colors));
         }
 
         /**
@@ -915,7 +915,7 @@ var Product = function () {
                 url = utils.addUrlQuery.call(url, 'code', discount);
             }
 
-            client.modal.open(url, utils.is.object(colors) ? colors : client.config.colors);
+            client.modal.open(url, Object.assign(client.config.colors, colors));
         }
     }, {
         key: 'featured_image',
@@ -1021,7 +1021,7 @@ var Cart = function () {
                 return;
             }
 
-            client$1.modal.open(this.url, utils.is.object(colors) ? colors : client$1.config.colors);
+            client$1.modal.open(this.url, Object.assign(client$1.config.colors, colors));
         }
 
         /**
