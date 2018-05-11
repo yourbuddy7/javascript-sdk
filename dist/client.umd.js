@@ -952,44 +952,38 @@ var Product = function () {
 
 var client$1 = null;
 
-var CartItem = function () {
-    function CartItem(item, cartId) {
-        var _this = this;
+var CartItem = function CartItem(item, cartId) {
+    var _this = this;
 
-        classCallCheck(this, CartItem);
+    classCallCheck(this, CartItem);
 
-        this.cartId = cartId;
+    this.cartId = cartId;
 
-        // Take all properties by default
-        Object.assign(this, item);
+    // Semi private for quantity updates so we can bind to getters/setters
+    var _quantity = item.quantity;
 
-        // Map product
-        this.product = new Product(client$1, item.product, item.variant_id);
-
-        // Semi private for quantity updates so we can bind to getters/setters
-        var _quantity = item.quantity;
-        this._setQuantity = function () {
+    // Take all properties by default
+    Object.assign(this, item, {
+        _setQuantity: function _setQuantity() {
             var quantity = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 1;
 
             _quantity = quantity;
             client$1.updateCartItemQuantity(_this.cartId, _this.index, quantity);
-        };
-        this._getQuantity = function () {
+        },
+        _getQuantity: function _getQuantity() {
             return _quantity;
-        };
-    }
-
-    createClass(CartItem, [{
-        key: 'quantity',
-        get: function get$$1() {
+        },
+        get quantity() {
             return this._getQuantity();
         },
-        set: function set$$1(quantity) {
+        set quantity(quantity) {
             this._setQuantity(quantity);
         }
-    }]);
-    return CartItem;
-}();
+    });
+
+    // Map product
+    this.product = new Product(client$1, item.product, item.variant_id);
+};
 
 var Cart = function () {
     function Cart(instance, cart) {
