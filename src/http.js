@@ -1,7 +1,8 @@
 import pascalCase from 'pascalcase-keys';
-
 import CustomFetch from './fetch';
 import utils from './utils';
+
+const queue = {};
 
 const http = {
     /**
@@ -9,7 +10,17 @@ const http = {
      * @param {string} url - The endpoint URL
      */
     get(url) {
-        return new CustomFetch(url);
+        // Queue requests to prevent hammering
+        if (!Object.keys(queue).includes(url)) {
+            queue[url] = new CustomFetch(url);
+
+            // Remove from queue on completed
+            queue[url].finally(() => {
+                delete queue[url];
+            });
+        }
+
+        return queue[url];
     },
 
     /**

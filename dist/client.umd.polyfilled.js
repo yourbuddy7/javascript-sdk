@@ -5655,13 +5655,25 @@ var CustomFetch = function CustomFetch(url, options) {
     });
 };
 
+var queue$1 = {};
+
 var http = {
     /**
      * GET remote URL and parse as JSON
      * @param {string} url - The endpoint URL
      */
     get: function get(url) {
-        return new CustomFetch(url);
+        // Queue requests to prevent hammering
+        if (!Object.keys(queue$1).includes(url)) {
+            queue$1[url] = new CustomFetch(url);
+
+            // Remove from queue on completed
+            queue$1[url].finally(function () {
+                delete queue$1[url];
+            });
+        }
+
+        return queue$1[url];
     },
 
 
