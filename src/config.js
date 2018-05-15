@@ -27,12 +27,12 @@ const config = {
         },
 
         /**
-         * Get URL for User ID by domain
+         * Get URL for finding user for a URL
          * @param {string} env - Environment (e.g. local, develop, release)
-         * @param {string} url - The URL for the store
+         * @param {string} url - The URL to lookup
          */
-        userId(env, url = '') {
-            return `${getBase(env)}userid?domain=${url}`;
+        user(env, url = '') {
+            return `${getBase(env)}user?url=${url}`;
         },
 
         /**

@@ -20,7 +20,7 @@ npm install selz-js-sdk
 or using our CDN:
 
 ```html
-<script src="https://sdk.selzstatic.com/0.1.18/client.umd.polyfilled.js"></script>
+<script src="https://sdk.selzstatic.com/0.1.19/client.umd.polyfilled.js"></script>
 ```
 
 ## Creating a client

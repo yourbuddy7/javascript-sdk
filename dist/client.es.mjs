@@ -405,14 +405,14 @@ var config = {
 
 
         /**
-         * Get URL for User ID by domain
+         * Get URL for finding user for a URL
          * @param {string} env - Environment (e.g. local, develop, release)
-         * @param {string} url - The URL for the store
+         * @param {string} url - The URL to lookup
          */
-        userId: function userId(env) {
+        user: function user(env) {
             var url = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
 
-            return getBase(env) + 'userid?domain=' + url;
+            return getBase(env) + 'user?url=' + url;
         },
 
 
@@ -1048,14 +1048,17 @@ var Cart = function () {
 var storage = new Map();
 
 var Storage = function () {
-    function Storage(keys) {
+    function Storage(config) {
         classCallCheck(this, Storage);
 
-        this.keys = Object.assign({
-            root: 'selz',
-            carts: 'carts',
-            domains: 'domains'
-        }, keys);
+        this.config = Object.assign({
+            keys: {
+                root: 'selz-js-sdk',
+                carts: 'carts',
+                users: 'users'
+            },
+            ttl: 7200 // 2 hours in seconds
+        }, config);
     }
 
     // Check for actual support (see if we can use it)
@@ -1064,11 +1067,11 @@ var Storage = function () {
     createClass(Storage, [{
         key: 'get',
         value: function get$$1(key) {
-            var data = storage.get(this.keys.root);
+            var data = storage.get(this.config.keys.root);
 
             // Grab from real storage if we can or use faux-storage
             if (Storage.supported) {
-                var stored = window.localStorage.getItem(this.keys.root);
+                var stored = window.localStorage.getItem(this.config.keys.root);
 
                 if (!utils.is.empty(stored)) {
                     data = JSON.parse(stored);
@@ -1079,24 +1082,28 @@ var Storage = function () {
                 return null;
             }
 
-            return utils.is.string(key) && key.length ? data[key] : data;
+            if (!utils.is.empty(key)) {
+                return Object.keys(data).includes(key) ? data[key] : null;
+            }
+
+            return data;
         }
     }, {
         key: 'set',
         value: function set$$1(key, value) {
             // Get current storage
-            var data = this.get() || {};
+            var current = this.get() || {};
 
             // Inject the new data
-            if (Object.keys(data).includes(key)) {
-                var base = data[key];
+            if (Object.keys(current).includes(key)) {
+                var base = current[key];
                 utils.extend(base, value);
             } else {
-                data[key] = value;
+                current[key] = value;
             }
 
             // Set in faux-storage
-            storage.set(this.keys.root, data);
+            storage.set(this.config.keys.root, current);
 
             // Bail if no real support
             if (!Storage.supported) {
@@ -1105,7 +1112,7 @@ var Storage = function () {
 
             // Update storage
             try {
-                window.localStorage.setItem(this.keys.root, JSON.stringify(data));
+                window.localStorage.setItem(this.config.keys.root, JSON.stringify(current));
             } catch (e) {
                 // Do nothing
             }
@@ -1113,7 +1120,7 @@ var Storage = function () {
     }, {
         key: 'getCarts',
         value: function getCarts(seller) {
-            var data = this.get(this.keys.carts) || {};
+            var data = this.get(this.config.keys.carts) || {};
 
             // If no carts
             if (utils.is.empty(data)) {
@@ -1158,43 +1165,49 @@ var Storage = function () {
     }, {
         key: 'setCart',
         value: function setCart(seller, currency, cart) {
-            var update = {};
-            update[seller] = {};
-            update[seller][currency.toUpperCase()] = {
+            var update = defineProperty({}, seller, defineProperty({}, currency.toUpperCase(), {
                 id: cart.id,
                 active: cart.active
-            };
+            }));
 
-            this.set(this.keys.carts, update);
+            this.set(this.config.keys.carts, update);
         }
     }, {
         key: 'setCarts',
         value: function setCarts(seller) {
             var carts = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
-            var update = {};
-            update[seller] = carts;
+            var update = defineProperty({}, seller, carts);
 
-            this.set(this.keys.carts, update);
+            this.set(this.config.keys.carts, update);
         }
     }, {
-        key: 'getSeller',
-        value: function getSeller(domain) {
-            var data = this.get(this.keys.domains) || {};
+        key: 'getUser',
+        value: function getUser(url) {
+            var data = this.get(this.config.keys.users) || {};
 
-            if (!utils.is.string(domain) || utils.is.empty(data) || !Object.keys(data).includes(domain)) {
+            if (!utils.is.string(url) || utils.is.empty(data) || !Object.keys(data).includes(url)) {
                 return null;
             }
 
-            return data[domain];
+            // Check timestamp
+            var ttl = Number(data[url].ttl);
+
+            if (ttl > 0 && ttl < Date.now()) {
+                return null;
+            }
+
+            return data[url].id;
         }
     }, {
-        key: 'setSeller',
-        value: function setSeller(domain, id) {
-            var update = {};
-            update[domain] = id;
+        key: 'setUser',
+        value: function setUser(url, id) {
+            var update = defineProperty({}, url, {
+                id: id,
+                ttl: Date.now() + this.config.ttl
+            });
 
-            this.set(this.keys.domains, update);
+            this.set(this.config.keys.users, update);
         }
     }], [{
         key: 'supported',
@@ -1657,13 +1670,14 @@ var SelzClient = function () {
 
         this.config = Object.assign({
             env: '',
+            userId: -1,
+            url: '',
             domain: '',
-            id: -1,
             colors: {}
         }, props);
 
-        if (!this.isIdSet() && !this.isDomainSet()) {
-            throw Error('User or domain are required');
+        if (!this.userSet && !this.urlSet && !this.domainSet) {
+            throw Error('User ID, URL, or domain are required');
         }
 
         this.storage = new Storage();
@@ -1672,45 +1686,43 @@ var SelzClient = function () {
     }
 
     createClass(SelzClient, [{
-        key: 'isIdSet',
-        value: function isIdSet() {
-            return Number.isInteger(this.config.id) && this.config.id !== -1;
-        }
-    }, {
-        key: 'isDomainSet',
-        value: function isDomainSet() {
-            return typeof this.config.domain === 'string' && this.config.domain.length;
-        }
+        key: 'getUser',
+
 
         /**
-         * Get the Store ID
+         * Get the User ID
          * TODO: Queue this somehow?
          */
-
-    }, {
-        key: 'getUser',
         value: function getUser() {
             var _this = this;
 
             return new Promise(function (resolve, reject) {
                 // Already set
-                if (_this.isIdSet()) {
-                    resolve(_this.config.id);
+                if (_this.idSet) {
+                    resolve(_this.config.userId);
                     return;
                 }
 
                 // Cached
-                var cached = _this.storage.getSeller(_this.config.domain);
+                var cached = _this.storage.getUser(_this.config.domain);
                 if (!utils.is.empty(cached)) {
-                    _this.config.id = cached;
+                    _this.config.userId = cached;
                     resolve(cached);
                     return;
                 }
 
-                http.get(config.urls.userId(_this.config.env, _this.config.domain)).then(function (id) {
-                    _this.config.id = id;
-                    _this.storage.setSeller(_this.config.domain, id);
-                    resolve(id);
+                // Lookup by a URL or domain name
+                var lookup = !utils.is.empty(_this.config.url) ? _this.config.url : _this.config.domain;
+
+                // URL or domain are required
+                if (utils.is.empty(lookup)) {
+                    reject(new Error('No domain or URL passed for user lookup'));
+                }
+
+                http.get(config.urls.user(_this.config.env, lookup)).then(function (user) {
+                    _this.config.userId = user.id;
+                    _this.storage.setUser(lookup, user.id);
+                    resolve(user.id);
                 }).catch(function (error) {
                     return reject(error);
                 });
@@ -1748,7 +1760,7 @@ var SelzClient = function () {
 
             return new Promise(function (resolve, reject) {
                 _this3.getUser().then(function () {
-                    http.get(config.urls.products(_this3.config.env, _this3.config.id, query, page < 1 ? 1 : page)).then(function (json) {
+                    http.get(config.urls.products(_this3.config.env, _this3.config.userId, query, page < 1 ? 1 : page)).then(function (json) {
                         resolve(json.map(function (p) {
                             return new Product(_this3, p);
                         }));
@@ -1779,14 +1791,14 @@ var SelzClient = function () {
                 _this4.getUser().then(function () {
                     var currencyCode = currency.toUpperCase();
 
-                    http.post(config.urls.createCart(_this4.config.env, _this4.config.id), {
+                    http.post(config.urls.createCart(_this4.config.env, _this4.config.userId), {
                         currency: currencyCode,
                         discount: typeof discount === 'string' && discount.length ? discount : null
                     }).then(function (json) {
                         var cart = new Cart(_this4, json);
 
                         // Store reference to cart id for later
-                        _this4.storage.setCart(_this4.config.id, currencyCode, cart);
+                        _this4.storage.setCart(_this4.config.userId, currencyCode, cart);
 
                         resolve(cart);
                     }).catch(function (error) {
@@ -1816,7 +1828,7 @@ var SelzClient = function () {
 
                 _this5.getUser().then(function () {
                     var currencyCode = currency.toUpperCase();
-                    var currentCart = _this5.storage.getCart(_this5.config.id, currencyCode);
+                    var currentCart = _this5.storage.getCart(_this5.config.userId, currencyCode);
 
                     // Create cart if it doesn't exist
                     if (utils.is.empty(currentCart)) {
@@ -1853,33 +1865,31 @@ var SelzClient = function () {
                     return;
                 }
 
-                _this6.getUser().then(function () {
-                    if (isCurrency) {
-                        var currencyCode = input.toUpperCase();
+                if (isCurrency) {
+                    var currencyCode = input.toUpperCase();
 
-                        _this6.getCartId(currencyCode).then(function (id) {
-                            if (utils.is.empty(id)) {
-                                reject(new Error('Could not find matching cart for currency \'' + currencyCode + '\''));
-                                return;
-                            }
+                    _this6.getCartId(currencyCode).then(function (id) {
+                        if (utils.is.empty(id)) {
+                            reject(new Error('Could not find matching cart for currency \'' + currencyCode + '\''));
+                            return;
+                        }
 
-                            _this6.getCart(id).then(function (cart) {
-                                return resolve(cart);
-                            }).catch(function (error) {
-                                return reject(error);
-                            });
-                        });
-                    } else {
-                        http.get(config.urls.getCart(_this6.config.env, input)).then(function (json) {
-                            var activeId = _this6.getActiveCart();
-                            resolve(new Cart(_this6, json, json.id === activeId));
+                        _this6.getCart(id).then(function (cart) {
+                            return resolve(cart);
                         }).catch(function (error) {
                             return reject(error);
                         });
-                    }
-                }).catch(function (error) {
-                    return reject(error);
-                });
+                    }).catch(function (error) {
+                        return reject(error);
+                    });
+                } else {
+                    http.get(config.urls.getCart(_this6.config.env, input)).then(function (json) {
+                        var activeId = _this6.getActiveCart();
+                        resolve(new Cart(_this6, json, json.id === activeId));
+                    }).catch(function (error) {
+                        return reject(error);
+                    });
+                }
             });
         }
 
@@ -1896,7 +1906,7 @@ var SelzClient = function () {
 
             return new Promise(function (resolve, reject) {
                 _this7.getUser().then(function () {
-                    var carts = _this7.storage.getCarts(_this7.config.id);
+                    var carts = _this7.storage.getCarts(_this7.config.userId);
 
                     if (utils.is.empty(carts)) {
                         resolve(null);
@@ -1933,7 +1943,7 @@ var SelzClient = function () {
                             }
 
                             // Update storage
-                            _this7.storage.setCarts(_this7.config.id, carts);
+                            _this7.storage.setCarts(_this7.config.userId, carts);
 
                             resolve(carts);
                         }).catch(function (error) {
@@ -2000,7 +2010,7 @@ var SelzClient = function () {
                         }
 
                         // Store again
-                        _this8.storage.setCarts(_this8.config.id, carts);
+                        _this8.storage.setCarts(_this8.config.userId, carts);
 
                         resolve(carts);
                     });
@@ -2023,7 +2033,7 @@ var SelzClient = function () {
 
             return new Promise(function (resolve, reject) {
                 _this9.getUser().then(function () {
-                    var carts = _this9.storage.getCarts(_this9.config.id);
+                    var carts = _this9.storage.getCarts(_this9.config.userId);
 
                     if (!Object.keys(carts).length) {
                         resolve(null);
@@ -2079,18 +2089,14 @@ var SelzClient = function () {
                     return;
                 }
 
-                _this10.getUser().then(function () {
-                    http.post(config.urls.addToCart(_this10.config.env, id), product).then(function (json) {
-                        var cart = new Cart(_this10, json, true);
+                http.post(config.urls.addToCart(_this10.config.env, id), product).then(function (json) {
+                    var cart = new Cart(_this10, json, true);
 
-                        // Set the active cart
-                        _this10.setActiveCart(cart.currency_code);
+                    // Set the active cart
+                    _this10.setActiveCart(cart.currency_code);
 
-                        resolve(cart);
-                    }).catch(reject);
-                }).catch(function (error) {
-                    return reject(error);
-                });
+                    resolve(cart);
+                }).catch(reject);
             });
         }
 
@@ -2119,18 +2125,14 @@ var SelzClient = function () {
                     return;
                 }
 
-                _this11.getUser().then(function () {
-                    http.post(config.urls.updateCartItemQuantity(_this11.config.env, id), { index: index, quantity: quantity }).then(function (json) {
-                        var cart = new Cart(_this11, json, true);
+                http.post(config.urls.updateCartItemQuantity(_this11.config.env, id), { index: index, quantity: quantity }).then(function (json) {
+                    var cart = new Cart(_this11, json, true);
 
-                        // Set the active cart
-                        _this11.setActiveCart(cart.currency_code);
+                    // Set the active cart
+                    _this11.setActiveCart(cart.currency_code);
 
-                        resolve(cart);
-                    }).catch(reject);
-                }).catch(function (error) {
-                    return reject(error);
-                });
+                    resolve(cart);
+                }).catch(reject);
             });
         }
 
@@ -2156,19 +2158,30 @@ var SelzClient = function () {
                     return;
                 }
 
-                _this12.getUser().then(function () {
-                    http.post(config.urls.removeFromCart(_this12.config.env, id), { index: index }).then(function (json) {
-                        var cart = new Cart(_this12, json, true);
+                http.post(config.urls.removeFromCart(_this12.config.env, id), { index: index }).then(function (json) {
+                    var cart = new Cart(_this12, json, true);
 
-                        // Set the active cart
-                        _this12.setActiveCart(cart.currency_code);
+                    // Set the active cart
+                    _this12.setActiveCart(cart.currency_code);
 
-                        resolve(cart);
-                    }).catch(reject);
-                }).catch(function (error) {
-                    return reject(error);
-                });
+                    resolve(cart);
+                }).catch(reject);
             });
+        }
+    }, {
+        key: 'userSet',
+        get: function get$$1() {
+            return Number.isInteger(this.config.userId) && this.config.userId !== -1;
+        }
+    }, {
+        key: 'urlSet',
+        get: function get$$1() {
+            return !utils.is.empty(this.config.url);
+        }
+    }, {
+        key: 'domainSet',
+        get: function get$$1() {
+            return !utils.is.empty(this.config.domain);
         }
     }]);
     return SelzClient;

@@ -8,14 +8,17 @@ import utils from './utils';
 const storage = new Map();
 
 class Storage {
-    constructor(keys) {
-        this.keys = Object.assign(
+    constructor(config) {
+        this.config = Object.assign(
             {
-                root: 'selz',
-                carts: 'carts',
-                domains: 'domains',
+                keys: {
+                    root: 'selz-js-sdk',
+                    carts: 'carts',
+                    users: 'users',
+                },
+                ttl: 7200, // 2 hours in seconds
             },
-            keys,
+            config,
         );
     }
 
@@ -38,11 +41,11 @@ class Storage {
     }
 
     get(key) {
-        let data = storage.get(this.keys.root);
+        let data = storage.get(this.config.keys.root);
 
         // Grab from real storage if we can or use faux-storage
         if (Storage.supported) {
-            const stored = window.localStorage.getItem(this.keys.root);
+            const stored = window.localStorage.getItem(this.config.keys.root);
 
             if (!utils.is.empty(stored)) {
                 data = JSON.parse(stored);
@@ -53,23 +56,27 @@ class Storage {
             return null;
         }
 
-        return utils.is.string(key) && key.length ? data[key] : data;
+        if (!utils.is.empty(key)) {
+            return Object.keys(data).includes(key) ? data[key] : null;
+        }
+
+        return data;
     }
 
     set(key, value) {
         // Get current storage
-        const data = this.get() || {};
+        const current = this.get() || {};
 
         // Inject the new data
-        if (Object.keys(data).includes(key)) {
-            const base = data[key];
+        if (Object.keys(current).includes(key)) {
+            const base = current[key];
             utils.extend(base, value);
         } else {
-            data[key] = value;
+            current[key] = value;
         }
 
         // Set in faux-storage
-        storage.set(this.keys.root, data);
+        storage.set(this.config.keys.root, current);
 
         // Bail if no real support
         if (!Storage.supported) {
@@ -78,14 +85,14 @@ class Storage {
 
         // Update storage
         try {
-            window.localStorage.setItem(this.keys.root, JSON.stringify(data));
+            window.localStorage.setItem(this.config.keys.root, JSON.stringify(current));
         } catch (e) {
             // Do nothing
         }
     }
 
     getCarts(seller) {
-        const data = this.get(this.keys.carts) || {};
+        const data = this.get(this.config.keys.carts) || {};
 
         // If no carts
         if (utils.is.empty(data)) {
@@ -128,38 +135,52 @@ class Storage {
     }
 
     setCart(seller, currency, cart) {
-        const update = {};
-        update[seller] = {};
-        update[seller][currency.toUpperCase()] = {
-            id: cart.id,
-            active: cart.active,
+        const update = {
+            [seller]: {
+                [currency.toUpperCase()]: {
+                    id: cart.id,
+                    active: cart.active,
+                },
+            },
         };
 
-        this.set(this.keys.carts, update);
+        this.set(this.config.keys.carts, update);
     }
 
     setCarts(seller, carts = {}) {
-        const update = {};
-        update[seller] = carts;
+        const update = {
+            [seller]: carts,
+        };
 
-        this.set(this.keys.carts, update);
+        this.set(this.config.keys.carts, update);
     }
 
-    getSeller(domain) {
-        const data = this.get(this.keys.domains) || {};
+    getUser(url) {
+        const data = this.get(this.config.keys.users) || {};
 
-        if (!utils.is.string(domain) || utils.is.empty(data) || !Object.keys(data).includes(domain)) {
+        if (!utils.is.string(url) || utils.is.empty(data) || !Object.keys(data).includes(url)) {
             return null;
         }
 
-        return data[domain];
+        // Check timestamp
+        const ttl = Number(data[url].ttl);
+
+        if (ttl > 0 && ttl < Date.now()) {
+            return null;
+        }
+
+        return data[url].id;
     }
 
-    setSeller(domain, id) {
-        const update = {};
-        update[domain] = id;
+    setUser(url, id) {
+        const update = {
+            [url]: {
+                id,
+                ttl: Date.now() + this.config.ttl,
+            },
+        };
 
-        this.set(this.keys.domains, update);
+        this.set(this.config.keys.users, update);
     }
 }
 
