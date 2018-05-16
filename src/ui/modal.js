@@ -3,7 +3,7 @@ import utils from '../utils';
 import './styles.scss';
 
 class Modal {
-    constructor(options) {
+    constructor(colors, env) {
         this.namespace = 'selz-modal';
 
         this.config = Object.assign(
@@ -35,7 +35,10 @@ class Modal {
                     },
                 },
             },
-            options,
+            {
+                colors,
+                env,
+            },
         );
 
         // Scroll position
@@ -87,6 +90,11 @@ class Modal {
     get theme() {
         const formatted = {};
         const { colors } = this.config;
+
+        // If no colors...
+        if (utils.is.empty(colors)) {
+            return null;
+        }
 
         // Buttons
         if (utils.is.hexColor(colors.buttons.background)) {
@@ -188,9 +196,6 @@ class Modal {
         }
 
         this.elements.modal.setAttribute('hidden', '');
-
-        // Reset to initial state
-        this.config.colors = null;
 
         // Enable scrolling
         this.toggleScroll();

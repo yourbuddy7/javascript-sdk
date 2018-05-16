@@ -121,7 +121,7 @@ Object.entries(formats).forEach(([format, task]) => {
                                 VERSION: JSON.stringify(pkg.version),
                             }),
                             babel(babelrc),
-                            // uglify({}, minify),
+                            uglify({}, minify),
                         ],
                     },
                     { name: namespace, format: task.format },
@@ -168,9 +168,9 @@ gulp.task('js:demo', () =>
 gulp.task('clean', () => del(['dist/**/*']));
 
 // Watch for file changes
-gulp.task('watch', () => {
-    gulp.watch('./src/**/*.scss', tasks.js);
-    return gulp.watch(['./src/**/*.js', './docs/scripts.js'], tasks.js);
+gulp.task('watch', [], () => {
+    const paths = ['./src/**/*.scss', './src/**/*.js', './docs/scripts.js'];
+    gulp.watch(paths, tasks.js);
 });
 
 // Default gulp task

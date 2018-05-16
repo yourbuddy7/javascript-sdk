@@ -1,4 +1,5 @@
 import utils from './../utils';
+import User from './User';
 
 let client = null;
 
@@ -28,8 +29,8 @@ class ProductMedia {
 
 class ProductFile {
     constructor(file) {
-        this.name = file.file_name;
-        this.size = file.file_size;
+        // Take all properties by default
+        Object.assign(this, file);
     }
 }
 
@@ -68,6 +69,11 @@ class Product {
         // Take all properties by default
         Object.assign(this, product);
 
+        // Map seller
+        if (utils.is.object(product.user)) {
+            this.user = new User(product.user);
+        }
+
         // Product URLs
         if (utils.is.object(product.urls)) {
             this.urls = new ProductUrls(product.urls);
@@ -84,8 +90,8 @@ class Product {
         }
 
         // Files for digital products
-        if (utils.is.array(product.download_files)) {
-            this.files = product.download_files.map(file => new ProductFile(file));
+        if (utils.is.array(product.files)) {
+            this.files = product.files.map(file => new ProductFile(file));
         }
 
         // Variants
@@ -131,7 +137,7 @@ class Product {
             url = utils.addUrlQuery.call(url, 'code', discount);
         }
 
-        client.modal.open(url, Object.assign(client.config.colors, colors));
+        client.modal.open(url, Object.assign(client.colors, colors));
     }
 
     /**
@@ -146,7 +152,7 @@ class Product {
             url = utils.addUrlQuery.call(url, 'code', discount);
         }
 
-        client.modal.open(url, Object.assign(client.config.colors, colors));
+        client.modal.open(url, Object.assign(client.colors, colors));
     }
 }
 

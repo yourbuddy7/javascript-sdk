@@ -1,5 +1,6 @@
 import utils from './../utils';
 import Product from './Product';
+import User from './User';
 
 let client = null;
 
@@ -41,6 +42,11 @@ class Cart {
         // Take all properties by default
         Object.assign(this, cart);
 
+        // Map seller
+        if (utils.is.object(cart.user)) {
+            this.user = new User(cart.user);
+        }
+
         // Set active state
         this.active = active;
 
@@ -57,7 +63,7 @@ class Cart {
             return;
         }
 
-        client.modal.open(this.url, Object.assign(client.config.colors, colors));
+        client.modal.open(this.url, Object.assign(client.colors, colors));
     }
 
     /**

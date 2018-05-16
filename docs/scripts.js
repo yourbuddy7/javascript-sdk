@@ -33,7 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // id: 13,
         domain: 'local.sampotts.me',
         env: 'local',
-        colors: {
+        /* colors: {
             buttons: {
                 background: '#303e4c',
                 text: '#97e66a',
@@ -42,13 +42,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 background: '#303e4c',
                 text: '#97e66a',
             },
-        },
+        }, */
     });
 
     // Expose
     window.client = client;
 
-    log('Config', client.config);
+    log('Client', client);
 
     // Listen for messages
     // window.addEventListener('message', event => console.warn(event), false);
@@ -117,7 +117,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // Expose
             window.product = product;
 
-            // addToCart(product);
+            addToCart(product, true);
 
             // product.buy();
 
