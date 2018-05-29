@@ -33,25 +33,22 @@ document.addEventListener('DOMContentLoaded', () => {
         // id: 13,
         domain: 'local.sampotts.me',
         env: 'local',
-        /* colors: {
+        colors: {
             buttons: {
-                background: '#303e4c',
-                text: '#97e66a',
+                background: '#559cda',
+                text: '#fff',
             },
             checkout: {
-                background: '#303e4c',
-                text: '#97e66a',
+                background: '#559cda',
+                text: '#fff',
             },
-        }, */
+        },
     });
 
     // Expose
     window.client = client;
 
     log('Client', client);
-
-    // Listen for messages
-    // window.addEventListener('message', event => console.warn(event), false);
 
     function getCart(currency) {
         return new Promise((resolve, reject) => {

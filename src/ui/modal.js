@@ -3,11 +3,12 @@ import utils from '../utils';
 import './styles.scss';
 
 class Modal {
-    constructor(colors, env) {
+    constructor(colors, env, forceTab = false) {
         this.namespace = 'selz-modal';
 
         this.config = Object.assign(
             {
+                forceTab: false,
                 minSize: {
                     checkout: {
                         width: 400,
@@ -38,6 +39,7 @@ class Modal {
             {
                 colors,
                 env,
+                forceTab,
             },
         );
 
@@ -73,7 +75,7 @@ class Modal {
         window.addEventListener(
             'beforeunload',
             () => {
-                if (this.elements.iframe) {
+                if (utils.is.element(this.elements.iframe)) {
                     this.elements.iframe.contentWindow.postMessage(
                         JSON.stringify({
                             key: 'beforeunload',
@@ -191,7 +193,7 @@ class Modal {
 
     // Hide the modal
     hide() {
-        if (!this.elements.modal) {
+        if (!utils.is.element(this.elements.modal)) {
             return;
         }
 
@@ -207,11 +209,19 @@ class Modal {
 
     // Loading state
     loading(toggle) {
+        if (!utils.is.element(this.elements.modal)) {
+            return;
+        }
+
         this.elements.modal.classList[toggle ? 'add' : 'remove'](`${this.namespace}--is-loading`);
     }
 
     // Show it
     show() {
+        if (!utils.is.element(this.elements.modal)) {
+            return;
+        }
+
         // Clear loading state
         this.loading(false);
 
@@ -271,9 +281,6 @@ class Modal {
         iframe.setAttribute('allowfullscreen', '');
         iframe.setAttribute('allow', 'geolocation');
         iframe.setAttribute('hidden', '');
-
-        // Prevent white flash
-        utils.preventFlash.call(iframe);
 
         // Wrapper
         const wrapper = document.createElement('div');
@@ -340,8 +347,11 @@ class Modal {
         const isCheckout = utils.parseUrl(url).pathname.indexOf('/checkout') === 0;
 
         // Check if window meets min sizes
-        if (!this.canOpenModal(isCheckout)) {
-            if (isCheckout) {
+        const canOpenModal = this.canOpenModal(isCheckout);
+
+        // Force to open tab or popup instead
+        if (this.config.forceTab || !canOpenModal) {
+            if (!this.config.forceTab && isCheckout) {
                 const { width, height } = this.config.popup.checkout;
                 utils.popup(url, width, height);
             } else {
@@ -351,6 +361,8 @@ class Modal {
                 // Open window
                 window.open(url);
             }
+
+            return;
         }
 
         // Disable scroll

@@ -1,13 +1,3 @@
-@keyframes selzFadeIn {
-    0% {
-        opacity: 0;
-    }
-
-    100% {
-        opacity: 1;
-    }
-}
-
 @keyframes selzSpin {
     0% {
         transform: rotate(0deg);
@@ -44,8 +34,8 @@
     right: 0;
     bottom: 0;
     background: rgba(46, 52, 61, 0.85);
-    animation: selzFadeIn 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    font: 400 16px/1.5 'Selz', 'Circular', 'Circular-Std', Avenir, 'Avenir Next', sans-serif;
+    font: 400 16px/1.5 'Selz', 'Circular', 'Circular-Std', system-ui, BlinkMacSystemFont, -apple-system, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell,
+        'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
     -moz-osx-font-smoothing: grayscale;
     -webkit-font-smoothing: antialiased;
 
@@ -68,7 +58,6 @@
     &__iframe {
         display: block;
         border: 0;
-        animation: selzFadeIn 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     &--is-loading &__iframe {

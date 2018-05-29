@@ -18,8 +18,8 @@ const utils = {
         function(input) {
             return this.getConstructor(input) === Function;
         },
-        htmlElement(input) {
-            return this.instanceof(input, HTMLElement);
+        element(input) {
+            return this.instanceof(input, Element);
         },
         nodeList(input) {
             return this.instanceof(input, NodeList);
@@ -56,37 +56,9 @@ const utils = {
     toggleClass(name, toggle) {
         const element = this;
 
-        if (utils.is.htmlElement(element)) {
+        if (utils.is.element(element)) {
             element.classList[toggle ? 'add' : 'remove'](name);
         }
-    },
-
-    // Fix iframe white flash
-    preventFlash(callback) {
-        const iframe = this;
-
-        // Need an iframe
-        if (!utils.is.htmlElement(iframe) || iframe.tagName.toLowerCase() !== 'iframe') {
-            return;
-        }
-
-        // Prevent white flash (hide the iframe until loaded)
-        iframe.style.opacity = 0;
-        iframe.style.visibility = 'hidden';
-
-        // Handle iframe loaded
-        iframe.addEventListener('load', () => {
-            // Slight delay for reduced jankness
-            setTimeout(() => {
-                iframe.style.opacity = 1;
-                iframe.style.visibility = 'visible';
-
-                // If there's a callback, fire it
-                if (typeof callback === 'function') {
-                    callback.call(iframe);
-                }
-            }, 300);
-        });
     },
 
     // Determine if page is iframed

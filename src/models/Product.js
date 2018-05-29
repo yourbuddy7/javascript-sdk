@@ -108,7 +108,7 @@ class Product {
 
     // eslint-disable-next-line camelcase
     get featured_image() {
-        return this.images.find(image => image.featured);
+        return this.images.find(image => image.is_featured);
     }
 
     // eslint-disable-next-line camelcase

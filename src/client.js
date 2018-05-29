@@ -14,6 +14,7 @@ class SelzClient {
         this.url = !utils.is.empty(props.url) ? props.url : '';
         this.domain = !utils.is.empty(props.domain) ? props.domain : '';
         this.colors = utils.is.object(props.colors) ? props.colors : {};
+        this.forceTab = utils.is.boolean(props.forceTab) ? props.forceTab : false;
 
         if (!this.userSet && !this.urlSet && !this.domainSet) {
             throw Error('User ID, URL, or domain are required');
@@ -21,7 +22,7 @@ class SelzClient {
 
         this.storage = new Storage();
 
-        this.modal = new Modal(this.colors, this.env);
+        this.modal = new Modal(this.colors, this.env, this.forceTab);
     }
 
     get userSet() {
