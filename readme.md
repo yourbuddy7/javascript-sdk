@@ -33,13 +33,12 @@ const client = new SelzClient({
 
 ### Options
 
-| Property  | Type   | Default | Required  | Description                                      |
-| --------- | ------ | ------- | --------- | ------------------------------------------------ |
-| `storeId` | Number | `-1`    | Yes&sup1; | The store ID, this will be numeric - e.g. 123456 |
-| `domain`  | String | `''`    | Yes&sup1; | The store ID, this will be numeric - e.g. 123456 |
-| `colors`  | Object | `null`  | No        | The colors for buttons, checkout and links       |
+| Property | Type                 | Default | Required  | Description                                                                                                        |
+| -------- | -------------------- | ------- | --------- | ------------------------------------------------------------------------------------------------------------------ |
+| `store`  | `Number` or `String` | `-1`    | Yes&sup1; | The store ID (e.g. `123456`) _or_ a URL in the store (e.g. `store.selz.com` or `mystore.com` or `selz.co/1a2b3c`). |
+| `colors` | Object               | `null`  | No        | The colors for buttons, checkout and links.                                                                        |
 
-1.  If a `storeId` is not provided, `domain` is expected. `storeId` is preferred and is faster.
+1.  A store ID is preferred and is faster.
 
 ## Products
 

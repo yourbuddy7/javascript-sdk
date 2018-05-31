@@ -10,14 +10,12 @@ import utils from './utils';
 class SelzClient {
     constructor(props) {
         this.env = !utils.is.empty(props.env) ? props.env : '';
-        this.store = new Store(props.storeId);
-        this.url = !utils.is.empty(props.url) ? props.url : '';
-        this.domain = !utils.is.empty(props.domain) ? props.domain : '';
+        this.store = new Store(props.store);
         this.colors = utils.is.object(props.colors) ? props.colors : {};
         this.forceTab = utils.is.boolean(props.forceTab) ? props.forceTab : false;
 
-        if (!this.storeSet && !this.urlSet && !this.domainSet) {
-            throw Error('User ID, URL, or domain are required to create a client');
+        if (!this.store.hasId && !this.store.hasUrl) {
+            throw Error('Store is required to create a client');
         }
 
         this.storage = new Storage();
@@ -25,54 +23,52 @@ class SelzClient {
         this.modal = new Modal(this.colors, this.env, this.forceTab);
     }
 
-    get storeSet() {
-        return this.store.id > -1;
-    }
-
-    get urlSet() {
-        return !utils.is.empty(this.url);
-    }
-
-    get domainSet() {
-        return !utils.is.empty(this.domain);
-    }
-
     /**
-     * Get the Store by URL or domain
+     * Get the Store by URL
      */
     getStore() {
         return new Promise((resolve, reject) => {
             // Already set
-            if (this.storeSet) {
+            if (this.store.hasId) {
                 resolve(this.store.id);
                 return;
             }
 
             // Cached
-            const cached = this.storage.getStore(this.domain);
+            const cached = this.storage.getStore(this.store.url);
             if (!utils.is.empty(cached)) {
-                this.store = new Store(cached);
-                resolve(cached);
+                resolve(this.store);
                 return;
             }
 
-            // Lookup by a URL or domain name
-            const lookup = !utils.is.empty(this.url) ? this.url : this.domain;
-
             // URL or domain are required
-            if (utils.is.empty(lookup)) {
-                reject(new Error('No domain or URL passed for user lookup'));
+            if (!this.store.hasUrl) {
+                reject(new Error('Url is required for user lookup'));
+                return;
             }
 
             http
-                .get(config.urls.store(this.env, lookup))
+                .get(config.urls.store(this.env, this.store.url))
                 .then(store => {
-                    this.store = new Store(store);
-                    this.storage.setStore(lookup, store);
-                    resolve(store);
+                    this.setStore(store);
+                    resolve(this.store);
                 })
                 .catch(error => reject(error));
         });
+    }
+
+    /**
+     * Set the store details
+     * @param {Object} store
+     */
+    setStore(store) {
+        if (!utils.is.object(store)) {
+            return;
+        }
+
+        Object.assign(this.store, store);
+
+        this.storage.setStore(this.store.url, this.store);
     }
 
     /**
@@ -84,13 +80,11 @@ class SelzClient {
             http
                 .get(config.urls.product(this.env, url))
                 .then(json => {
-                    const product = new Product(this, json);
-
-                    if (!this.storeSet) {
-                        this.store = new Store(product.store);
+                    if (!this.store.hasId) {
+                        this.setStore(json.store);
                     }
 
-                    resolve(product);
+                    resolve(new Product(this, json));
                 })
                 .catch(reject);
         });
@@ -205,8 +199,8 @@ class SelzClient {
                         this.getCart(id)
                             .then(cart => {
                                 // Set store
-                                if (!this.storeSet) {
-                                    this.store = new Store(cart.store);
+                                if (!this.store.hasId) {
+                                    this.setStore(cart.store);
                                 }
 
                                 resolve(cart);
@@ -222,8 +216,8 @@ class SelzClient {
                         const cart = new Cart(this, json, json.id === activeId);
 
                         // Set store
-                        if (!this.storeSet) {
-                            this.store = cart.store;
+                        if (!this.store.hasId) {
+                            this.setStore(cart.store);
                         }
 
                         resolve(cart);
@@ -402,8 +396,8 @@ class SelzClient {
                     const cart = new Cart(this, json, true);
 
                     // Set store
-                    if (!this.storeSet) {
-                        this.store = new Store(cart.store);
+                    if (!this.store.hasId) {
+                        this.setStore(cart.store);
                     }
 
                     // Set the active cart
@@ -439,8 +433,8 @@ class SelzClient {
                     const cart = new Cart(this, json, true);
 
                     // Set store
-                    if (!this.storeSet) {
-                        this.store = new Store(cart.store);
+                    if (!this.store.hasId) {
+                        this.setStore(cart.store);
                     }
 
                     // Set the active cart

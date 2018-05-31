@@ -2,6 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const output = document.getElementById('output');
 
     function log(label, data) {
+        console.log(label, data);
         const details = document.createElement('details');
 
         const summary = document.createElement('summary');
@@ -30,8 +31,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const client = new SelzClient({
-        storeId: 13,
-        // domain: 'local.sampotts.me',
+        store: 'local.sampotts.me',
         env: 'local',
         colors: {
             buttons: {
@@ -123,7 +123,7 @@ document.addEventListener('DOMContentLoaded', () => {
         .catch(errors => fail('Product', errors));
 
     // Listen for messages from parent
-    window.addEventListener('message', event => {
+    /* window.addEventListener('message', event => {
         // console.warn(event.data);
         const json = JSON.parse(event.data);
 
@@ -132,5 +132,5 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         addToCart(json.data);
-    });
+    }); */
 });

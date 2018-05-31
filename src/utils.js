@@ -37,6 +37,25 @@ const utils = {
         currencyCode(input) {
             return this.string(input) && /^[A-z]{3}$/.test(input);
         },
+        url(input) {
+            // Accept a URL object
+            if (this.instanceof(input, window.URL)) {
+                return true;
+            }
+
+            // Add the protocol if required
+            let string = input;
+            if (!input.startsWith('http://') || !input.startsWith('https://')) {
+                string = `http://${input}`;
+            }
+
+            try {
+                const url = new URL(string);
+                return !this.empty(url.hostname);
+            } catch (e) {
+                return false;
+            }
+        },
         empty(input) {
             return (
                 this.nullOrUndefined(input) ||

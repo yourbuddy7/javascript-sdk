@@ -1,5 +1,4 @@
 import utils from './../utils';
-import Store from './Store';
 
 let client = null;
 
@@ -66,13 +65,13 @@ class Product {
             return;
         }
 
+        client = instance;
+
         // Take all properties by default
         Object.assign(this, product);
 
         // Map store
-        if (utils.is.object(product.store)) {
-            this.store = new Store(product.store);
-        }
+        this.store = client.store;
 
         // Product URLs
         if (utils.is.object(product.urls)) {
@@ -102,8 +101,6 @@ class Product {
         if (utils.is.array(product.variant_attributes) && product.variant_attributes.length) {
             this.variant_attributes = product.variant_attributes.map(attribute => new ProductVariantAttribute(attribute));
         }
-
-        client = instance;
     }
 
     // eslint-disable-next-line camelcase

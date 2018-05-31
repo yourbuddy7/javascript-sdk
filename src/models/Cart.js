@@ -1,6 +1,5 @@
 import utils from './../utils';
 import Product from './Product';
-import Store from './Store';
 
 let client = null;
 
@@ -43,9 +42,7 @@ class Cart {
         Object.assign(this, cart);
 
         // Map store
-        if (utils.is.object(cart.store)) {
-            this.store = new Store(cart.store);
-        }
+        this.store = client.store;
 
         // Set active state
         this.active = active;
