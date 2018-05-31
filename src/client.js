@@ -401,7 +401,7 @@ class SelzClient {
                     }
 
                     // Set the active cart
-                    this.setActiveCart(cart.currency_code);
+                    this.setActiveCart(cart.id);
 
                     resolve(cart);
                 })
@@ -438,7 +438,7 @@ class SelzClient {
                     }
 
                     // Set the active cart
-                    this.setActiveCart(cart.currency_code);
+                    this.setActiveCart(cart.id);
 
                     resolve(cart);
                 })
@@ -469,7 +469,7 @@ class SelzClient {
                     const cart = new Cart(this, json, true);
 
                     // Set the active cart
-                    this.setActiveCart(cart.currency_code);
+                    this.setActiveCart(cart.id);
 
                     resolve(cart);
                 })
