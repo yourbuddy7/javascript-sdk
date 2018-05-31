@@ -2,7 +2,7 @@ import config from './config';
 import http from './http';
 import Cart from './models/Cart';
 import Product from './models/Product';
-import User from './models/User';
+import Store from './models/Store';
 import Storage from './storage';
 import Modal from './ui/Modal';
 import utils from './utils';
@@ -10,14 +10,14 @@ import utils from './utils';
 class SelzClient {
     constructor(props) {
         this.env = !utils.is.empty(props.env) ? props.env : '';
-        this.user = new User(props.userId);
+        this.store = new Store(props.storeId);
         this.url = !utils.is.empty(props.url) ? props.url : '';
         this.domain = !utils.is.empty(props.domain) ? props.domain : '';
         this.colors = utils.is.object(props.colors) ? props.colors : {};
         this.forceTab = utils.is.boolean(props.forceTab) ? props.forceTab : false;
 
-        if (!this.userSet && !this.urlSet && !this.domainSet) {
-            throw Error('User ID, URL, or domain are required');
+        if (!this.storeSet && !this.urlSet && !this.domainSet) {
+            throw Error('User ID, URL, or domain are required to create a client');
         }
 
         this.storage = new Storage();
@@ -25,8 +25,8 @@ class SelzClient {
         this.modal = new Modal(this.colors, this.env, this.forceTab);
     }
 
-    get userSet() {
-        return this.user.id > -1;
+    get storeSet() {
+        return this.store.id > -1;
     }
 
     get urlSet() {
@@ -38,21 +38,20 @@ class SelzClient {
     }
 
     /**
-     * Get the User ID
-     * TODO: Queue this somehow?
+     * Get the Store by URL or domain
      */
-    getUser() {
+    getStore() {
         return new Promise((resolve, reject) => {
             // Already set
-            if (this.userSet) {
-                resolve(this.user.id);
+            if (this.storeSet) {
+                resolve(this.store.id);
                 return;
             }
 
             // Cached
-            const cached = this.storage.getUser(this.domain);
+            const cached = this.storage.getStore(this.domain);
             if (!utils.is.empty(cached)) {
-                this.user = cached;
+                this.store = new Store(cached);
                 resolve(cached);
                 return;
             }
@@ -66,11 +65,11 @@ class SelzClient {
             }
 
             http
-                .get(config.urls.user(this.env, lookup))
-                .then(user => {
-                    this.user = user;
-                    this.storage.setUser(lookup, user);
-                    resolve(user);
+                .get(config.urls.store(this.env, lookup))
+                .then(store => {
+                    this.store = new Store(store);
+                    this.storage.setStore(lookup, store);
+                    resolve(store);
                 })
                 .catch(error => reject(error));
         });
@@ -87,8 +86,8 @@ class SelzClient {
                 .then(json => {
                     const product = new Product(this, json);
 
-                    if (!this.userSet) {
-                        this.user = product.user;
+                    if (!this.storeSet) {
+                        this.store = new Store(product.store);
                     }
 
                     resolve(product);
@@ -102,10 +101,10 @@ class SelzClient {
      */
     getProducts(query = '', page = 1) {
         return new Promise((resolve, reject) => {
-            this.getUser()
+            this.getStore()
                 .then(() => {
                     http
-                        .get(config.urls.products(this.env, this.user.id, query, page < 1 ? 1 : page))
+                        .get(config.urls.products(this.env, this.store.id, query, page < 1 ? 1 : page))
                         .then(json => {
                             resolve(json.map(p => new Product(this, p)));
                         })
@@ -127,12 +126,12 @@ class SelzClient {
                 return;
             }
 
-            this.getUser()
+            this.getStore()
                 .then(() => {
                     const currencyCode = currency.toUpperCase();
 
                     http
-                        .post(config.urls.createCart(this.env, this.user.id), {
+                        .post(config.urls.createCart(this.env, this.store.id), {
                             currency: currencyCode,
                             discount: !utils.is.empty(discount) ? discount : null,
                         })
@@ -140,7 +139,7 @@ class SelzClient {
                             const cart = new Cart(this, json);
 
                             // Store reference to cart id for later
-                            this.storage.setCart(this.user.id, currencyCode, cart);
+                            this.storage.setCart(this.store.id, currencyCode, cart);
 
                             resolve(cart);
                         })
@@ -161,10 +160,10 @@ class SelzClient {
                 return;
             }
 
-            this.getUser()
+            this.getStore()
                 .then(() => {
                     const currencyCode = currency.toUpperCase();
-                    const currentCart = this.storage.getCart(this.user.id, currencyCode);
+                    const currentCart = this.storage.getCart(this.store.id, currencyCode);
 
                     // Create cart if it doesn't exist
                     if (utils.is.empty(currentCart)) {
@@ -205,9 +204,9 @@ class SelzClient {
 
                         this.getCart(id)
                             .then(cart => {
-                                // Set user
-                                if (!this.userSet) {
-                                    this.user = cart.user;
+                                // Set store
+                                if (!this.storeSet) {
+                                    this.store = new Store(cart.store);
                                 }
 
                                 resolve(cart);
@@ -222,9 +221,9 @@ class SelzClient {
                         const activeId = this.getActiveCart();
                         const cart = new Cart(this, json, json.id === activeId);
 
-                        // Set user
-                        if (!this.userSet) {
-                            this.user = cart.user;
+                        // Set store
+                        if (!this.storeSet) {
+                            this.store = cart.store;
                         }
 
                         resolve(cart);
@@ -239,9 +238,9 @@ class SelzClient {
      */
     getCarts(validate = true) {
         return new Promise((resolve, reject) => {
-            this.getUser()
+            this.getStore()
                 .then(() => {
-                    const carts = this.storage.getCarts(this.user.id);
+                    const carts = this.storage.getCarts(this.store.id);
 
                     if (utils.is.empty(carts)) {
                         resolve(null);
@@ -274,7 +273,7 @@ class SelzClient {
                                 }
 
                                 // Update storage
-                                this.storage.setCarts(this.user.id, carts);
+                                this.storage.setCarts(this.store.id, carts);
 
                                 resolve(carts);
                             })
@@ -301,7 +300,7 @@ class SelzClient {
                 return;
             }
 
-            this.getUser()
+            this.getStore()
                 .then(() => {
                     this.getCarts(false).then(data => {
                         const carts = data;
@@ -335,7 +334,7 @@ class SelzClient {
                         }
 
                         // Store again
-                        this.storage.setCarts(this.user.id, carts);
+                        this.storage.setCarts(this.store.id, carts);
 
                         resolve(carts);
                     });
@@ -349,9 +348,9 @@ class SelzClient {
      */
     getActiveCart(fetch = false) {
         return new Promise((resolve, reject) => {
-            this.getUser()
+            this.getStore()
                 .then(() => {
-                    const carts = this.storage.getCarts(this.user.id);
+                    const carts = this.storage.getCarts(this.store.id);
 
                     if (!Object.keys(carts).length) {
                         resolve(null);
@@ -402,9 +401,9 @@ class SelzClient {
                 .then(json => {
                     const cart = new Cart(this, json, true);
 
-                    // Set user
-                    if (!this.userSet) {
-                        this.user = cart.user;
+                    // Set store
+                    if (!this.storeSet) {
+                        this.store = new Store(cart.store);
                     }
 
                     // Set the active cart
@@ -439,9 +438,9 @@ class SelzClient {
                 .then(json => {
                     const cart = new Cart(this, json, true);
 
-                    // Set user
-                    if (!this.userSet) {
-                        this.user = cart.user;
+                    // Set store
+                    if (!this.storeSet) {
+                        this.store = new Store(cart.store);
                     }
 
                     // Set the active cart

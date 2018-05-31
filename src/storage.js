@@ -14,7 +14,7 @@ class Storage {
                 keys: {
                     root: 'selz-js-sdk',
                     carts: 'carts',
-                    users: 'users',
+                    stores: 'stores',
                 },
                 ttl: 7200, // 2 hours in seconds
             },
@@ -155,8 +155,8 @@ class Storage {
         this.set(this.config.keys.carts, update);
     }
 
-    getUser(url) {
-        const data = this.get(this.config.keys.users) || {};
+    getStore(url) {
+        const data = this.get(this.config.keys.stores) || {};
 
         if (!utils.is.string(url) || utils.is.empty(data) || !Object.keys(data).includes(url)) {
             return null;
@@ -172,7 +172,7 @@ class Storage {
         return data[url].id;
     }
 
-    setUser(url, id) {
+    setStore(url, id) {
         const update = {
             [url]: {
                 id,
@@ -180,7 +180,7 @@ class Storage {
             },
         };
 
-        this.set(this.config.keys.users, update);
+        this.set(this.config.keys.stores, update);
     }
 }
 

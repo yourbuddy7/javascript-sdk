@@ -1,6 +1,6 @@
 import utils from './../utils';
 import Product from './Product';
-import User from './User';
+import Store from './Store';
 
 let client = null;
 
@@ -42,9 +42,9 @@ class Cart {
         // Take all properties by default
         Object.assign(this, cart);
 
-        // Map seller
-        if (utils.is.object(cart.user)) {
-            this.user = new User(cart.user);
+        // Map store
+        if (utils.is.object(cart.store)) {
+            this.store = new Store(cart.store);
         }
 
         // Set active state

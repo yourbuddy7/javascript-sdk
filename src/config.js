@@ -8,7 +8,7 @@ const config = {
     urls: {
         /**
          * Get URL for product data by URL
-         * @param {string} env - Environment (e.g. local, develop, release)
+         * @param {string} env - Environment (for internal use)
          * @param {string} url - Short or full URL for a product
          */
         product(env, url = '') {
@@ -16,9 +16,9 @@ const config = {
         },
 
         /**
-         * Get URL for all products by User ID
-         * @param {string} env - Environment (e.g. local, develop, release)
-         * @param {string} id - The User ID for the store
+         * Get URL for all products by store ID
+         * @param {string} env - Environment (for internal use)
+         * @param {string} id - The store ID
          * @param {string} query - Search query
          * @param {number} page - Page to fetch
          */
@@ -27,17 +27,17 @@ const config = {
         },
 
         /**
-         * Get URL for finding user for a URL
-         * @param {string} env - Environment (e.g. local, develop, release)
+         * Get URL for finding a store by URL
+         * @param {string} env - Environment (for internal use)
          * @param {string} url - The URL to lookup
          */
-        user(env, url = '') {
-            return `${getBase(env)}user/find?url=${url}`;
+        store(env, url = '') {
+            return `${getBase(env)}store/find?url=${url}`;
         },
 
         /**
          * Create a new cart
-         * @param {string} env - Environment (e.g. local, develop, release)
+         * @param {string} env - Environment (for internal use)
          * @param {number} id - Store ID
          */
         createCart(env, id = '') {
@@ -46,7 +46,7 @@ const config = {
 
         /**
          * Get cart from ID
-         * @param {string} env - Environment (e.g. local, develop, release)
+         * @param {string} env - Environment (for internal use)
          * @param {string} id - Cart ID
          */
         getCart(env, id = '') {
@@ -55,7 +55,7 @@ const config = {
 
         /**
          * Check carts still exist server side
-         * @param {string} env - Environment (e.g. local, develop, release)
+         * @param {string} env - Environment (for internal use)
          * @param {number} id - Cart IDs
          */
         checkCarts(env, ids = '') {
@@ -64,7 +64,7 @@ const config = {
 
         /**
          * Add product to cart
-         * @param {string} env - Environment (e.g. local, develop, release)
+         * @param {string} env - Environment (for internal use)
          * @param {string} id - Cart ID
          */
         addToCart(env, id = '') {
@@ -73,7 +73,7 @@ const config = {
 
         /**
          * Update a cart item quantity
-         * @param {string} env - Environment (e.g. local, develop, release)
+         * @param {string} env - Environment (for internal use)
          * @param {string} id - Cart ID
          */
         updateCartItemQuantity(env, id = '') {
@@ -82,7 +82,7 @@ const config = {
 
         /**
          * Remove product from cart
-         * @param {string} env - Environment (e.g. local, develop, release)
+         * @param {string} env - Environment (for internal use)
          * @param {string} id - Cart ID
          */
         removeFromCart(env, id = '') {

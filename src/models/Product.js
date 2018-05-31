@@ -1,5 +1,5 @@
 import utils from './../utils';
-import User from './User';
+import Store from './Store';
 
 let client = null;
 
@@ -69,9 +69,9 @@ class Product {
         // Take all properties by default
         Object.assign(this, product);
 
-        // Map seller
-        if (utils.is.object(product.user)) {
-            this.user = new User(product.user);
+        // Map store
+        if (utils.is.object(product.store)) {
+            this.store = new Store(product.store);
         }
 
         // Product URLs

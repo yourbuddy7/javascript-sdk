@@ -20,24 +20,26 @@ npm install selz-js-sdk
 or using our CDN:
 
 ```html
-<script src="https://sdk.selzstatic.com/0.1.23/client.umd.polyfilled.js"></script>
+<script src="https://sdk.selzstatic.com/0.1.24/client.umd.polyfilled.js"></script>
 ```
 
 ## Creating a client
 
 ```javascript
-const client = new SelzClient({ id: 12345 });
+const client = new SelzClient({
+    storeId: 12345,
+});
 ```
 
 ### Options
 
-```javascript
-{
-    domain: '', // The store domain (if the user is not known) - e.g. store.example.com
-    id: -1,     // The user ID for the store - e.g. 123456
-    colors: {}, // Colors object for the modal
-}
-```
+| Property  | Type   | Default | Required  | Description                                      |
+| --------- | ------ | ------- | --------- | ------------------------------------------------ |
+| `storeId` | Number | `-1`    | Yes&sup1; | The store ID, this will be numeric - e.g. 123456 |
+| `domain`  | String | `''`    | Yes&sup1; | The store ID, this will be numeric - e.g. 123456 |
+| `colors`  | Object | `null`  | No        | The colors for buttons, checkout and links       |
+
+1.  If a `storeId` is not provided, `domain` is expected. `storeId` is preferred and is faster.
 
 ## Products
 
