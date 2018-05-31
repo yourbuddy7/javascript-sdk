@@ -26,7 +26,7 @@ class SelzClient {
     }
 
     get userSet() {
-        return utils.is.object(this.user) && Number.isInteger(this.user.id) && this.user.id > -1;
+        return this.user.id > -1;
     }
 
     get urlSet() {
@@ -44,7 +44,7 @@ class SelzClient {
     getUser() {
         return new Promise((resolve, reject) => {
             // Already set
-            if (this.idSet) {
+            if (this.userSet) {
                 resolve(this.user.id);
                 return;
             }

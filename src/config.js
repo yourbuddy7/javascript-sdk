@@ -12,7 +12,7 @@ const config = {
          * @param {string} url - Short or full URL for a product
          */
         product(env, url = '') {
-            return `${getBase(env)}product?url=${url}`;
+            return `${getBase(env)}products/find?url=${url}`;
         },
 
         /**
@@ -23,7 +23,7 @@ const config = {
          * @param {number} page - Page to fetch
          */
         products(env, id, query = '', page = 1) {
-            return `${getBase(env)}products/${id}?q=${query}&p=${page}`;
+            return `${getBase(env)}products/all${id}?q=${query}&p=${page}`;
         },
 
         /**
@@ -32,7 +32,7 @@ const config = {
          * @param {string} url - The URL to lookup
          */
         user(env, url = '') {
-            return `${getBase(env)}user?url=${url}`;
+            return `${getBase(env)}user/find?url=${url}`;
         },
 
         /**
@@ -41,7 +41,7 @@ const config = {
          * @param {number} id - Store ID
          */
         createCart(env, id = '') {
-            return `${getBase(env)}createcart/${id}`;
+            return `${getBase(env)}cart/create/${id}`;
         },
 
         /**
@@ -59,7 +59,7 @@ const config = {
          * @param {number} id - Cart IDs
          */
         checkCarts(env, ids = '') {
-            return `${getBase(env)}checkcarts?ids=${ids}`;
+            return `${getBase(env)}cart/verify?ids=${ids}`;
         },
 
         /**
@@ -68,7 +68,7 @@ const config = {
          * @param {string} id - Cart ID
          */
         addToCart(env, id = '') {
-            return `${getBase(env)}addtocart/${id}`;
+            return `${getBase(env)}cart/add/${id}`;
         },
 
         /**
@@ -77,7 +77,7 @@ const config = {
          * @param {string} id - Cart ID
          */
         updateCartItemQuantity(env, id = '') {
-            return `${getBase(env)}updatecartitemquantity/${id}`;
+            return `${getBase(env)}cart/updateitemquantity/${id}`;
         },
 
         /**
@@ -86,7 +86,7 @@ const config = {
          * @param {string} id - Cart ID
          */
         removeFromCart(env, id = '') {
-            return `${getBase(env)}removefromcart/${id}`;
+            return `${getBase(env)}cart/remove/${id}`;
         },
     },
 };

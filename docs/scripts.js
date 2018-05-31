@@ -30,8 +30,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const client = new SelzClient({
-        // id: 13,
-        domain: 'local.sampotts.me',
+        userId: 13,
+        // domain: 'local.sampotts.me',
         env: 'local',
         colors: {
             buttons: {
