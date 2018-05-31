@@ -169,13 +169,13 @@ class Storage {
             return null;
         }
 
-        return data[url].id;
+        return data[url].data;
     }
 
-    setStore(url, id) {
+    setStore(url, data) {
         const update = {
             [url]: {
-                id,
+                data,
                 ttl: Date.now() + this.config.ttl,
             },
         };
