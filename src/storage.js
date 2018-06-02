@@ -63,20 +63,19 @@ class Storage {
         return data;
     }
 
-    set(key, value) {
+    set(key, value, extend = false) {
         // Get current storage
-        const current = this.get() || {};
+        const data = this.get() || {};
 
-        // Inject the new data
-        if (Object.keys(current).includes(key)) {
-            const base = current[key];
-            utils.extend(base, value);
+        // Extend with the new data
+        if (extend && Object.keys(data).includes(key)) {
+            data[key] = utils.extend(data[key], value);
         } else {
-            current[key] = value;
+            data[key] = value;
         }
 
         // Set in faux-storage
-        storage.set(this.config.keys.root, current);
+        storage.set(this.config.keys.root, data);
 
         // Bail if no real support
         if (!Storage.supported) {
@@ -85,13 +84,13 @@ class Storage {
 
         // Update storage
         try {
-            window.localStorage.setItem(this.config.keys.root, JSON.stringify(current));
+            window.localStorage.setItem(this.config.keys.root, JSON.stringify(data));
         } catch (e) {
             // Do nothing
         }
     }
 
-    getCarts(seller) {
+    getCarts(store) {
         const data = this.get(this.config.keys.carts) || {};
 
         // If no carts
@@ -100,28 +99,28 @@ class Storage {
         }
 
         // Get all carts
-        if (!utils.is.number(seller)) {
+        if (!utils.is.number(store)) {
             return data;
         }
 
-        // Seller not found
-        if (!Object.keys(data).includes(seller.toString())) {
+        // Store not found
+        if (!Object.keys(data).includes(store.toString())) {
             return null;
         }
 
-        // Get all for a seller
-        return data[seller.toString()];
+        // Get all for a store
+        return data[store.toString()];
     }
 
-    getCart(seller, currency) {
-        const carts = this.getCarts(seller);
+    getCart(store, currency) {
+        const carts = this.getCarts(store);
 
         // No carts
         if (utils.is.empty(carts)) {
             return null;
         }
 
-        // Get all for a seller
+        // Get all for a store
         if (!utils.is.string(currency)) {
             return carts;
         }
@@ -134,25 +133,25 @@ class Storage {
         return carts[currency.toUpperCase()];
     }
 
-    setCart(seller, currency, cart) {
-        const update = {
-            [seller]: {
-                [currency.toUpperCase()]: {
-                    id: cart.id,
-                    active: cart.active,
+    setCart(store, currency, cart) {
+        this.set(
+            this.config.keys.carts,
+            {
+                [store]: {
+                    [currency.toUpperCase()]: {
+                        id: cart.id,
+                        active: cart.active,
+                    },
                 },
             },
-        };
-
-        this.set(this.config.keys.carts, update);
+            true,
+        );
     }
 
-    setCarts(seller, carts = {}) {
-        const update = {
-            [seller]: carts,
-        };
-
-        this.set(this.config.keys.carts, update);
+    setCarts(store, carts = {}) {
+        this.set(this.config.keys.carts, {
+            [store]: carts,
+        });
     }
 
     getStore(url) {
@@ -173,14 +172,16 @@ class Storage {
     }
 
     setStore(url, data) {
-        const update = {
-            [url]: {
-                data,
-                ttl: Date.now() + this.config.ttl,
+        this.set(
+            this.config.keys.stores,
+            {
+                [url]: {
+                    data,
+                    ttl: Date.now() + this.config.ttl,
+                },
             },
-        };
-
-        this.set(this.config.keys.stores, update);
+            true,
+        );
     }
 }
 

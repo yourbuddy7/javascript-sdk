@@ -149,8 +149,8 @@ class SelzClient {
      */
     getCartId(currency) {
         return new Promise((resolve, reject) => {
-            if (utils.is.empty(currency)) {
-                reject(new Error('currency is required'));
+            if (!utils.is.currencyCode(currency)) {
+                reject(new Error('A valid currency code is required'));
                 return;
             }
 
@@ -176,13 +176,14 @@ class SelzClient {
      * Get a shopping cart
      * @param {string} input - The shopping cart ISO currency code or cart ID
      */
+    // TODO: If cart doesn't exist, create it on the fly
     getCart(input) {
         return new Promise((resolve, reject) => {
             const isCurrency = utils.is.currencyCode(input);
             const isObjectId = utils.is.objectId(input);
 
             if (!isCurrency && !isObjectId) {
-                reject(new Error('A valid currency or cart id are required'));
+                reject(new Error('A valid currency code or cart id are required'));
                 return;
             }
 
@@ -192,7 +193,7 @@ class SelzClient {
                 this.getCartId(currencyCode)
                     .then(id => {
                         if (utils.is.empty(id)) {
-                            reject(new Error(`Could not find matching cart for currency '${currencyCode}'`));
+                            reject(new Error(`Could not find matching cart for currency code '${currencyCode}'`));
                             return;
                         }
 
@@ -248,18 +249,17 @@ class SelzClient {
                         http
                             .get(config.urls.checkCarts(this.env, ids.join(',')))
                             .then(json => {
-                                // Filter out carts that don't exist
-                                const remove = Object.keys(carts).filter(cart => json[cart.id]);
-
                                 // Remove non existant carts
-                                remove.forEach(currency => {
-                                    delete carts[currency];
+                                Object.entries(json).forEach(([id, exists]) => {
+                                    if (!exists) {
+                                        const currency = Object.keys(carts).find(c => carts[c].id === id);
+                                        delete carts[currency];
+                                    }
                                 });
 
                                 // Set active to first if none exist
                                 const currencies = Object.keys(carts);
                                 if (currencies.length && !currencies.some(currency => carts[currency].active)) {
-                                    // Set active
                                     currencies.forEach(currency => {
                                         const cart = carts[currency];
                                         cart.active = cart.id === carts[currencies[0]].id;
