@@ -176,7 +176,6 @@ class SelzClient {
      * Get a shopping cart
      * @param {string} input - The shopping cart ISO currency code or cart ID
      */
-    // TODO: If cart doesn't exist, create it on the fly
     getCart(input) {
         return new Promise((resolve, reject) => {
             const isCurrency = utils.is.currencyCode(input);
@@ -401,9 +400,11 @@ class SelzClient {
                     }
 
                     // Set the active cart
-                    this.setActiveCart(cart.id);
-
-                    resolve(cart);
+                    this.setActiveCart(cart.id)
+                        .then(() => {
+                            resolve(cart);
+                        })
+                        .catch(reject);
                 })
                 .catch(reject);
         });
@@ -438,9 +439,11 @@ class SelzClient {
                     }
 
                     // Set the active cart
-                    this.setActiveCart(cart.id);
-
-                    resolve(cart);
+                    this.setActiveCart(cart.id)
+                        .then(() => {
+                            resolve(cart);
+                        })
+                        .catch(reject);
                 })
                 .catch(reject);
         });
@@ -469,9 +472,11 @@ class SelzClient {
                     const cart = new Cart(this, json, true);
 
                     // Set the active cart
-                    this.setActiveCart(cart.id);
-
-                    resolve(cart);
+                    this.setActiveCart(cart.id)
+                        .then(() => {
+                            resolve(cart);
+                        })
+                        .catch(reject);
                 })
                 .catch(reject);
         });
