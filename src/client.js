@@ -53,7 +53,7 @@ class SelzClient {
                     this.setStore(store);
                     resolve(this.store);
                 })
-                .catch(error => reject(error));
+                .catch(reject);
         });
     }
 
@@ -104,7 +104,7 @@ class SelzClient {
                         })
                         .catch(reject);
                 })
-                .catch(error => reject(error));
+                .catch(reject);
         });
     }
 
@@ -137,9 +137,9 @@ class SelzClient {
 
                             resolve(cart);
                         })
-                        .catch(error => reject(error));
+                        .catch(reject);
                 })
-                .catch(error => reject(error));
+                .catch(reject);
         });
     }
 
@@ -163,12 +163,12 @@ class SelzClient {
                     if (utils.is.empty(currentCart)) {
                         this.createCart(currencyCode)
                             .then(cart => resolve(cart.id))
-                            .catch(error => reject(error));
+                            .catch(reject);
                     } else {
                         resolve(currentCart.id);
                     }
                 })
-                .catch(error => reject(error));
+                .catch(reject);
         });
     }
 
@@ -205,9 +205,9 @@ class SelzClient {
 
                                 resolve(cart);
                             })
-                            .catch(error => reject(error));
+                            .catch(reject);
                     })
-                    .catch(error => reject(error));
+                    .catch(reject);
             } else {
                 http
                     .get(config.urls.getCart(this.env, input))
@@ -222,7 +222,7 @@ class SelzClient {
 
                         resolve(cart);
                     })
-                    .catch(error => reject(error));
+                    .catch(reject);
             }
         });
     }
@@ -256,26 +256,16 @@ class SelzClient {
                                     }
                                 });
 
-                                // Set active to first if none exist
-                                const currencies = Object.keys(carts);
-                                if (currencies.length && !currencies.some(currency => carts[currency].active)) {
-                                    currencies.forEach(currency => {
-                                        const cart = carts[currency];
-                                        cart.active = cart.id === carts[currencies[0]].id;
-                                    });
-                                }
-
-                                // Update storage
-                                this.storage.setCarts(this.store.id, carts);
-
-                                resolve(carts);
+                                this.setActiveCart()
+                                    .then(resolve)
+                                    .catch(reject);
                             })
-                            .catch(error => reject(error));
+                            .catch(reject);
                     } else {
                         resolve(carts);
                     }
                 })
-                .catch(error => reject(error));
+                .catch(reject);
         });
     }
 
@@ -283,16 +273,8 @@ class SelzClient {
      * Set the active cart based on currency
      * @param {string} input - The shopping cart ISO currency code or cart ID
      */
-    setActiveCart(input) {
+    setActiveCart(input = null) {
         return new Promise((resolve, reject) => {
-            const isCurrency = utils.is.currencyCode(input);
-            const isObjectId = utils.is.objectId(input);
-
-            if (!isCurrency && !isObjectId) {
-                reject(new Error('A valid currency or cart id are required'));
-                return;
-            }
-
             this.getStore()
                 .then(() => {
                     this.getCarts(false).then(data => {
@@ -304,7 +286,8 @@ class SelzClient {
                             return;
                         }
 
-                        if (isCurrency) {
+                        // Currency code was passed...
+                        if (utils.is.currencyCode(input)) {
                             const currencyCode = input.toUpperCase();
                             const currencies = Object.keys(carts);
 
@@ -315,14 +298,17 @@ class SelzClient {
                             }
 
                             // Set active
-                            currencies.forEach(code => {
-                                carts[code].active = code === currencyCode;
+                            currencies.forEach(currency => {
+                                carts[currency].active = currency === currencyCode;
                             });
                         } else {
+                            // Set to id if specified, otherwise first
+                            const id = utils.is.objectId(input) ? input : carts[Object.keys(carts)[0]].id;
+
                             // Set active
-                            Object.keys(carts).forEach(code => {
-                                const cart = carts[code];
-                                cart.active = cart.id === input;
+                            Object.keys(carts).forEach(currency => {
+                                const cart = carts[currency];
+                                cart.active = cart.id === id;
                             });
                         }
 
@@ -332,7 +318,7 @@ class SelzClient {
                         resolve(carts);
                     });
                 })
-                .catch(error => reject(error));
+                .catch(reject);
         });
     }
 
@@ -365,10 +351,10 @@ class SelzClient {
                     }
 
                     this.getCart(active.id)
-                        .then(cart => resolve(cart))
-                        .catch(error => reject(error));
+                        .then(resolve)
+                        .catch(reject);
                 })
-                .catch(error => reject(error));
+                .catch(reject);
         });
     }
 
@@ -469,10 +455,15 @@ class SelzClient {
             http
                 .post(config.urls.removeFromCart(this.env, id), { index })
                 .then(json => {
-                    const cart = new Cart(this, json, true);
+                    let cart = null;
+
+                    // If there's actually a cart left, map it
+                    if (!utils.is.empty(json)) {
+                        cart = new Cart(this, json, true);
+                    }
 
                     // Set the active cart
-                    this.setActiveCart(cart.id)
+                    this.setActiveCart(cart !== null ? cart.id : null)
                         .then(() => {
                             resolve(cart);
                         })
