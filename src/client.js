@@ -455,19 +455,22 @@ class SelzClient {
             http
                 .post(config.urls.removeFromCart(this.env, id), { index })
                 .then(json => {
-                    let cart = null;
-
                     // If there's actually a cart left, map it
                     if (!utils.is.empty(json)) {
-                        cart = new Cart(this, json, true);
-                    }
+                        const cart = new Cart(this, json, true);
 
-                    // Set the active cart
-                    this.setActiveCart(cart !== null ? cart.id : null)
-                        .then(() => {
-                            resolve(cart);
-                        })
-                        .catch(reject);
+                        // Set the active cart
+                        this.setActiveCart(cart.id)
+                            .then(() => {
+                                resolve(cart);
+                            })
+                            .catch(reject);
+                    } else {
+                        // Otherwise, update carts (as one removed)
+                        this.getCarts()
+                            .then(() => resolve(null))
+                            .catch(reject);
+                    }
                 })
                 .catch(reject);
         });
