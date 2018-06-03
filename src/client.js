@@ -256,6 +256,10 @@ class SelzClient {
                                     }
                                 });
 
+                                // Store again
+                                this.storage.setCarts(this.store.id, carts);
+
+                                // Set active
                                 this.setActiveCart()
                                     .then(resolve)
                                     .catch(reject);
