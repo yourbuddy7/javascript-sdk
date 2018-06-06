@@ -114,11 +114,11 @@ document.addEventListener('DOMContentLoaded', () => {
             // Expose
             window.product = product;
 
-            addToCart(product, true);
+            // addToCart(product, true);
 
             // product.buy();
 
-            // product.view();
+            product.view();
         })
         .catch(errors => fail('Product', errors));
 

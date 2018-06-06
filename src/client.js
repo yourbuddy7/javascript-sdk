@@ -25,30 +25,40 @@ class SelzClient {
 
     /**
      * Get the Store by URL
+     * @param {boolean} idOnly - only the ID is required
      */
-    getStore() {
+    getStore(idOnly = false) {
         return new Promise((resolve, reject) => {
-            // Already set
-            if (this.store.hasId) {
-                resolve(this.store.id);
-                return;
+            // Only ID is required
+            if (idOnly) {
+                if (this.store.hasId) {
+                    resolve(this.store);
+                    return;
+                }
+
+                // URL is required
+                if (!this.store.hasUrl) {
+                    reject(new Error('Url is required for user lookup'));
+                    return;
+                }
             }
 
-            // Cached
-            const cached = this.storage.getStore(this.store.url);
-            if (!utils.is.empty(cached)) {
-                resolve(this.store);
-                return;
+            // Try from cache
+            if (this.store.hasUrl) {
+                const cached = this.storage.getStore(this.store.url);
+
+                if (!utils.is.empty(cached)) {
+                    this.setStore(cached);
+                    resolve(this.store);
+                    return;
+                }
             }
 
-            // URL or domain are required
-            if (!this.store.hasUrl) {
-                reject(new Error('Url is required for user lookup'));
-                return;
-            }
+            // Lookup by ID if we have it as it's faster
+            const url = config.urls.store(this.env, this.store.id, this.store.url);
 
             http
-                .get(config.urls.store(this.env, this.store.url))
+                .get(url)
                 .then(store => {
                     this.setStore(store);
                     resolve(this.store);
@@ -59,7 +69,7 @@ class SelzClient {
 
     /**
      * Set the store details
-     * @param {Object} store
+     * @param {object} store
      */
     setStore(store) {
         if (!utils.is.object(store)) {
@@ -67,6 +77,8 @@ class SelzClient {
         }
 
         Object.assign(this.store, store);
+
+        this.colors = utils.extend({}, store.theme.colors, this.colors);
 
         this.storage.setStore(this.store.url, this.store);
     }
@@ -95,7 +107,7 @@ class SelzClient {
      */
     getProducts(query = '', page = 1) {
         return new Promise((resolve, reject) => {
-            this.getStore()
+            this.getStore(true)
                 .then(() => {
                     http
                         .get(config.urls.products(this.env, this.store.id, query, page < 1 ? 1 : page))
@@ -120,7 +132,7 @@ class SelzClient {
                 return;
             }
 
-            this.getStore()
+            this.getStore(true)
                 .then(() => {
                     const currencyCode = currency.toUpperCase();
 
@@ -154,7 +166,7 @@ class SelzClient {
                 return;
             }
 
-            this.getStore()
+            this.getStore(true)
                 .then(() => {
                     const currencyCode = currency.toUpperCase();
                     const currentCart = this.storage.getCart(this.store.id, currencyCode);
@@ -232,7 +244,7 @@ class SelzClient {
      */
     getCarts(validate = true) {
         return new Promise((resolve, reject) => {
-            this.getStore()
+            this.getStore(true)
                 .then(() => {
                     const carts = this.storage.getCarts(this.store.id);
 
@@ -279,7 +291,7 @@ class SelzClient {
      */
     setActiveCart(input = null) {
         return new Promise((resolve, reject) => {
-            this.getStore()
+            this.getStore(true)
                 .then(() => {
                     this.getCarts(false).then(data => {
                         const carts = data;
@@ -331,7 +343,7 @@ class SelzClient {
      */
     getActiveCart(fetch = false) {
         return new Promise((resolve, reject) => {
-            this.getStore()
+            this.getStore(true)
                 .then(() => {
                     const carts = this.storage.getCarts(this.store.id);
 

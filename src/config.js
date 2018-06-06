@@ -27,11 +27,16 @@ const config = {
         },
 
         /**
-         * Get URL for finding a store by URL
+         * Get URL for finding a store by URL or ID
          * @param {string} env - Environment (for internal use)
-         * @param {string} url - The URL to lookup
+         * @param {objectId} id - The ID to lookup
+         * @param {objectId} url - The URL to lookup
          */
-        store(env, url = '') {
+        store(env, id = '', url = '') {
+            if (utils.is.number(id) && id > 1) {
+                return `${getBase(env)}store/find/${id}`;
+            }
+
             return `${getBase(env)}store/find?url=${url}`;
         },
 

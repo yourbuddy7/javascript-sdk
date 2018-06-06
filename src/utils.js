@@ -236,9 +236,9 @@ const utils = {
 
     /**
      * Convert an Object to FormData
-     * @param {Object} source - source Object
-     * @param {FormData} form - existing FormData object
-     * @param {String} namespace - namespace for FormData
+     * @param {object} source - source Object
+     * @param {formdata} form - existing FormData object
+     * @param {string} namespace - namespace for FormData
      */
     buildFormData(source, form, namespace) {
         const data = form || new FormData();
