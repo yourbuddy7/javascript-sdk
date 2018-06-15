@@ -1,5 +1,5 @@
 import pascalCase from 'pascalcase-keys';
-import CustomFetch from './fetch';
+import fetch from './fetch';
 import utils from './utils';
 
 const queue = {};
@@ -12,7 +12,7 @@ const http = {
     get(url) {
         // Queue requests to prevent hammering
         if (!Object.keys(queue).includes(url)) {
-            queue[url] = new CustomFetch(url);
+            queue[url] = fetch(url);
 
             // Remove from queue on completed
             queue[url].finally(() => {
@@ -38,7 +38,7 @@ const http = {
             options.body = utils.buildFormData(pascalCase(data));
         }
 
-        return new CustomFetch(url, options);
+        return fetch(url, options);
     },
 };
 

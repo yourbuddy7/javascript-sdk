@@ -3,18 +3,17 @@
  * @param {string} url - The URL of the endpoint
  * @param {object} options - Object of options for the request
  */
-const CustomFetch = (url, options) => {
+export default function(url, options) {
     const defaults = {
         mode: 'cors',
         redirect: 'follow',
-        headers: {
-            Accept: 'application/json',
-            'X-Requested-With': 'XMLHttpRequest',
-        },
     };
 
     return new Promise((resolve, reject) => {
-        fetch(url, Object.assign(defaults, options))
+        const request = new Request(url, Object.assign(defaults, options));
+        request.headers.append('Accept', 'application/json');
+
+        fetch(request)
             .then(response => {
                 if (response.status >= 200 && response.status < 300) {
                     try {
@@ -41,6 +40,4 @@ const CustomFetch = (url, options) => {
             })
             .catch(reject);
     });
-};
-
-export default CustomFetch;
+}
