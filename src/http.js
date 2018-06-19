@@ -14,10 +14,12 @@ const http = {
         if (!Object.keys(queue).includes(url)) {
             queue[url] = fetch(url);
 
-            // Remove from queue on completed
-            queue[url].finally(() => {
+            const remove = () => {
                 delete queue[url];
-            });
+            };
+
+            // Remove from queue on completed
+            queue[url].then(remove).catch(remove);
         }
 
         return queue[url];

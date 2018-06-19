@@ -33,7 +33,7 @@ export default function(url, options) {
                         throw error;
                     }
                 } else {
-                    const error = new Error(response.statusText || response.status);
+                    const error = new Error(response.status);
                     error.response = response;
                     throw error;
                 }
