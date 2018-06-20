@@ -1,3 +1,7 @@
+// ==========================================================================
+// Common fetch actions
+// ==========================================================================
+
 import pascalCase from 'pascalcase-keys';
 import fetch from './fetch';
 import buildFormData from './form-data';

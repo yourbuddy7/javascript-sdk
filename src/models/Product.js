@@ -55,7 +55,9 @@ class ProductVariantAttribute {
         Object.assign(this, variant);
 
         // Map options
-        this.options = Object.keys(variant.options).map(id => new ProductVariantAttributeOption(id, variant.options[id]));
+        this.options = Object.keys(variant.options).map(
+            id => new ProductVariantAttributeOption(id, variant.options[id]),
+        );
     }
 }
 
@@ -99,7 +101,9 @@ class Product {
             this.variants = product.variants.map(variant => new ProductVariant(variant, selected));
         }
         if (is.array(product.variant_attributes) && product.variant_attributes.length) {
-            this.variant_attributes = product.variant_attributes.map(attribute => new ProductVariantAttribute(attribute));
+            this.variant_attributes = product.variant_attributes.map(
+                attribute => new ProductVariantAttribute(attribute),
+            );
         }
     }
 
