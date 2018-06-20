@@ -1,4 +1,3 @@
-import is from '../utils/is';
 import Product from './Product';
 
 let client = null;
@@ -49,18 +48,6 @@ class Cart {
 
         // Map items
         this.items = Array.from(cart.items).map(item => new CartItem(item, cart.id));
-    }
-
-    /**
-     * Checkout a cart
-     * @param {object} colors - Colors object for the modal
-     */
-    checkout(colors) {
-        if (!is.string(this.url)) {
-            return;
-        }
-
-        client.modal.open(this.url, Object.assign(client.colors, colors));
     }
 
     /**
