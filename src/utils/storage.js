@@ -3,7 +3,8 @@
 // TODO: methods should return promises?
 // ==========================================================================
 
-import utils from './utils';
+import extend from './extend';
+import is from './is';
 
 const storage = new Map();
 
@@ -47,29 +48,29 @@ class Storage {
         if (Storage.supported) {
             const stored = window.localStorage.getItem(this.config.keys.root);
 
-            if (!utils.is.empty(stored)) {
+            if (!is.empty(stored)) {
                 data = JSON.parse(stored);
             }
         }
 
-        if (utils.is.empty(data)) {
+        if (is.empty(data)) {
             return null;
         }
 
-        if (!utils.is.empty(key)) {
+        if (!is.empty(key)) {
             return Object.keys(data).includes(key) ? data[key] : null;
         }
 
         return data;
     }
 
-    set(key, value, extend = false) {
+    set(key, value, merge = false) {
         // Get current storage
         const data = this.get() || {};
 
         // Extend with the new data
-        if (extend && Object.keys(data).includes(key)) {
-            data[key] = utils.extend(data[key], value);
+        if (merge && Object.keys(data).includes(key)) {
+            data[key] = extend(data[key], value);
         } else {
             data[key] = value;
         }
@@ -94,12 +95,12 @@ class Storage {
         const data = this.get(this.config.keys.carts) || {};
 
         // If no carts
-        if (utils.is.empty(data)) {
+        if (is.empty(data)) {
             return null;
         }
 
         // Get all carts
-        if (!utils.is.number(store)) {
+        if (!is.number(store)) {
             return data;
         }
 
@@ -116,12 +117,12 @@ class Storage {
         const carts = this.getCarts(store);
 
         // No carts
-        if (utils.is.empty(carts)) {
+        if (is.empty(carts)) {
             return null;
         }
 
         // Get all for a store
-        if (!utils.is.string(currency)) {
+        if (!is.string(currency)) {
             return carts;
         }
 
@@ -157,7 +158,7 @@ class Storage {
     getStore(url) {
         const data = this.get(this.config.keys.stores) || {};
 
-        if (!utils.is.string(url) || utils.is.empty(data) || !Object.keys(data).includes(url)) {
+        if (!is.string(url) || is.empty(data) || !Object.keys(data).includes(url)) {
             return null;
         }
 

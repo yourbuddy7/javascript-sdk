@@ -1,4 +1,4 @@
-import utils from './../utils';
+import is from '../utils/is';
 import Product from './Product';
 
 let client = null;
@@ -56,7 +56,7 @@ class Cart {
      * @param {object} colors - Colors object for the modal
      */
     checkout(colors) {
-        if (!utils.is.string(this.url)) {
+        if (!is.string(this.url)) {
             return;
         }
 

@@ -70,7 +70,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    function addToCart(product, checkout = false) {
+    function addToCart(product) {
         getCart(product.currency_code)
             .then(cart => {
                 let variant = null;
@@ -91,10 +91,6 @@ document.addEventListener('DOMContentLoaded', () => {
                         log('Add to cart', updatedCart);
 
                         window.cart = updatedCart;
-
-                        if (checkout) {
-                            updatedCart.checkout();
-                        }
                     })
                     .catch(error => fail('Add to cart', error));
             })
@@ -114,11 +110,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // Expose
             window.product = product;
 
-            // addToCart(product, true);
-
-            // product.buy();
-
-            product.view();
+            addToCart(product);
         })
         .catch(errors => fail('Product', errors));
 

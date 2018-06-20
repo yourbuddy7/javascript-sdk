@@ -1,4 +1,4 @@
-import utils from './../utils';
+import is from '../utils/is';
 
 let client = null;
 
@@ -61,7 +61,7 @@ class ProductVariantAttribute {
 
 class Product {
     constructor(instance, product, variantId = '') {
-        if (!utils.is.object(product)) {
+        if (!is.object(product)) {
             return;
         }
 
@@ -74,31 +74,31 @@ class Product {
         this.store = client.store;
 
         // Product URLs
-        if (utils.is.object(product.urls)) {
+        if (is.object(product.urls)) {
             this.urls = new ProductUrls(product.urls);
         }
 
         // Media (Video, YouTube, Vimeo, Audio)
-        if (utils.is.object(product.media)) {
+        if (is.object(product.media)) {
             this.media = new ProductMedia(product.media);
         }
 
         // Images
-        if (utils.is.array(product.images)) {
+        if (is.array(product.images)) {
             this.images = product.images.map(image => new ProductImage(image));
         }
 
         // Files for digital products
-        if (utils.is.array(product.files)) {
+        if (is.array(product.files)) {
             this.files = product.files.map(file => new ProductFile(file));
         }
 
         // Variants
-        if (utils.is.array(product.variants) && product.variants.length) {
-            const selected = !utils.is.empty(variantId) ? variantId : product.variants[0].id;
+        if (is.array(product.variants) && product.variants.length) {
+            const selected = !is.empty(variantId) ? variantId : product.variants[0].id;
             this.variants = product.variants.map(variant => new ProductVariant(variant, selected));
         }
-        if (utils.is.array(product.variant_attributes) && product.variant_attributes.length) {
+        if (is.array(product.variant_attributes) && product.variant_attributes.length) {
             this.variant_attributes = product.variant_attributes.map(attribute => new ProductVariantAttribute(attribute));
         }
     }
@@ -115,41 +115,11 @@ class Product {
 
     // eslint-disable-next-line camelcase
     get selected_variant() {
-        if (utils.is.empty(this.variants)) {
+        if (is.empty(this.variants)) {
             return null;
         }
 
         return this.variants.find(variant => variant.selected);
-    }
-
-    /**
-     * View product in modal
-     * @param {string} discount - Discount code for the product
-     * @param {object} colors - Colors object for the modal
-     */
-    view(discount, colors) {
-        let url = this.urls.full;
-
-        if (utils.is.string(discount)) {
-            url = utils.addUrlQuery.call(url, 'code', discount);
-        }
-
-        client.modal.open(url, Object.assign(client.colors, colors));
-    }
-
-    /**
-     * Buy product
-     * @param {string} [discount] - Discount code for the product
-     * @param {object} colors - Colors object for the modal
-     */
-    buy(discount, colors) {
-        let url = this.urls.checkout;
-
-        if (utils.is.string(discount)) {
-            url = utils.addUrlQuery.call(url, 'code', discount);
-        }
-
-        client.modal.open(url, Object.assign(client.colors, colors));
     }
 }
 

@@ -1,26 +1,23 @@
 import config from './config';
-import http from './http';
 import Cart from './models/Cart';
 import Product from './models/Product';
 import Store from './models/Store';
-import Storage from './storage';
-import Modal from './ui/Modal';
-import utils from './utils';
+import extend from './utils/extend';
+import http from './utils/http';
+import is from './utils/is';
+import Storage from './utils/storage';
 
 class SelzClient {
     constructor(props) {
-        this.env = !utils.is.empty(props.env) ? props.env : '';
+        this.env = !is.empty(props.env) ? props.env : '';
         this.store = new Store(props.store);
-        this.colors = utils.is.object(props.colors) ? props.colors : {};
-        this.forceTab = utils.is.boolean(props.forceTab) ? props.forceTab : false;
+        this.colors = is.object(props.colors) ? props.colors : {};
 
         if (!this.store.hasId && !this.store.hasUrl) {
             throw Error('Store is required to create a client');
         }
 
         this.storage = new Storage();
-
-        this.modal = new Modal(this.colors, this.env, this.forceTab);
     }
 
     /**
@@ -47,7 +44,7 @@ class SelzClient {
             if (this.store.hasUrl) {
                 const cached = this.storage.getStore(this.store.url);
 
-                if (!utils.is.empty(cached)) {
+                if (!is.empty(cached)) {
                     this.setStore(cached);
                     resolve(this.store);
                     return;
@@ -72,13 +69,13 @@ class SelzClient {
      * @param {object} store
      */
     setStore(store) {
-        if (!utils.is.object(store)) {
+        if (!is.object(store)) {
             return;
         }
 
         Object.assign(this.store, store);
 
-        this.colors = utils.extend({}, store.theme.colors, this.colors);
+        this.colors = extend({}, store.theme.colors, this.colors);
 
         this.storage.setStore(this.store.url, this.store);
     }
@@ -127,7 +124,7 @@ class SelzClient {
      */
     createCart(currency, discount) {
         return new Promise((resolve, reject) => {
-            if (utils.is.empty(currency)) {
+            if (is.empty(currency)) {
                 reject(new Error('currency is required'));
                 return;
             }
@@ -139,7 +136,7 @@ class SelzClient {
                     http
                         .post(config.urls.createCart(this.env, this.store.id), {
                             currency: currencyCode,
-                            discount: !utils.is.empty(discount) ? discount : null,
+                            discount: !is.empty(discount) ? discount : null,
                         })
                         .then(json => {
                             const cart = new Cart(this, json);
@@ -161,7 +158,7 @@ class SelzClient {
      */
     getCartId(currency) {
         return new Promise((resolve, reject) => {
-            if (!utils.is.currencyCode(currency)) {
+            if (!is.currencyCode(currency)) {
                 reject(new Error('A valid currency code is required'));
                 return;
             }
@@ -172,7 +169,7 @@ class SelzClient {
                     const currentCart = this.storage.getCart(this.store.id, currencyCode);
 
                     // Create cart if it doesn't exist
-                    if (utils.is.empty(currentCart)) {
+                    if (is.empty(currentCart)) {
                         this.createCart(currencyCode)
                             .then(cart => resolve(cart.id))
                             .catch(reject);
@@ -190,8 +187,8 @@ class SelzClient {
      */
     getCart(input) {
         return new Promise((resolve, reject) => {
-            const isCurrency = utils.is.currencyCode(input);
-            const isObjectId = utils.is.objectId(input);
+            const isCurrency = is.currencyCode(input);
+            const isObjectId = is.objectId(input);
 
             if (!isCurrency && !isObjectId) {
                 reject(new Error('A valid currency code or cart id are required'));
@@ -203,7 +200,7 @@ class SelzClient {
 
                 this.getCartId(currencyCode)
                     .then(id => {
-                        if (utils.is.empty(id)) {
+                        if (is.empty(id)) {
                             reject(new Error(`Could not find matching cart for currency code '${currencyCode}'`));
                             return;
                         }
@@ -248,7 +245,7 @@ class SelzClient {
                 .then(() => {
                     const carts = this.storage.getCarts(this.store.id);
 
-                    if (utils.is.empty(carts)) {
+                    if (is.empty(carts)) {
                         resolve(null);
                         return;
                     }
@@ -297,13 +294,13 @@ class SelzClient {
                         const carts = data;
 
                         // No carts
-                        if (utils.is.empty(carts)) {
+                        if (is.empty(carts)) {
                             resolve(null);
                             return;
                         }
 
                         // Currency code was passed...
-                        if (utils.is.currencyCode(input)) {
+                        if (is.currencyCode(input)) {
                             const currencyCode = input.toUpperCase();
                             const currencies = Object.keys(carts);
 
@@ -319,7 +316,7 @@ class SelzClient {
                             });
                         } else {
                             // Set to id if specified, otherwise first
-                            const id = utils.is.objectId(input) ? input : carts[Object.keys(carts)[0]].id;
+                            const id = is.objectId(input) ? input : carts[Object.keys(carts)[0]].id;
 
                             // Set active
                             Object.keys(carts).forEach(currency => {
@@ -352,14 +349,12 @@ class SelzClient {
                         return;
                     }
 
-                    const actives = Object.keys(carts).filter(c => carts[c].active);
+                    const active = Object.keys(carts).find(c => carts[c].active);
 
-                    if (!actives.length) {
+                    if (!active) {
                         resolve(null);
                         return;
                     }
-
-                    const active = carts[actives[0]];
 
                     if (!fetch) {
                         resolve(active.id);
@@ -381,12 +376,12 @@ class SelzClient {
      */
     addToCart(id, product) {
         return new Promise((resolve, reject) => {
-            if (!utils.is.objectId(id)) {
+            if (!is.objectId(id)) {
                 reject(new Error('A valid id is required'));
                 return;
             }
 
-            if (utils.is.empty(product)) {
+            if (is.empty(product)) {
                 reject(new Error('A valid product is required'));
                 return;
             }
@@ -420,12 +415,12 @@ class SelzClient {
      */
     updateCartItemQuantity(id, index, quantity = 1) {
         return new Promise((resolve, reject) => {
-            if (!utils.is.objectId(id)) {
+            if (!is.objectId(id)) {
                 reject(new Error('A valid id is required'));
                 return;
             }
 
-            if (utils.is.empty(index)) {
+            if (is.empty(index)) {
                 reject(new Error('A valid index is required'));
                 return;
             }
@@ -458,12 +453,12 @@ class SelzClient {
      */
     removeFromCart(id, index) {
         return new Promise((resolve, reject) => {
-            if (!utils.is.objectId(id)) {
+            if (!is.objectId(id)) {
                 reject(new Error('A valid id is required'));
                 return;
             }
 
-            if (utils.is.empty(index)) {
+            if (is.empty(index)) {
                 reject(new Error('A valid index is required'));
                 return;
             }
@@ -472,7 +467,7 @@ class SelzClient {
                 .post(config.urls.removeFromCart(this.env, id), { index })
                 .then(json => {
                     // If there's actually a cart left, map it
-                    if (!utils.is.empty(json)) {
+                    if (!is.empty(json)) {
                         const cart = new Cart(this, json, true);
 
                         // Set the active cart

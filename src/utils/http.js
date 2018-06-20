@@ -1,6 +1,7 @@
 import pascalCase from 'pascalcase-keys';
 import fetch from './fetch';
-import utils from './utils';
+import buildFormData from './form-data';
+import is from './is';
 
 const queue = {};
 
@@ -36,8 +37,8 @@ const http = {
         };
 
         // Convert POST data to FormData for C#
-        if (utils.is.object(data)) {
-            options.body = utils.buildFormData(pascalCase(data));
+        if (is.object(data)) {
+            options.body = buildFormData(pascalCase(data));
         }
 
         return fetch(url, options);

@@ -7,9 +7,7 @@
 const gulp = require('gulp');
 const del = require('del');
 const gutil = require('gulp-util');
-const postcss = require('rollup-plugin-postcss');
 const run = require('run-sequence');
-const autoprefixer = require('autoprefixer');
 const rename = require('gulp-rename');
 const size = require('gulp-size');
 const rollup = require('gulp-better-rollup');
@@ -109,10 +107,6 @@ Object.entries(formats).forEach(([format, task]) => {
                 rollup(
                     {
                         plugins: [
-                            postcss({
-                                plugins: [autoprefixer],
-                                minimize: { zindex: false, discardUnused: false },
-                            }),
                             resolve(),
                             commonjs(),
                             rollupReplace({

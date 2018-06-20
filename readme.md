@@ -68,17 +68,11 @@ client
 
 ### Display a product modal
 
-```javascript
-product.view(colors);
-```
+TBD
 
 ### Buy a product
 
-This will create a temporary cart and add the product to it, ready for checkout
-
-```javascript
-product.buy(colors);
-```
+TBD
 
 ## Carts
 
@@ -150,12 +144,11 @@ client
 ### Add to a cart
 
 ```javascript
-cart
-    .add({
-        id: product.id,
-        quantity: 3,
-        variant_id: product.variants[0].id,
-    })
+cart.add({
+    id: product.id,
+    quantity: 3,
+    variant_id: product.variants[0].id,
+})
     .then(updatedCart => {
         console.log('Added', updatedCart);
     })
@@ -184,8 +177,7 @@ cart.items.find(i => i.product.id === '544de566b7987209f0406100').quantity = 2;
 ### Remove from a cart
 
 ```javascript
-cart
-    .remove(cartItem.index)
+cart.remove(cartItem.index)
     .then(updatedCart => {
         console.log('Removed', updatedCart);
     })
@@ -207,8 +199,4 @@ client
 
 ### Checkout
 
-This will launch the modal
-
-```javascript
-cart.checkout(colors);
-```
+TBD

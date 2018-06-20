@@ -1,7 +1,7 @@
-import utils from './utils';
+import is from './utils/is';
 
 function getBase(env) {
-    return `https://${!utils.is.empty(env) ? `${env}-` : ''}selz.com/sdk/`;
+    return `https://${!is.empty(env) ? `${env}-` : ''}selz.com/sdk/`;
 }
 
 const config = {
@@ -33,7 +33,7 @@ const config = {
          * @param {objectId} url - The URL to lookup
          */
         store(env, id = '', url = '') {
-            if (utils.is.number(id) && id > 1) {
+            if (is.number(id) && id > 1) {
                 return `${getBase(env)}store/find/${id}`;
             }
 
