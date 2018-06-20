@@ -54,8 +54,7 @@ class SelzClient {
             // Lookup by ID if we have it as it's faster
             const url = config.urls.store(this.env, this.store.id, this.store.url);
 
-            http
-                .get(url)
+            http.get(url)
                 .then(store => {
                     this.setStore(store);
                     resolve(this.store);
@@ -86,8 +85,7 @@ class SelzClient {
      */
     getProduct(url) {
         return new Promise((resolve, reject) => {
-            http
-                .get(config.urls.product(this.env, url))
+            http.get(config.urls.product(this.env, url))
                 .then(json => {
                     if (!this.store.hasId) {
                         this.setStore(json.store);
@@ -106,8 +104,7 @@ class SelzClient {
         return new Promise((resolve, reject) => {
             this.getStore(true)
                 .then(() => {
-                    http
-                        .get(config.urls.products(this.env, this.store.id, query, page < 1 ? 1 : page))
+                    http.get(config.urls.products(this.env, this.store.id, query, page < 1 ? 1 : page))
                         .then(json => {
                             resolve(json.map(p => new Product(this, p)));
                         })
@@ -133,11 +130,10 @@ class SelzClient {
                 .then(() => {
                     const currencyCode = currency.toUpperCase();
 
-                    http
-                        .post(config.urls.createCart(this.env, this.store.id), {
-                            currency: currencyCode,
-                            discount: !is.empty(discount) ? discount : null,
-                        })
+                    http.post(config.urls.createCart(this.env, this.store.id), {
+                        currency: currencyCode,
+                        discount: !is.empty(discount) ? discount : null,
+                    })
                         .then(json => {
                             const cart = new Cart(this, json);
 
@@ -218,8 +214,7 @@ class SelzClient {
                     })
                     .catch(reject);
             } else {
-                http
-                    .get(config.urls.getCart(this.env, input))
+                http.get(config.urls.getCart(this.env, input))
                     .then(json => {
                         const activeId = this.getActiveCart();
                         const cart = new Cart(this, json, json.id === activeId);
@@ -254,8 +249,7 @@ class SelzClient {
                     if (validate) {
                         const ids = Object.keys(carts).map(currency => carts[currency].id);
 
-                        http
-                            .get(config.urls.checkCarts(this.env, ids.join(',')))
+                        http.get(config.urls.checkCarts(this.env, ids.join(',')))
                             .then(json => {
                                 // Remove non existant carts
                                 Object.entries(json).forEach(([id, exists]) => {
@@ -349,7 +343,7 @@ class SelzClient {
                         return;
                     }
 
-                    const active = Object.keys(carts).find(c => carts[c].active);
+                    const active = Object.values(carts).find(cart => cart.active);
 
                     if (!active) {
                         resolve(null);
@@ -386,8 +380,7 @@ class SelzClient {
                 return;
             }
 
-            http
-                .post(config.urls.addToCart(this.env, id), product)
+            http.post(config.urls.addToCart(this.env, id), product)
                 .then(json => {
                     const cart = new Cart(this, json, true);
 
@@ -425,8 +418,7 @@ class SelzClient {
                 return;
             }
 
-            http
-                .post(config.urls.updateCartItemQuantity(this.env, id), { index, quantity })
+            http.post(config.urls.updateCartItemQuantity(this.env, id), { index, quantity })
                 .then(json => {
                     const cart = new Cart(this, json, true);
 
@@ -463,8 +455,7 @@ class SelzClient {
                 return;
             }
 
-            http
-                .post(config.urls.removeFromCart(this.env, id), { index })
+            http.post(config.urls.removeFromCart(this.env, id), { index })
                 .then(json => {
                     // If there's actually a cart left, map it
                     if (!is.empty(json)) {
