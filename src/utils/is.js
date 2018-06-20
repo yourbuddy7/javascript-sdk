@@ -4,7 +4,7 @@ const instanceOf = (input, constructor) => Boolean(input && constructor && input
 
 const is = {
     array(input) {
-        return !this.nullOrUndefined(input) && Array.isArray(input);
+        return Array.isArray(input);
     },
     object(input) {
         return getConstructor(input) === Object;
@@ -25,10 +25,10 @@ const is = {
         return input === null || typeof input === 'undefined';
     },
     objectId(input) {
-        return this.string(input) && /^[a-f\d]{24}$/i.test(input);
+        return is.string(input) && /^[a-f\d]{24}$/i.test(input);
     },
     currencyCode(input) {
-        return this.string(input) && /^[A-z]{3}$/.test(input);
+        return is.string(input) && /^[A-z]{3}$/.test(input);
     },
     url(input) {
         // Accept a URL object
@@ -44,15 +44,13 @@ const is = {
 
         try {
             const url = new URL(string);
-            return !this.empty(url.hostname);
+            return !is.empty(url.hostname);
         } catch (e) {
             return false;
         }
     },
     empty(input) {
-        return (
-            this.nullOrUndefined(input) || ((this.string(input) || this.array(input)) && !input.length) || (this.object(input) && !Object.keys(input).length)
-        );
+        return is.nullOrUndefined(input) || ((is.string(input) || is.array(input)) && !input.length) || (is.object(input) && !Object.keys(input).length);
     },
 };
 
