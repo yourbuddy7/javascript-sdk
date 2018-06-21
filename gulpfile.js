@@ -123,7 +123,7 @@ Object.entries(formats).forEach(([format, task]) => {
             )
             .pipe(
                 rename({
-                    basename: `client.${task.format}${task.polyfill ? '.polyfilled' : ''}`,
+                    basename: `client${task.polyfill ? '.polyfilled' : ''}`,
                     extname: `.${task.ext}`,
                 }),
             )
@@ -137,7 +137,7 @@ Object.entries(formats).forEach(([format, task]) => {
 tasks.js.push('js:demo');
 gulp.task('js:demo', () =>
     gulp
-        .src('./docs/scripts.js')
+        .src('./docs/src/*.js')
         .on('error', gutil.log)
         .pipe(sourcemaps.init())
         .pipe(
@@ -148,14 +148,9 @@ gulp.task('js:demo', () =>
                 { format: 'es' },
             ),
         )
-        .pipe(
-            rename({
-                suffix: '.es5',
-            }),
-        )
         .pipe(size(sizeOptions))
         .pipe(sourcemaps.write(''))
-        .pipe(gulp.dest('./docs/')),
+        .pipe(gulp.dest('./docs/dist')),
 );
 
 // Clean out /dist
@@ -174,7 +169,8 @@ gulp.task('default', () => {
 
 // If aws is setup
 if (Object.keys(aws).length) {
-    const regex = '(?:0|[1-9][0-9]*)\\.(?:0|[1-9][0-9]*).(?:0|[1-9][0-9]*)(?:-[\\da-z\\-]+(?:.[\\da-z\\-]+)*)?(?:\\+[\\da-z\\-]+(?:.[\\da-z\\-]+)*)?';
+    const regex =
+        '(?:0|[1-9][0-9]*)\\.(?:0|[1-9][0-9]*).(?:0|[1-9][0-9]*)(?:-[\\da-z\\-]+(?:.[\\da-z\\-]+)*)?(?:\\+[\\da-z\\-]+(?:.[\\da-z\\-]+)*)?';
     const cdnpath = new RegExp(`${aws.domain}/${regex}`, 'gi');
     const paths = {
         local: new RegExp('(../)?dist', 'gi'),
@@ -196,8 +192,7 @@ if (Object.keys(aws).length) {
         console.log(`Uploading ${pkg.version} to ${aws.domain}...`);
 
         // Replace versioned files in readme.md
-        gulp
-            .src([`${__dirname}/readme.md`])
+        gulp.src([`${__dirname}/readme.md`])
             .pipe(replace(cdnpath, `${aws.domain}/${pkg.version}`))
             .pipe(gulp.dest(__dirname));
 

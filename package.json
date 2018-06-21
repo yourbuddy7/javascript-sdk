@@ -2,8 +2,8 @@
     "name": "selz-js-sdk",
     "version": "0.1.39",
     "description": "JavaScript SDK for use with the Selz platform.",
-    "main": "dist/client.umd.js",
-    "module": "dist/client.es.mjs",
+    "main": "dist/client.js",
+    "module": "dist/client.mjs",
     "jsnext:main": "src/index.js",
     "directories": {
         "doc": "docs"
