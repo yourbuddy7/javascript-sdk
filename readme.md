@@ -47,7 +47,6 @@ const client = new SelzClient({
 | Property | Type                 | Default | Required  | Description                                                                                                        |
 | -------- | -------------------- | ------- | --------- | ------------------------------------------------------------------------------------------------------------------ |
 | `store`  | `Number` or `String` | `-1`    | Yes&sup1; | The store ID (e.g. `123456`) _or_ a URL in the store (e.g. `store.selz.com` or `mystore.com` or `selz.co/1a2b3c`). |
-| `colors` | Object               | `null`  | No        | The colors for buttons, checkout and links.                                                                        |
 
 1.  A store ID is preferred and is faster.
 
