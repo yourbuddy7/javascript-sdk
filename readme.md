@@ -38,7 +38,7 @@ import 'SelzClient' from 'selz-js-sdk';
 
 ```javascript
 const client = new SelzClient({
-    storeId: 12345,
+    store: 12345,
 });
 ```
 
