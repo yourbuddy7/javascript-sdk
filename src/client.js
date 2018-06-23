@@ -263,9 +263,13 @@ class SelzClient {
                                 this.storage.setCarts(this.store.id, carts);
 
                                 // Set active
-                                this.setActiveCart()
-                                    .then(resolve)
-                                    .catch(reject);
+                                if (!Object.values(carts).find(cart => cart.active)) {
+                                    this.setActiveCart()
+                                        .then(resolve)
+                                        .catch(reject);
+                                } else {
+                                    resolve(carts);
+                                }
                             })
                             .catch(reject);
                     } else {

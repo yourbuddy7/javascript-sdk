@@ -19,13 +19,13 @@ npm install selz-js-sdk
 or using our CDN:
 
 ```html
-<script src="https://sdk.selzstatic.com/0.1.40/client.js"></script>
+<script src="https://sdk.selzstatic.com/0.1.41/client.js"></script>
 ```
 
 Or if you want a polyfilled version:
 
 ```html
-<script src="https://sdk.selzstatic.com/0.1.40/client.polyfilled.js"></script>
+<script src="https://sdk.selzstatic.com/0.1.41/client.polyfilled.js"></script>
 ```
 
 ## Creating a client
