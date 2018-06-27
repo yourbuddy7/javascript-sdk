@@ -9,9 +9,11 @@ import Storage from './utils/storage';
 
 class SelzClient {
     constructor(props) {
-        this.env = !is.empty(props.env) ? props.env : '';
-        this.store = new Store(props.store);
-        this.colors = is.object(props.colors) ? props.colors : {};
+        const { env, store, colors } = props;
+
+        this.env = !is.empty(env) ? env : '';
+        this.store = new Store(store);
+        this.colors = is.object(colors) ? colors : {};
 
         if (!this.store.hasId && !this.store.hasUrl) {
             throw Error('Store is required to create a client');
