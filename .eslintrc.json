@@ -1,13 +1,15 @@
 {
     "parser": "babel-eslint",
-    "extends": ["airbnb", "prettier"],
+    "extends": ["airbnb-base", "prettier"],
     "env": {
         "browser": true,
-        "es6": true,
-        "mocha": true,
-        "node": true
+        "es6": true
     },
-    "globals": { "SelzClient": false, "ENVIRONMENT": false, "VERSION": false },
+    "globals": {
+        "SelzClient": false,
+        "ENVIRONMENT": false,
+        "VERSION": false
+    },
     "rules": {
         "no-const-assign": 1,
         "no-this-before-super": 1,
