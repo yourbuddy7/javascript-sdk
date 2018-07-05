@@ -54,21 +54,24 @@ class SelzClient {
      */
     getStore() {
         return new Promise((resolve, reject) => {
-            let cached = null;
-
             // Try from cache by ID or URL
             if (is.number(this.store) || is.url(this.store)) {
-                cached = this.storage.getStore(this.store);
+                const cached = this.storage.getStore(this.store);
+
+                // Return cached if we have it
+                if (cached instanceof Store) {
+                    resolve(cached);
+                    return;
+                }
             }
 
-            // Return cached if we have it
-            if (!is.empty(cached)) {
-                this.setStore(cached);
+            // If already fetched
+            if (this.store instanceof Store) {
                 resolve(this.store);
                 return;
             }
 
-            // Lookup from remote by ID or URL
+            // Fetch from remote by ID or URL
             const url = config.urls.store(this.env, this.store);
 
             http.get(url)
