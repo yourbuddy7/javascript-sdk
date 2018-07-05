@@ -33,16 +33,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const client = new SelzClient({
         store: 'local.sampotts.me',
         env: 'local',
-        colors: {
-            buttons: {
-                background: '#559cda',
-                text: '#fff',
-            },
-            checkout: {
-                background: '#559cda',
-                text: '#fff',
-            },
-        },
     });
 
     // Expose
@@ -81,12 +71,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     variant = product.variants[0].id;
                 }
 
-                cart
-                    .add({
-                        id: product.id,
-                        quantity: 2,
-                        variant_id: variant,
-                    })
+                cart.add({
+                    id: product.id,
+                    quantity: 2,
+                    variant_id: variant,
+                })
                     .then(updatedCart => {
                         log('Add to cart', updatedCart);
 

@@ -2,18 +2,16 @@ import config from './config';
 import Cart from './models/Cart';
 import Product from './models/Product';
 import Store from './models/Store';
-import extend from './utils/extend';
 import http from './utils/http';
 import is from './utils/is';
 import Storage from './utils/storage';
 
 class SelzClient {
     constructor(props) {
-        const { env, store, colors } = props;
+        const { env, store } = props;
 
         this.env = !is.empty(env) ? env : '';
         this.store = new Store(store);
-        this.colors = is.object(colors) ? colors : {};
 
         if (!this.store.hasId && !this.store.hasUrl) {
             throw Error('Store is required to create a client');
@@ -76,9 +74,7 @@ class SelzClient {
 
         Object.assign(this.store, store);
 
-        this.colors = extend({}, store.embeds.colors, this.colors);
-
-        this.storage.setStore(this.store.url, this.store);
+        this.storage.setStore(this.store.url, store);
     }
 
     /**

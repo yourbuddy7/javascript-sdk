@@ -3,10 +3,27 @@
 // TODO: methods should return promises?
 // ==========================================================================
 
+import { dedupe } from './arrays';
 import extend from './extend';
 import is from './is';
+import parseUrl from './parseUrl';
 
 const storage = new Map();
+
+// Check version against that in storage
+// So we invalidate on cache
+// const schemaVersion = 1;
+
+const getKey = url => {
+    // Strip the protocol from the lookup url
+    const parsed = parseUrl(url);
+
+    if (parsed === null) {
+        return null;
+    }
+
+    return `${parsed.host}${parsed.pathname}`.replace(/\/$/, '');
+};
 
 class Storage {
     constructor(config) {
@@ -17,10 +34,13 @@ class Storage {
                     carts: 'carts',
                     stores: 'stores',
                 },
-                ttl: 7200, // 2 hours in seconds
+                ttl: 3600, // 1 hour
+                schema: new Date('2018-07-01').getTime(), // Schema version (allowing us to change data schema and invalidate storage)
             },
             config,
         );
+
+        this.purge();
     }
 
     // Check for actual support (see if we can use it)
@@ -83,12 +103,49 @@ class Storage {
             return;
         }
 
+        // Set schema version
+        data.schema = this.config.schema;
+
         // Update storage
         try {
             window.localStorage.setItem(this.config.keys.root, JSON.stringify(data));
         } catch (e) {
             // Do nothing
         }
+    }
+
+    // Clean up stale storage
+    purge() {
+        // Check schema
+        const data = this.get();
+
+        // Nothing to purge
+        if (is.empty(data)) {
+            return;
+        }
+
+        // If schema does not match, kill it
+        if (Number(data.schema) !== this.config.schema) {
+            window.localStorage.removeItem(this.config.keys.root);
+            return;
+        }
+
+        // Get current list of stores
+        const stores = this.get(this.config.keys.stores) || [];
+
+        // Nothing to cleanup
+        if (is.empty(stores)) {
+            return;
+        }
+
+        // Check TTL is valid
+        this.set(
+            this.config.keys.stores,
+            stores.filter(store => {
+                const ttl = Number(store.ttl);
+                return ttl > 0 && ttl > Date.now();
+            }),
+        );
     }
 
     getCarts(store) {
@@ -156,33 +213,67 @@ class Storage {
     }
 
     getStore(url) {
-        const data = this.get(this.config.keys.stores) || {};
+        const key = getKey(url);
 
-        if (!is.string(url) || is.empty(data) || !Object.keys(data).includes(url)) {
+        // Bail if invalid URL
+        if (key === null) {
             return null;
         }
 
-        // Check timestamp
-        const ttl = Number(data[url].ttl);
+        const stores = this.get(this.config.keys.stores) || [];
+        const data = stores.find(store => store.urls.includes(key));
+
+        if (!is.object(data)) {
+            return null;
+        }
+
+        // Check TTL is valid
+        const ttl = Number(data.ttl);
 
         if (ttl > 0 && ttl < Date.now()) {
+            this.purge();
             return null;
         }
 
-        return data[url].data;
+        return data;
     }
 
     setStore(url, data) {
-        this.set(
-            this.config.keys.stores,
-            {
-                [url]: {
-                    data,
-                    ttl: Date.now() + this.config.ttl,
-                },
-            },
-            true,
-        );
+        // Strip the protocol from the lookup url
+        const key = getKey(url);
+
+        // Bail if invalid URL
+        if (key === null) {
+            return;
+        }
+
+        // Get current list of stores
+        const stores = this.get(this.config.keys.stores) || [];
+        let existing = null;
+
+        if (!is.empty(stores)) {
+            // Find existing store by id
+            existing = stores.find(store => store.data.id === data.id);
+        }
+
+        const ttl = Date.now() + this.config.ttl;
+
+        // If we found something
+        if (is.object(existing)) {
+            Object.assign(existing, {
+                urls: dedupe(existing.urls.push(key)),
+                data,
+                ttl,
+            });
+        } else {
+            stores.push({
+                urls: [key],
+                data,
+                ttl,
+            });
+        }
+
+        this.set(this.config.keys.stores, stores);
     }
 }
 

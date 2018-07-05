@@ -19,7 +19,7 @@ const isEmpty = input =>
     ((isString(input) || isArray(input)) && !input.length) ||
     (isObject(input) && !Object.keys(input).length);
 
-const isUrl = input => {
+const isUrl = (input, strict = false) => {
     // Accept a URL object
     if (instanceOf(input, window.URL)) {
         return true;
@@ -27,7 +27,7 @@ const isUrl = input => {
 
     // Add the protocol if required
     let string = input;
-    if (!input.startsWith('http://') || !input.startsWith('https://')) {
+    if (!strict && !/^https?:\/\/*/.test(input)) {
         string = `http://${input}`;
     }
 
