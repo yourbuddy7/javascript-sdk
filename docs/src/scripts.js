@@ -92,7 +92,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     client
-        .getProduct(products.USD)
+        .getProduct(products.GBP)
         .then(product => {
             log('Product', product);
 
