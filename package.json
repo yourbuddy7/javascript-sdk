@@ -1,6 +1,6 @@
 {
     "name": "selz-js-sdk",
-    "version": "0.1.46",
+    "version": "0.1.47",
     "description": "JavaScript SDK for use with the Selz platform.",
     "main": "dist/client.js",
     "module": "dist/client.mjs",

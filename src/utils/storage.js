@@ -221,21 +221,21 @@ class Storage {
         }
 
         const stores = this.get(this.config.keys.stores) || [];
-        const data = stores.find(store => store.urls.includes(key));
+        const store = stores.find(s => s.urls.includes(key));
 
-        if (!is.object(data)) {
+        if (!is.object(store)) {
             return null;
         }
 
         // Check TTL is valid
-        const ttl = Number(data.ttl);
+        const ttl = Number(store.ttl);
 
         if (ttl > 0 && ttl < Date.now()) {
             this.purge();
             return null;
         }
 
-        return data;
+        return store.data;
     }
 
     setStore(url, data) {
