@@ -3,6 +3,7 @@
 // TODO: methods should return promises?
 // ==========================================================================
 
+import Store from '../models/Store';
 import { dedupe } from './arrays';
 import extend from './extend';
 import is from './is';
@@ -10,12 +11,11 @@ import parseUrl from './parseUrl';
 
 const storage = new Map();
 
-// Check version against that in storage
-// So we invalidate on cache
-// const schemaVersion = 1;
-
 const getKey = url => {
-    // Strip the protocol from the lookup url
+    if (url === null) {
+        return null;
+    }
+
     const parsed = parseUrl(url);
 
     if (parsed === null) {
@@ -35,7 +35,7 @@ class Storage {
                     stores: 'stores',
                 },
                 ttl: 3600, // 1 hour
-                schema: new Date('2018-07-01').getTime(), // Schema version (allowing us to change data schema and invalidate storage)
+                schema: new Date('2018-07-02').getTime(), // Schema version (allowing us to change data schema and invalidate storage)
             },
             config,
         );
@@ -212,16 +212,27 @@ class Storage {
         });
     }
 
-    getStore(url) {
-        const key = getKey(url);
+    getStore(input) {
+        let store = null;
 
-        // Bail if invalid URL
-        if (key === null) {
+        if (!is.number(input) && !is.url(input)) {
             return null;
         }
 
         const stores = this.get(this.config.keys.stores) || [];
-        const store = stores.find(s => s.urls.includes(key));
+
+        if (is.number(input)) {
+            store = stores.find(s => is.object(s.data) && s.data.id === input);
+        } else if (is.url(input)) {
+            const key = getKey(input);
+
+            // Bail if invalid URL
+            if (key === null) {
+                return null;
+            }
+
+            store = stores.find(s => is.array(s.urls) && s.urls.includes(key));
+        }
 
         if (!is.object(store)) {
             return null;
@@ -235,17 +246,12 @@ class Storage {
             return null;
         }
 
-        return store.data;
+        return new Store(store.data);
     }
 
-    setStore(url, data) {
+    setStore(data, url = null) {
         // Strip the protocol from the lookup url
         const key = getKey(url);
-
-        // Bail if invalid URL
-        if (key === null) {
-            return;
-        }
 
         // Get current list of stores
         const stores = this.get(this.config.keys.stores) || [];
@@ -261,23 +267,41 @@ class Storage {
 
         // If we found something
         if (is.object(existing)) {
-            // Add the new url
-            existing.urls.push(key);
-
-            // Remove duplicate entries
-            const urls = dedupe(existing.urls);
-
+            // Update data and extend TTL
             Object.assign(existing, {
-                urls,
                 data,
                 ttl,
             });
+
+            if (key !== null) {
+                // Add the URL key for later lookup
+                if (is.array(existing.urls)) {
+                    existing.urls = [key];
+                } else {
+                    existing.urls.push(key);
+                }
+
+                // Remove duplicate entries
+                const urls = dedupe(existing.urls);
+
+                // Add to existing record
+                Object.assign(existing, {
+                    urls,
+                });
+            }
         } else {
-            stores.push({
-                urls: [key],
+            const store = {
                 data,
                 ttl,
-            });
+            };
+
+            if (key !== null) {
+                Object.assign(store, {
+                    urls: [key],
+                });
+            }
+
+            stores.push(store);
         }
 
         this.set(this.config.keys.stores, stores);
