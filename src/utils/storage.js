@@ -249,18 +249,21 @@ class Storage {
 
         // Get current list of stores
         const stores = this.get(this.config.keys.stores) || [];
-        let existing = null;
+        let index = -1;
 
         if (!is.empty(stores)) {
             // Find existing store by id
-            existing = stores.find(store => store.data.id === data.id);
+            index = stores.findIndex(store => store.data.id === data.id);
         }
 
+        // Extend TTL each time
         const ttl = Date.now() + this.config.ttl;
 
         // If we found something
-        if (is.object(existing)) {
-            Object.assign(existing, {
+        if (index > -1) {
+            const existing = stores[index];
+
+            stores[index] = Object.assign(existing, {
                 urls: dedupe(existing.urls.push(key)),
                 data,
                 ttl,
