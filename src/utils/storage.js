@@ -289,6 +289,8 @@ class Storage {
                     urls,
                 });
             }
+
+            console.warn(existing);
         } else {
             const store = {
                 data,
