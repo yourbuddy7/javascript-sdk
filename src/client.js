@@ -76,7 +76,7 @@ class SelzClient {
 
         Object.assign(this.store, store);
 
-        this.colors = extend({}, store.theme.colors, this.colors);
+        this.colors = extend({}, store.embeds.colors, this.colors);
 
         this.storage.setStore(this.store.url, this.store);
     }

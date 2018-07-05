@@ -25,14 +25,6 @@
         "one-var": [2, "never"],
         "comma-dangle": [2, "always-multiline"],
         "camelcase": [2, { "properties": "never" }],
-        "import/extensions": [
-            "error",
-            "always",
-            {
-                "js": "never",
-                "mjs": "never"
-            }
-        ],
         "no-param-reassign": [2, { "props": false }],
         "no-underscore-dangle": 0
     },
