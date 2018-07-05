@@ -275,7 +275,7 @@ class Storage {
 
             if (key !== null) {
                 // Add the URL key for later lookup
-                if (is.array(existing.urls)) {
+                if (!is.array(existing.urls)) {
                     existing.urls = [key];
                 } else {
                     existing.urls.push(key);
