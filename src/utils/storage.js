@@ -259,8 +259,10 @@ class Storage {
 
         if (!is.empty(stores)) {
             // Find existing store by id
-            existing = stores.find(store => store.data.id === data.id);
+            existing = stores.find(s => s.data.id === data.id);
         }
+
+        console.warn(existing);
 
         // Extend TTL each
         const ttl = Date.now() + this.config.ttl;
