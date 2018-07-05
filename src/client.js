@@ -59,7 +59,7 @@ class SelzClient {
                 const cached = this.storage.getStore(this.store);
 
                 // Return cached if we have it
-                if (cached instanceof Store) {
+                if (!is.empty(cached) && cached instanceof Store) {
                     resolve(cached);
                     return;
                 }
