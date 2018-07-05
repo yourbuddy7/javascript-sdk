@@ -262,8 +262,6 @@ class Storage {
             existing = stores.find(s => s.data.id === data.id);
         }
 
-        console.warn(existing);
-
         // Extend TTL each
         const ttl = Date.now() + this.config.ttl;
 
@@ -291,8 +289,6 @@ class Storage {
                     urls,
                 });
             }
-
-            console.warn(existing);
         } else {
             const store = {
                 data,
