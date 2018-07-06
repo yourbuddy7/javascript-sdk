@@ -226,10 +226,8 @@ class SelzClient {
 
                         this.getCart(id)
                             .then(cart => {
-                                // Set store
-                                if (!(this.store instanceof Store)) {
-                                    this.setStore(cart.store);
-                                }
+                                // Update store
+                                this.setStore(cart.store);
 
                                 resolve(cart);
                             })
@@ -242,10 +240,8 @@ class SelzClient {
                         const activeId = this.getActiveCart();
                         const cart = new Cart(this, json, json.id === activeId);
 
-                        // Set store
-                        if (!(this.store instanceof Store)) {
-                            this.setStore(cart.store);
-                        }
+                        // Update store
+                        this.setStore(cart.store);
 
                         resolve(cart);
                     })
@@ -411,10 +407,8 @@ class SelzClient {
                 .then(json => {
                     const cart = new Cart(this, json, true);
 
-                    // Set store
-                    if (!(this.store instanceof Store)) {
-                        this.setStore(cart.store);
-                    }
+                    // Update store
+                    this.setStore(cart.store);
 
                     // Set the active cart
                     this.setActiveCart(cart.id)
@@ -449,10 +443,8 @@ class SelzClient {
                 .then(json => {
                     const cart = new Cart(this, json, true);
 
-                    // Set store
-                    if (!(this.store instanceof Store)) {
-                        this.setStore(cart.store);
-                    }
+                    // Update store
+                    this.setStore(cart.store);
 
                     // Set the active cart
                     this.setActiveCart(cart.id)
