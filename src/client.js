@@ -77,7 +77,6 @@ class SelzClient {
             http.get(url)
                 .then(store => {
                     this.setStore(store);
-                    console.warn('resolve', this.store);
                     resolve(this.store);
                 })
                 .catch(reject);
@@ -90,14 +89,11 @@ class SelzClient {
      */
     setStore(store) {
         if (!is.object(store)) {
-            console.warn('Not object', store);
             return;
         }
 
         // Store reference to lookup URL
         const url = is.url(this.store) ? this.store : null;
-
-        console.warn('url', url);
 
         // Map to Store
         this.store = new Store(store);
