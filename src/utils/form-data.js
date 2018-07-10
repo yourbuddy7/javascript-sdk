@@ -3,6 +3,7 @@
 // ==========================================================================
 
 import is from './is';
+import { toPascalCase } from './strings';
 
 /**
  * Convert an Object to FormData
@@ -31,7 +32,7 @@ const buildFormData = (source, form, namespace) => {
         if (typeof source[key] === 'object' && !(source[key] instanceof File)) {
             buildFormData(source[key], data, key);
         } else {
-            data.append(formKey, source[key]);
+            data.append(toPascalCase(formKey), source[key]);
         }
     });
 

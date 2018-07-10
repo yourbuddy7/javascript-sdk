@@ -2,7 +2,6 @@
 // Common fetch actions
 // ==========================================================================
 
-import pascalCase from 'pascalcase-keys';
 import fetch from './fetch';
 import buildFormData from './form-data';
 import is from './is';
@@ -42,7 +41,7 @@ const http = {
 
         // Convert POST data to FormData for C#
         if (is.object(data)) {
-            options.body = buildFormData(pascalCase(data));
+            options.body = buildFormData(data);
         }
 
         return fetch(url, options);

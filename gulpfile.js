@@ -41,7 +41,7 @@ const build = process.env.BUILD || builds.prod;
 process.env.NODE_ENV = build;
 
 // Naming
-const namespace = 'SelzClient';
+// const namespace = 'SelzClient';
 
 // Browser list
 const browsers = ['> 1%'];
@@ -118,7 +118,10 @@ Object.entries(formats).forEach(([format, task]) => {
                             uglify({}, minify),
                         ],
                     },
-                    { name: namespace, format: task.format },
+                    {
+                        // name: namespace,
+                        format: task.format,
+                    },
                 ),
             )
             .pipe(
