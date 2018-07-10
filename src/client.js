@@ -6,7 +6,7 @@ import http from './utils/http';
 import is from './utils/is';
 import Storage from './utils/storage';
 
-class SelzClient {
+class Client {
     constructor(props) {
         const { env, store } = props;
 
@@ -498,4 +498,4 @@ class SelzClient {
     }
 }
 
-export default SelzClient;
+export default Client;

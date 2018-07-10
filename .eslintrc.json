@@ -6,7 +6,7 @@
         "es6": true
     },
     "globals": {
-        "SelzClient": false,
+        "Client": false,
         "ENVIRONMENT": false,
         "VERSION": false
     },

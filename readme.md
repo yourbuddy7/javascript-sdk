@@ -13,7 +13,7 @@ It is assumed you have reasonable knowledge of JavaScript to use this library.
 Using NPM:
 
 ```
-npm install selz-js-sdk
+npm i -S selz-js-sdk
 ```
 
 or using our CDN:
@@ -33,11 +33,11 @@ Or if you want a polyfilled version:
 If you're using the module then you'll need to import the client
 
 ```javascript
-import { SelzClient } from 'selz-js-sdk';
+import Client from 'selz-js-sdk';
 ```
 
 ```javascript
-const client = new SelzClient({
+const client = new Client({
     store: 12345,
 });
 ```

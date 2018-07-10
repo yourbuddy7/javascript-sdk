@@ -30,7 +30,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return log(`${label} (failed)`, errors);
     }
 
-    const client = new SelzClient({
+    const client = new Client({
         store: 'local.sampotts.me',
         env: 'local',
     });
