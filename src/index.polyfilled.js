@@ -1,5 +1,5 @@
 import 'babel-polyfill';
 import 'url-polyfill';
-import SelzClient from './client';
+import * as exports from './index';
 
-export default SelzClient;
+export default exports;

@@ -33,7 +33,7 @@ Or if you want a polyfilled version:
 If you're using the module then you'll need to import the client
 
 ```javascript
-import 'SelzClient' from 'selz-js-sdk';
+import { SelzClient } from 'selz-js-sdk';
 ```
 
 ```javascript
