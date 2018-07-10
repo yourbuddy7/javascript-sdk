@@ -96,11 +96,11 @@ class Product {
         }
 
         // Variants
-        if (is.array(product.variants) && product.variants.length) {
+        if (product.has_variants) {
             const selected = !is.empty(variantId) ? variantId : product.variants[0].id;
             this.variants = product.variants.map(variant => new ProductVariant(variant, selected));
         }
-        if (is.array(product.variant_attributes) && product.variant_attributes.length) {
+        if (product.has_variant_attributes) {
             this.variant_attributes = product.variant_attributes.map(
                 attribute => new ProductVariantAttribute(attribute),
             );
