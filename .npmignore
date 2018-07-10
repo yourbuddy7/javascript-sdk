@@ -1,0 +1,6 @@
+aws.json
+*.code-workspace
+.vscode
+yarn.lock
+package-lock.json
+/docs/

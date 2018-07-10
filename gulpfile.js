@@ -120,6 +120,7 @@ Object.entries(formats).forEach(([format, task]) => {
                     },
                     {
                         // name: namespace,
+                        exports: 'named',
                         format: task.format,
                     },
                 ),
