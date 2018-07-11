@@ -140,7 +140,7 @@ class Client {
     /**
      * Create a new shopping cart
      * @param {string} currency - ISO currency code
-     * @param {string} [discount] - Discount code
+     * @param {string} discount - Discount code
      */
     createCart(currency, discount) {
         return new Promise((resolve, reject) => {
@@ -497,5 +497,7 @@ class Client {
         });
     }
 }
+
+export { Product, Cart, Store };
 
 export default Client;

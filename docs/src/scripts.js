@@ -1,8 +1,12 @@
+import 'babel-polyfill';
+import 'url-polyfill';
+import Client from '../../dist/client';
+
 document.addEventListener('DOMContentLoaded', () => {
     const output = document.getElementById('output');
 
     function log(label, data) {
-        console.log(label, data);
+        // console.log(label, data);
         const details = document.createElement('details');
 
         const summary = document.createElement('summary');
@@ -23,7 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function fail(label, errors) {
         if (errors instanceof Error) {
-            console.error(errors);
+            // console.error(errors);
             return log(`${label} (error)`, { error: errors.toString() });
         }
 

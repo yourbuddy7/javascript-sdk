@@ -20,7 +20,6 @@ const resolve = require('rollup-plugin-node-resolve');
 const rollupReplace = require('rollup-plugin-replace');
 const replace = require('gulp-replace');
 const s3 = require('gulp-s3');
-
 const pkg = require('./package.json');
 
 let aws = {};
@@ -29,6 +28,8 @@ try {
 } catch (e) {
     // Do nothing
 }
+
+const namespace = 'SelzClient';
 
 // Build types
 const builds = {
@@ -84,11 +85,6 @@ const formats = {
         ext: 'js',
         polyfill: false,
     },
-    'umd-polyfilled': {
-        format: 'umd',
-        ext: 'js',
-        polyfill: true,
-    },
 };
 
 Object.entries(formats).forEach(([format, task]) => {
@@ -97,7 +93,7 @@ Object.entries(formats).forEach(([format, task]) => {
 
     gulp.task(name, () =>
         gulp
-            .src(`./src/index${task.polyfill ? '.polyfilled' : ''}.js`)
+            .src('./src/client.js')
             .on('error', gutil.log)
             .pipe(sourcemaps.init())
             .pipe(
@@ -116,6 +112,7 @@ Object.entries(formats).forEach(([format, task]) => {
                         ],
                     },
                     {
+                        name: namespace,
                         exports: 'named',
                         format: task.format,
                     },
@@ -123,7 +120,6 @@ Object.entries(formats).forEach(([format, task]) => {
             )
             .pipe(
                 rename({
-                    basename: `client${task.polyfill ? '.polyfilled' : ''}`,
                     extname: `.${task.ext}`,
                 }),
             )
@@ -134,7 +130,6 @@ Object.entries(formats).forEach(([format, task]) => {
 });
 
 // Docs JS
-tasks.js.push('js:demo');
 gulp.task('js:demo', () =>
     gulp
         .src('./docs/src/*.js')
@@ -159,12 +154,12 @@ gulp.task('clean', () => del(['dist/**/*']));
 // Watch for file changes
 gulp.task('watch', [], () => {
     const paths = ['src/**/*.scss', 'src/**/*.js', 'docs/scripts.js'];
-    gulp.watch(paths, tasks.js);
+    gulp.watch(paths, tasks.js, ['js:demo']);
 });
 
 // Default gulp task
 gulp.task('default', () => {
-    run(tasks.clean, tasks.js, 'watch');
+    run(tasks.clean, tasks.js, ['js:demo'], 'watch');
 });
 
 // If aws is setup

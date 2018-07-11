@@ -3,4 +3,4 @@ aws.json
 .vscode
 yarn.lock
 package-lock.json
-/docs/
+docs/
