@@ -1,5 +1,3 @@
-import 'babel-polyfill';
-import 'url-polyfill';
 import Client from '../../dist/client';
 
 document.addEventListener('DOMContentLoaded', () => {
