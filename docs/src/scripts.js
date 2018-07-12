@@ -68,7 +68,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 let variant = null;
 
                 if (typeof product.variant === 'string' && product.variant.length) {
-                    variant = product.variant; //eslint-disable-line
+                    ({ variant } = product);
                 } else if (product.variants && product.variants.length) {
                     variant = product.variants[0].id;
                 }
