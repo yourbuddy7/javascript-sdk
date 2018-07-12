@@ -7,11 +7,11 @@ import { toPascalCase } from './strings';
 
 /**
  * Convert an Object to FormData
- * @param {object} source - source Object
- * @param {formdata} form - existing FormData object
- * @param {string} namespace - namespace for FormData
+ * @param {Object} source - source Object
+ * @param {FormData} form - existing FormData object
+ * @param {String} namespace - namespace for FormData
  */
-const buildFormData = (source, form, namespace) => {
+const buildFormData = (source = {}, form, namespace) => {
     const data = form || new FormData();
     let formKey;
 

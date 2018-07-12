@@ -3,8 +3,6 @@
 // ==========================================================================
 
 import fetch from './fetch';
-import buildFormData from './form-data';
-import is from './is';
 
 const queue = {};
 
@@ -34,15 +32,11 @@ const http = {
      * @param {string} url - The endpoint URL
      * @param {object} data - The POST data payload
      */
-    post(url, data) {
+    post(url, data = {}) {
         const options = {
-            method: 'POST',
+            type: 'POST',
+            body: data,
         };
-
-        // Convert POST data to FormData for C#
-        if (is.object(data)) {
-            options.body = buildFormData(data);
-        }
 
         return fetch(url, options);
     },

@@ -5,8 +5,8 @@
 
 import Store from '../models/Store';
 import { dedupe } from './arrays';
-import extend from './extend';
 import is from './is';
+import { extend } from './objects';
 import parseUrl from './parseUrl';
 
 const storage = new Map();

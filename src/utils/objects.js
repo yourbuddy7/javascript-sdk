@@ -4,8 +4,12 @@
 
 import is from './is';
 
-// Deep extend destination object with N more objects
-const extend = (target = {}, ...sources) => {
+/**
+ * Deep extend destination object with N more objects
+ * @param {Object} target
+ * @param {...Object} sources
+ */
+export function extend(target = {}, ...sources) {
     if (!sources.length) {
         return target;
     }
@@ -29,6 +33,18 @@ const extend = (target = {}, ...sources) => {
     });
 
     return extend(target, ...sources);
-};
+}
 
-export default extend;
+/**
+ * Safer JSON parsing
+ * @param {Object} data
+ */
+export function parseJSON(data = {}) {
+    return new Promise((resolve, reject) => {
+        try {
+            resolve(JSON.parse(data));
+        } catch (error) {
+            reject(error);
+        }
+    });
+}
