@@ -4,7 +4,7 @@ Beware: The SDK is currently in beta and not production-ready
 
 # Selz JavaScript SDK
 
-The Selz JavaScript SDK is a lightweight (10k gzipped) library to allow you to build ecommerce into any web application. You can query for product information and manage shopping carts.
+The Selz JavaScript SDK is a lightweight (4.7k gzipped) library to allow you to build ecommerce into any web application. You can query for product information and manage shopping carts.
 
 It is assumed you have reasonable knowledge of JavaScript to use this library.
 
