@@ -16,6 +16,12 @@ Using NPM:
 npm i -S selz-js-sdk
 ```
 
+or using our CDN:
+
+```html
+<script src="https://sdk.selzstatic.com/0.1.47/client.js"></script>
+```
+
 ## Polyfilling
 
 The SDK is built using ES6 and ES7 syntax, meaning if you need to support older browsers such as IE11, you will need to add polyfills to support them. The two recommended options are:
