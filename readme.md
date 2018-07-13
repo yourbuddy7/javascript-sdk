@@ -16,17 +16,17 @@ Using NPM:
 npm i -S selz-js-sdk
 ```
 
-or using our CDN:
+## Polyfilling
 
-```html
-<script src="https://sdk.selzstatic.com/0.1.47/client.js"></script>
-```
+The SDK is built using ES6 and ES7 syntax, meaning if you need to support older browsers such as IE11, you will need to add polyfills to support them. The two recommended options are:
 
-Or if you want a polyfilled version:
+### polyfill.io
 
-```html
-<script src="https://sdk.selzstatic.com/0.1.47/client.polyfilled.js"></script>
-```
+[polyfill.io](https://polyfill.io) is a service that will serve polyfills based on the User Agent header so only browsers that _require_ polyfills will get them.
+
+### babel-polyfill / core-js
+
+You can include [babel-polyfill](https://babeljs.io/docs/en/babel-polyfill.html) or [core-js](https://github.com/zloirock/core-js) to add the required polyfills to your build
 
 ## Creating a client
 
