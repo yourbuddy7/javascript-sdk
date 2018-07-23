@@ -109,6 +109,10 @@ class Product {
 
     // eslint-disable-next-line camelcase
     get featured_image() {
+        if (is.empty(this.images)) {
+            return null;
+        }
+
         return this.images.find(image => image.is_featured);
     }
 
