@@ -108,20 +108,6 @@ class Product {
     }
 
     // eslint-disable-next-line camelcase
-    get featured_image() {
-        if (is.empty(this.images)) {
-            return null;
-        }
-
-        return this.images.find(image => image.is_featured);
-    }
-
-    // eslint-disable-next-line camelcase
-    get is_sold_out() {
-        return this.quantity_available === 0;
-    }
-
-    // eslint-disable-next-line camelcase
     get selected_variant() {
         if (is.empty(this.variants)) {
             return null;
