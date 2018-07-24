@@ -19,7 +19,7 @@ npm i -S selz-js-sdk
 or using our CDN:
 
 ```html
-<script src="https://sdk.selzstatic.com/0.1.51/client.js"></script>
+<script src="https://sdk.selzstatic.com/0.1.52/client.js"></script>
 ```
 
 ## Polyfilling
