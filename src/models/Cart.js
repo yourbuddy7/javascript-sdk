@@ -6,6 +6,9 @@ class CartItem {
     constructor(item, cartId) {
         this.cartId = cartId;
 
+        // Take all properties by default
+        Object.assign(this, item);
+
         // Map product
         this.product = new Product(client, item.product, item.variant_id);
     }
