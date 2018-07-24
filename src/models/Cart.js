@@ -6,24 +6,6 @@ class CartItem {
     constructor(item, cartId) {
         this.cartId = cartId;
 
-        // Semi private for quantity updates so we can bind to getters/setters
-        let _quantity = item.quantity;
-
-        // Take all properties by default
-        Object.assign(this, item, {
-            _setQuantity: (quantity = 1) => {
-                _quantity = quantity;
-                client.updateCartItemQuantity(this.cartId, this.index, quantity);
-            },
-            _getQuantity: () => _quantity,
-            get quantity() {
-                return this._getQuantity();
-            },
-            set quantity(quantity) {
-                this._setQuantity(quantity);
-            },
-        });
-
         // Map product
         this.product = new Product(client, item.product, item.variant_id);
     }
