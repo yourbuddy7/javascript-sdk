@@ -23,7 +23,7 @@ const config = {
          * @param {number} page - Page to fetch
          */
         products(env, id, query = '', page = 1) {
-            return `${getBase(env)}products/all${id}?q=${query}&p=${page}`;
+            return `${getBase(env)}products/all/${id}?q=${query}&p=${page}`;
         },
 
         /**

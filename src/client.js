@@ -127,7 +127,9 @@ class Client {
         return new Promise((resolve, reject) => {
             this.getStoreId()
                 .then(id => {
-                    http.get(config.urls.products(this.env, id, query, page < 1 ? 1 : page))
+                    const keyword = !is.empty(query) ? query : '';
+
+                    http.get(config.urls.products(this.env, id, keyword, page < 1 ? 1 : page))
                         .then(json => {
                             resolve(json.map(p => new Product(this, p)));
                         })
