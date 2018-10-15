@@ -1,3 +1,7 @@
+# v1.0.3
+
+-   Changed end point to use cache
+
 # v1.0.2
 
 -   Fix for URL for getting all products
