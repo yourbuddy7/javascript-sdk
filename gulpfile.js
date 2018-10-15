@@ -13,8 +13,7 @@ const size = require('gulp-size');
 const rollup = require('gulp-better-rollup');
 const babel = require('rollup-plugin-babel');
 const sourcemaps = require('gulp-sourcemaps');
-const { uglify } = require('rollup-plugin-uglify');
-const { minify } = require('uglify-es');
+const uglify = require('gulp-uglify-es').default;
 const commonjs = require('rollup-plugin-commonjs');
 const resolve = require('rollup-plugin-node-resolve');
 const rollupReplace = require('rollup-plugin-replace');
@@ -41,9 +40,6 @@ const builds = {
 const build = process.env.BUILD || builds.prod;
 process.env.NODE_ENV = build;
 
-// Browser list
-const browsers = ['> 1%'];
-
 // Size plugin
 const sizeOptions = { showFiles: true, gzip: true };
 
@@ -54,22 +50,16 @@ const tasks = {
 
 // Babel config
 const babelrc = {
+    babelrc: false,
     presets: [
+        '@babel/env',
         [
-            'env',
+            'minify',
             {
-                targets: {
-                    browsers,
-                },
-                useBuiltIns: true,
-                modules: false,
-                // debug: true,
+                builtIns: false, // Temporary fix for https://github.com/babel/minify/issues/904
             },
         ],
     ],
-    plugins: ['external-helpers'],
-    babelrc: false,
-    // exclude: 'node_modules/**',
 };
 
 // JavaScript
@@ -108,7 +98,6 @@ Object.entries(formats).forEach(([format, task]) => {
                                 VERSION: JSON.stringify(pkg.version),
                             }),
                             babel(babelrc),
-                            uglify({}, minify),
                         ],
                     },
                     {
@@ -118,6 +107,7 @@ Object.entries(formats).forEach(([format, task]) => {
                     },
                 ),
             )
+            .pipe(uglify())
             .pipe(
                 rename({
                     extname: `.${task.ext}`,
@@ -138,11 +128,12 @@ gulp.task('js:demo', () =>
         .pipe(
             rollup(
                 {
-                    plugins: [resolve(), commonjs(), babel(babelrc), uglify({}, minify)],
+                    plugins: [resolve(), commonjs(), babel(babelrc)],
                 },
                 { format: 'es' },
             ),
         )
+        .pipe(uglify())
         .pipe(size(sizeOptions))
         .pipe(sourcemaps.write(''))
         .pipe(gulp.dest('./docs/dist')),
