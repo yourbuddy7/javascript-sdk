@@ -1,12 +1,12 @@
-# v1.0.3
+### v1.0.3
 
 -   Changed end point to use cache
 
-# v1.0.2
+### v1.0.2
 
 -   Fix for URL for getting all products
 
-# v1.0.1
+### v1.0.1
 
 -   Version bump for docs update
 
