@@ -131,7 +131,11 @@ class Client {
 
                     http.get(config.urls.products(this.env, id, keyword, page < 1 ? 1 : page))
                         .then(json => {
-                            resolve(json.map(p => new Product(this, p)));
+                            resolve(
+                                Object.assign(json, {
+                                    products: json.products.map(p => new Product(this, p)),
+                                }),
+                            );
                         })
                         .catch(reject);
                 })

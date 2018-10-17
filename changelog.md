@@ -1,3 +1,7 @@
+# v1.0.4
+
+-   Added additional data to the getProducts response
+
 # v1.0.3
 
 -   Changed end point to use cache
