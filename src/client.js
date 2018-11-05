@@ -1,5 +1,6 @@
 import config from './config';
 import Cart from './models/Cart';
+import Category from './models/Category';
 import Product from './models/Product';
 import Store from './models/Store';
 import http from './utils/http';
@@ -104,7 +105,7 @@ class Client {
 
     /**
      * Get product data
-     * @param {string} url - Short or full URL for a product
+     * @param {String} url - Short or full URL for a product
      */
     getProduct(url) {
         return new Promise((resolve, reject) => {
@@ -144,9 +145,30 @@ class Client {
     }
 
     /**
+     * Get all categories
+     */
+    getCategories() {
+        return new Promise((resolve, reject) => {
+            this.getStoreId()
+                .then(id => {
+                    http.get(config.urls.categories(this.env, id))
+                        .then(json => {
+                            resolve(
+                                Object.assign(json, {
+                                    categories: json.categories.map(c => new Category(c)),
+                                }),
+                            );
+                        })
+                        .catch(reject);
+                })
+                .catch(reject);
+        });
+    }
+
+    /**
      * Create a new shopping cart
-     * @param {string} currency - ISO currency code
-     * @param {string} discount - Discount code
+     * @param {String} currency - ISO currency code
+     * @param {String} discount - Discount code
      */
     createCart(currency, discount) {
         return new Promise((resolve, reject) => {
@@ -179,7 +201,7 @@ class Client {
 
     /**
      * Get a shopping cart or create one if needed
-     * @param {string} currency - The shopping cart ISO currency code
+     * @param {String} currency - The shopping cart ISO currency code
      */
     getCartId(currency) {
         return new Promise((resolve, reject) => {
@@ -208,7 +230,7 @@ class Client {
 
     /**
      * Get a shopping cart
-     * @param {string} input - The shopping cart ISO currency code or cart ID
+     * @param {String} input - The shopping cart ISO currency code or cart ID
      */
     getCart(input) {
         return new Promise((resolve, reject) => {
@@ -307,7 +329,7 @@ class Client {
 
     /**
      * Set the active cart based on currency
-     * @param {string} input - The shopping cart ISO currency code or cart ID
+     * @param {String} input - The shopping cart ISO currency code or cart ID
      */
     setActiveCart(input = null) {
         return new Promise((resolve, reject) => {
@@ -394,8 +416,8 @@ class Client {
 
     /**
      * Add a product to a cart
-     * @param {string} id - The cart ID
-     * @param {object} product - The product details
+     * @param {String} id - The cart ID
+     * @param {Object} product - The product details
      */
     addToCart(id, product) {
         return new Promise((resolve, reject) => {
@@ -429,9 +451,9 @@ class Client {
 
     /**
      * Update an items quantity in the shopping cart
-     * @param {string} id - The shopping cart ID
-     * @param {string} index - The shopping cart item quid
-     * @param {number} quantity - Desired quantity
+     * @param {String} id - The shopping cart ID
+     * @param {String} index - The shopping cart item quid
+     * @param {Number} quantity - Desired quantity
      */
     updateCartItemQuantity(id, index, quantity = 1) {
         return new Promise((resolve, reject) => {
@@ -465,8 +487,8 @@ class Client {
 
     /**
      * Remove a product from a cart
-     * @param {string} id - The shopping cart id
-     * @param {string} index - The shopping cart item guid
+     * @param {String} id - The shopping cart id
+     * @param {String} index - The shopping cart item guid
      */
     removeFromCart(id, index) {
         return new Promise((resolve, reject) => {
@@ -504,6 +526,6 @@ class Client {
     }
 }
 
-export { Product, Cart, Store };
+export { Product, Category, Cart, Store };
 
 export default Client;

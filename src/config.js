@@ -1,13 +1,13 @@
 import is from './utils/is';
 
-const getBase = env => `https://${is.empty(env) ? 'sdk.selz.com' : `${env}-selz.com/sdk`}/`;
+const getBase = env => `https://${!is.empty(env) ? `${env}-` : ''}selz.com/sdk/`;
 
 const config = {
     urls: {
         /**
          * Get URL for product data by URL
-         * @param {string} env - Environment (for internal use)
-         * @param {string} url - Short or full URL for a product
+         * @param {String} env - Environment (for internal use)
+         * @param {String} url - Short or full URL for a product
          */
         product(env, url = '') {
             return `${getBase(env)}products/find?url=${url}`;
@@ -15,19 +15,29 @@ const config = {
 
         /**
          * Get URL for all products by store ID
-         * @param {string} env - Environment (for internal use)
-         * @param {string} id - The store ID
-         * @param {string} query - Search query
-         * @param {number} page - Page to fetch
+         * @param {String} env - Environment (for internal use)
+         * @param {Number|String} id - The store ID
+         * @param {String} query - Search query
+         * @param {ObjectId} category - Category ID
+         * @param {Number} page - Page to fetch
          */
-        products(env, id, query = '', page = 1) {
-            return `${getBase(env)}products/all/${id}?q=${query}&p=${page}`;
+        products(env, id, query = '', category = '', page = 1) {
+            return `${getBase(env)}products/all/${id}?q=${query}&c=${category}&p=${page}`;
+        },
+
+        /**
+         * Get all categories for a given store ID
+         * @param {String} env - Environment (for internal use)
+         * @param {String} id - The store ID
+         */
+        categories(env, id) {
+            return `${getBase(env)}categories/${id}`;
         },
 
         /**
          * Get URL for finding a store by URL or ID
-         * @param {string} env - Environment (for internal use)
-         * @param {number|string} input - The ID or URL to lookup
+         * @param {String} env - Environment (for internal use)
+         * @param {Number|String} input - The ID or URL to lookup
          */
         store(env, input = null) {
             if (is.number(input)) {
@@ -39,8 +49,8 @@ const config = {
 
         /**
          * Create a new cart
-         * @param {string} env - Environment (for internal use)
-         * @param {number} id - Store ID
+         * @param {String} env - Environment (for internal use)
+         * @param {Number} id - Store ID
          */
         createCart(env, id = '') {
             return `${getBase(env)}cart/create/${id}`;
@@ -48,8 +58,8 @@ const config = {
 
         /**
          * Get cart from ID
-         * @param {string} env - Environment (for internal use)
-         * @param {string} id - Cart ID
+         * @param {String} env - Environment (for internal use)
+         * @param {String} id - Cart ID
          */
         getCart(env, id = '') {
             return `${getBase(env)}cart/${id}`;
@@ -57,8 +67,8 @@ const config = {
 
         /**
          * Check carts still exist server side
-         * @param {string} env - Environment (for internal use)
-         * @param {number} id - Cart IDs
+         * @param {String} env - Environment (for internal use)
+         * @param {Number} id - Cart IDs
          */
         checkCarts(env, ids = '') {
             return `${getBase(env)}cart/verify?ids=${ids}`;
@@ -66,8 +76,8 @@ const config = {
 
         /**
          * Add product to cart
-         * @param {string} env - Environment (for internal use)
-         * @param {string} id - Cart ID
+         * @param {String} env - Environment (for internal use)
+         * @param {String} id - Cart ID
          */
         addToCart(env, id = '') {
             return `${getBase(env)}cart/add/${id}`;
@@ -75,8 +85,8 @@ const config = {
 
         /**
          * Update a cart item quantity
-         * @param {string} env - Environment (for internal use)
-         * @param {string} id - Cart ID
+         * @param {String} env - Environment (for internal use)
+         * @param {String} id - Cart ID
          */
         updateCartItemQuantity(env, id = '') {
             return `${getBase(env)}cart/updateitemquantity/${id}`;
@@ -84,8 +94,8 @@ const config = {
 
         /**
          * Remove product from cart
-         * @param {string} env - Environment (for internal use)
-         * @param {string} id - Cart ID
+         * @param {String} env - Environment (for internal use)
+         * @param {String} id - Cart ID
          */
         removeFromCart(env, id = '') {
             return `${getBase(env)}cart/remove/${id}`;
