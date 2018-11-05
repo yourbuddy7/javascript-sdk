@@ -124,13 +124,19 @@ class Client {
     /**
      * Get all products
      */
-    getProducts(query = '', page = 1) {
+    getProducts(keyword = '', category = '', page = 1) {
         return new Promise((resolve, reject) => {
             this.getStoreId()
                 .then(id => {
-                    const keyword = !is.empty(query) ? query : '';
-
-                    http.get(config.urls.products(this.env, id, keyword, page < 1 ? 1 : page))
+                    http.get(
+                        config.urls.products(
+                            this.env,
+                            id,
+                            !is.empty(keyword) ? keyword : '',
+                            category,
+                            page < 1 ? 1 : page,
+                        ),
+                    )
                         .then(json => {
                             resolve(
                                 Object.assign(json, {

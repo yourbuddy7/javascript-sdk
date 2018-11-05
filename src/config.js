@@ -17,12 +17,12 @@ const config = {
          * Get URL for all products by store ID
          * @param {String} env - Environment (for internal use)
          * @param {Number|String} id - The store ID
-         * @param {String} query - Search query
+         * @param {String} keyword - Search keyword
          * @param {ObjectId} category - Category ID
          * @param {Number} page - Page to fetch
          */
-        products(env, id, query = '', category = '', page = 1) {
-            return `${getBase(env)}products/all/${id}?q=${query}&c=${category}&p=${page}`;
+        products(env, id, keyword = '', category = '', page = 1) {
+            return `${getBase(env)}products/all/${id}?q=${keyword}&c=${category}&p=${page}`;
         },
 
         /**
