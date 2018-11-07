@@ -1,6 +1,6 @@
 {
     "name": "selz-js-sdk",
-    "version": "1.0.6-beta2",
+    "version": "1.0.6",
     "description": "JavaScript SDK for use with the Selz platform.",
     "main": "dist/client.js",
     "module": "dist/client.mjs",
@@ -34,8 +34,8 @@
     ],
     "homepage": "https://github.com/Selz/javascript-sdk#readme",
     "devDependencies": {
-        "@babel/core": "^7.1.2",
-        "@babel/preset-env": "^7.1.0",
+        "@babel/core": "^7.1.5",
+        "@babel/preset-env": "^7.1.5",
         "babel-eslint": "^10.0.1",
         "babel-preset-minify": "^0.5.0",
         "del": "^3.0.0",

@@ -18,7 +18,7 @@ const config = {
          * @param {String} env - Environment (for internal use)
          * @param {Number|String} id - The store ID
          * @param {String} keyword - Search keyword
-         * @param {ObjectId} category - Category ID
+         * @param {ObjectId|String} category - Category ID or relative path
          * @param {Number} page - Page to fetch
          */
         products(env, id, keyword = '', category = '', page = 1) {
