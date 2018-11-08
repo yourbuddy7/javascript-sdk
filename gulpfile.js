@@ -16,7 +16,7 @@ const commonjs = require('rollup-plugin-commonjs');
 const resolve = require('rollup-plugin-node-resolve');
 const rollupReplace = require('rollup-plugin-replace');
 const sourcemaps = require('gulp-sourcemaps');
-const uglify = require('gulp-uglify-es').default;
+const terser = require('gulp-terser');
 const replace = require('gulp-replace');
 const s3 = require('gulp-s3');
 const pkg = require('./package.json');
@@ -107,7 +107,11 @@ Object.entries(formats).forEach(([format, task]) => {
                     },
                 ),
             )
-            .pipe(uglify())
+            .pipe(
+                terser({
+                    // keep_classnames: true,
+                }),
+            )
             .pipe(
                 rename({
                     extname: `.${task.ext}`,
@@ -133,7 +137,11 @@ gulp.task('js:demo', () =>
                 { format: 'es' },
             ),
         )
-        .pipe(uglify())
+        .pipe(
+            terser({
+                // keep_classnames: true,
+            }),
+        )
         .pipe(size(sizeOptions))
         .pipe(sourcemaps.write(''))
         .pipe(gulp.dest('./docs/dist')),
