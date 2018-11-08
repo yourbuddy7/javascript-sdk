@@ -1,6 +1,6 @@
 ### v1.0.7
 
--   Restored `sdk.selz.com` endpoint so we don't break changes
+-   Restored `sdk.selz.com` endpoint to avoid a breaking change
 
 ### v1.0.6
 
