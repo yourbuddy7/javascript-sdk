@@ -1,3 +1,7 @@
+### v1.0.7
+
+-   Restored `sdk.selz.com` endpoint so we don't break changes
+
 ### v1.0.6
 
 -   Added category support for product listing and new `getCategories` method
