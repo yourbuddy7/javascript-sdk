@@ -4,9 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const output = document.getElementById('output');
 
     function log(label, data) {
-        // console.log(label, data);
         const details = document.createElement('details');
-
         const summary = document.createElement('summary');
         summary.innerHTML = label;
         details.appendChild(summary);
@@ -34,7 +32,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const client = new Client({
         store: 'local.sampotts.me',
-        env: 'local',
+        env: 'local-selz.com',
     });
 
     // Expose

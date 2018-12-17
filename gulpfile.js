@@ -6,8 +6,6 @@
 
 const gulp = require('gulp');
 const del = require('del');
-const gutil = require('gulp-util');
-const run = require('run-sequence');
 const rename = require('gulp-rename');
 const size = require('gulp-size');
 const rollup = require('gulp-better-rollup');
@@ -18,17 +16,21 @@ const rollupReplace = require('rollup-plugin-replace');
 const sourcemaps = require('gulp-sourcemaps');
 const terser = require('gulp-terser');
 const replace = require('gulp-replace');
-const s3 = require('gulp-s3');
+const publish = require('gulp-awspublish');
+const aws = require('aws-sdk');
 const pkg = require('./package.json');
 
-let aws = {};
-try {
-    aws = require('./aws.json'); // eslint-disable-line
-} catch (e) {
-    // Do nothing
-}
-
 const namespace = 'SelzClient';
+
+// Create publisher instance
+const domain = 'sdk.selzstatic.com';
+const publisher = publish.create({
+    region: 'us-east-1',
+    params: {
+        Bucket: 'selz-sdk',
+    },
+    credentials: new aws.SharedIniFileCredentials({ profile: 'selz' }),
+});
 
 // Build types
 const builds = {
@@ -44,7 +46,7 @@ process.env.NODE_ENV = build;
 const sizeOptions = { showFiles: true, gzip: true };
 
 const tasks = {
-    clean: ['clean'],
+    clean: 'clean',
     js: [],
 };
 
@@ -84,7 +86,7 @@ Object.entries(formats).forEach(([format, task]) => {
     gulp.task(name, () =>
         gulp
             .src('./src/client.js')
-            .on('error', gutil.log)
+            .on('error', console.log)
             .pipe(sourcemaps.init())
             .pipe(
                 rollup(
@@ -127,7 +129,7 @@ Object.entries(formats).forEach(([format, task]) => {
 gulp.task('js:demo', () =>
     gulp
         .src('./docs/src/*.js')
-        .on('error', gutil.log)
+        .on('error', console.log)
         .pipe(sourcemaps.init())
         .pipe(
             rollup(
@@ -151,60 +153,50 @@ gulp.task('js:demo', () =>
 gulp.task('clean', () => del(['dist/**/*']));
 
 // Watch for file changes
-gulp.task('watch', [], () => {
-    const paths = ['src/**/*.scss', 'src/**/*.js', 'docs/scripts.js'];
-    gulp.watch(paths, tasks.js, ['js:demo']);
+gulp.task('watch', () => {
+    const paths = ['src/**/*.js', 'docs/scripts.js'];
+    return gulp.watch(paths, gulp.parallel(...tasks.js, 'js:demo'));
 });
 
 // Default gulp task
-gulp.task('default', () => {
-    run(tasks.clean, tasks.js, ['js:demo'], 'watch');
+gulp.task('default', gulp.series(tasks.clean, gulp.parallel(...tasks.js, 'js:demo'), 'watch'));
+
+// Deployment
+const regex =
+    '(?:0|[1-9][0-9]*)\\.(?:0|[1-9][0-9]*).(?:0|[1-9][0-9]*)(?:-[\\da-z\\-]+(?:.[\\da-z\\-]+)*)?(?:\\+[\\da-z\\-]+(?:.[\\da-z\\-]+)*)?';
+const cdnpath = new RegExp(`${domain}/${regex}`, 'gi');
+const paths = {
+    local: new RegExp('(../)?dist', 'gi'),
+    cdn: `https://${domain}/${pkg.version}`,
+};
+
+// Upload options
+const headers = {
+    'Cache-Control': `max-age=${31536000}`,
+};
+
+// Publish version to CDN bucket
+gulp.task('upload', () => {
+    console.log(`Uploading ${pkg.version} to ${domain}...`);
+
+    // Replace versioned files in readme.md
+    gulp.src([`${__dirname}/readme.md`])
+        .pipe(replace(cdnpath, `${domain}/${pkg.version}`))
+        .pipe(gulp.dest(__dirname));
+
+    // Upload to CDN
+    return gulp
+        .src('./dist/**')
+        .pipe(
+            rename(p => {
+                // eslint-disable-next-line
+                p.dirname = p.dirname.replace('.', pkg.version);
+            }),
+        )
+        .pipe(replace(paths.local, paths.cdn))
+        .pipe(publisher.publish(headers))
+        .pipe(publish.reporter());
 });
 
-// If aws is setup
-if (Object.keys(aws).length) {
-    const regex =
-        '(?:0|[1-9][0-9]*)\\.(?:0|[1-9][0-9]*).(?:0|[1-9][0-9]*)(?:-[\\da-z\\-]+(?:.[\\da-z\\-]+)*)?(?:\\+[\\da-z\\-]+(?:.[\\da-z\\-]+)*)?';
-    const cdnpath = new RegExp(`${aws.domain}/${regex}`, 'gi');
-    const paths = {
-        local: new RegExp('(../)?dist', 'gi'),
-        cdn: `https://${aws.domain}/${pkg.version}`,
-    };
-
-    // Upload options
-    const maxAge = 31536000; // 1 year
-    const options = {
-        headers: {
-            'Cache-Control': `max-age=${maxAge}`,
-            Vary: 'Accept-Encoding',
-        },
-        failOnError: true,
-    };
-
-    // Publish version to CDN bucket
-    gulp.task('upload', () => {
-        console.log(`Uploading ${pkg.version} to ${aws.domain}...`);
-
-        // Replace versioned files in readme.md
-        gulp.src([`${__dirname}/readme.md`])
-            .pipe(replace(cdnpath, `${aws.domain}/${pkg.version}`))
-            .pipe(gulp.dest(__dirname));
-
-        // Upload to CDN
-        return gulp
-            .src('./dist/**')
-            .pipe(
-                rename(p => {
-                    // eslint-disable-next-line
-                    p.dirname = p.dirname.replace('.', pkg.version);
-                }),
-            )
-            .pipe(replace(paths.local, paths.cdn))
-            .pipe(s3(aws, options.cdn));
-    });
-
-    // Do everything
-    gulp.task('deploy', () => {
-        run(tasks.clean, tasks.js, 'upload');
-    });
-}
+// Do everything
+gulp.task('deploy', gulp.series(tasks.clean, ...tasks.js, 'upload'));

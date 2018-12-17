@@ -1,3 +1,7 @@
+### v1.0.8
+
+-   Minor bug fix
+
 ### v1.0.7
 
 -   Restored `sdk.selz.com` endpoint to avoid a breaking change
