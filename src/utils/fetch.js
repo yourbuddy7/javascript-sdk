@@ -30,8 +30,23 @@ export default function(url, options = {}) {
                 throw error;
             }
 
+            // Handle failures
+            // https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/status
+            const fail = () => {
+                const error = new Error(xhr.status);
+                error.request = xhr;
+                reject(error);
+            };
+
+            // Successfully made the request
             xhr.addEventListener('load', () => {
                 const { response } = xhr;
+
+                // Something went wrong either with the request or server
+                if (xhr.status >= 400) {
+                    fail();
+                    return;
+                }
 
                 // Parse JSON responses
                 if (responseType === 'json') {
@@ -42,7 +57,7 @@ export default function(url, options = {}) {
                             } else {
                                 const error = new Error('Request failed');
                                 error.errors = json.errors;
-                                throw error;
+                                reject(error);
                             }
                         })
                         .catch(reject);
@@ -51,11 +66,8 @@ export default function(url, options = {}) {
                 }
             });
 
-            xhr.addEventListener('error', () => {
-                const error = new Error(xhr.status);
-                error.request = xhr;
-                throw error;
-            });
+            // Request failed
+            xhr.addEventListener('error', fail);
 
             // Start the request
             xhr.open(type, url, true);

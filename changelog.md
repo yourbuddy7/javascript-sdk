@@ -1,3 +1,11 @@
+### v1.0.9
+
+-   Improved error handling for XHR requests
+
+### v1.0.8
+
+-   Minor bug fix
+
 ### v1.0.8
 
 -   Minor bug fix

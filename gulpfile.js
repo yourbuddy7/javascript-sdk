@@ -159,7 +159,7 @@ gulp.task('watch', () => {
 });
 
 // Default gulp task
-gulp.task('default', gulp.series(tasks.clean, gulp.parallel(...tasks.js, 'js:demo'), 'watch'));
+gulp.task('default', gulp.series(tasks.clean, gulp.parallel(...tasks.js), 'js:demo', 'watch'));
 
 // Deployment
 const regex =
