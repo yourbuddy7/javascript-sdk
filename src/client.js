@@ -133,8 +133,8 @@ class Client {
                             this.env,
                             id,
                             !is.empty(keyword) ? keyword : '',
-                            category,
-                            page < 1 ? 1 : page,
+                            is.objectId(category) ? category : '',
+                            !is.number(page) || page < 1 ? 1 : page,
                         ),
                     )
                         .then(json => {
