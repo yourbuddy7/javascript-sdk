@@ -2,7 +2,7 @@ import Product from './Product';
 
 let client = null;
 
-class CartItem {
+export class CartItem {
     constructor(item, cartId) {
         this.cartId = cartId;
 
@@ -14,7 +14,7 @@ class CartItem {
     }
 }
 
-class Cart {
+export class Cart {
     constructor(instance, cart, active = false) {
         if (cart === null) {
             return;

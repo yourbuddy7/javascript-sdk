@@ -1,5 +1,5 @@
 import config from './config';
-import Cart from './models/Cart';
+import { Cart, CartItem } from './models/Cart';
 import Category from './models/Category';
 import Product from './models/Product';
 import Store from './models/Store';
@@ -532,6 +532,6 @@ class Client {
     }
 }
 
-export { Product, Category, Cart, Store };
+export { Product, Category, Cart, CartItem, Store };
 
 export default Client;
