@@ -1,3 +1,15 @@
+### v1.0.12
+
+-   Validate category ID passed to `getProducts` method
+
+### v1.0.11
+
+-   Expose `CartItem` class1
+
+### v1.0.10
+
+-   Small bug fix with new `getProducts` method
+
 ### v1.0.9
 
 -   Improved error handling for XHR requests
