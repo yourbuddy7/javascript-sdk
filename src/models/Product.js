@@ -63,7 +63,7 @@ class ProductVariantAttribute {
 
 class Product {
     constructor(instance, product, variantId = '') {
-        if (!is.object(product) && !is.product(product)) {
+        if (!is.object(product)) {
             return;
         }
 

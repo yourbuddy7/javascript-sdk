@@ -139,7 +139,7 @@ class Client {
                     )
                         .then(json => {
                             resolve(
-                                Object.assign(json, {
+                                Object.assign({}, json, {
                                     products: json.products.map(p => new Product(this, p)),
                                 }),
                             );
@@ -160,7 +160,7 @@ class Client {
                     http.get(config.urls.categories(this.env, id))
                         .then(json => {
                             resolve(
-                                Object.assign(json, {
+                                Object.assign({}, json, {
                                     categories: json.categories.map(c => new Category(c)),
                                 }),
                             );

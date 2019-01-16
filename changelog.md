@@ -1,3 +1,7 @@
+### v1.0.13
+
+-   Fix mutation when responding to multiple requests
+
 ### v1.0.12
 
 -   Validate category ID passed to `getProducts` method

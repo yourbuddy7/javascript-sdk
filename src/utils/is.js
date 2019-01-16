@@ -2,6 +2,8 @@
 // Type checking
 // ==========================================================================
 
+import { Cart } from '../models/Cart';
+import Category from '../models/Category';
 import Product from '../models/Product';
 
 const getConstructor = input => (input !== null && typeof input !== 'undefined' ? input.constructor : null);
@@ -16,6 +18,8 @@ const isNullOrUndefined = input => input === null || typeof input === 'undefined
 const isObjectId = input => isString(input) && /^[a-f\d]{24}$/i.test(input);
 const isCurrencyCode = input => isString(input) && /^[A-z]{3}$/.test(input);
 const isProduct = input => getConstructor(input) === Product && Object.keys(input).length > 0;
+const isCart = input => getConstructor(input) === Cart && Object.keys(input).length > 0;
+const isCategory = input => getConstructor(input) === Category && Object.keys(input).length > 0;
 
 const isEmpty = input =>
     isNullOrUndefined(input) ||
@@ -52,6 +56,8 @@ const is = {
     objectId: isObjectId,
     currencyCode: isCurrencyCode,
     product: isProduct,
+    cart: isCart,
+    category: isCategory,
     url: isUrl,
     empty: isEmpty,
 };
