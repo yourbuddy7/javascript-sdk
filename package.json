@@ -1,10 +1,10 @@
 {
     "name": "selz-js-sdk",
-    "version": "1.0.13",
+    "version": "1.0.14",
     "description": "JavaScript SDK for use with the Selz platform.",
     "main": "dist/client.js",
     "module": "dist/client.mjs",
-    "jsnext:main": "src/index.js",
+    "jsnext:main": "dist/client.mjs",
     "directories": {
         "doc": "docs"
     },
@@ -35,7 +35,7 @@
     ],
     "homepage": "https://github.com/Selz/javascript-sdk#readme",
     "devDependencies": {
-        "aws-sdk": "^2.388.0",
+        "aws-sdk": "^2.389.0",
         "@babel/core": "^7.2.2",
         "@babel/preset-env": "^7.2.3",
         "babel-eslint": "^10.0.1",
@@ -43,7 +43,7 @@
         "del": "^3.0.0",
         "eslint": "^5.12.0",
         "eslint-config-airbnb-base": "13.1.0",
-        "eslint-config-prettier": "^3.4.0",
+        "eslint-config-prettier": "^3.5.0",
         "eslint-plugin-import": "^2.14.0",
         "gulp": "^4.0.0",
         "gulp-awspublish": "^3.4.0",

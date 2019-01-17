@@ -1,3 +1,7 @@
+### v1.0.14
+
+-   Fixed circular references
+
 ### v1.0.13
 
 -   Fix mutation when responding to multiple requests
