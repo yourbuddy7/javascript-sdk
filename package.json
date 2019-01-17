@@ -46,7 +46,7 @@
         "eslint-config-prettier": "^3.5.0",
         "eslint-plugin-import": "^2.14.0",
         "gulp": "^4.0.0",
-        "gulp-awspublish": "^3.4.0",
+        "gulp-awspublish": "^4.0.0",
         "gulp-better-rollup": "^3.4.0",
         "gulp-concat": "^2.6.1",
         "gulp-rename": "^1.4.0",
