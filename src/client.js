@@ -133,7 +133,7 @@ class Client {
                             this.env,
                             id,
                             !is.empty(keyword) ? keyword : '',
-                            is.objectId(category) ? category : '',
+                            is.string(category) ? category : '',
                             !is.number(page) || page < 1 ? 1 : page,
                         ),
                     )

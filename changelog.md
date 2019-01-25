@@ -1,3 +1,7 @@
+### v1.0.15
+
+-   Allow string (slugs) for category when fetching items
+
 ### v1.0.14
 
 -   Fixed circular references
