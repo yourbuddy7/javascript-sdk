@@ -5,11 +5,6 @@
         "browser": true,
         "es6": true
     },
-    "globals": {
-        "SelzClient": false,
-        "ENVIRONMENT": false,
-        "VERSION": false
-    },
     "rules": {
         "indent": ["error", 4, { "SwitchCase": 1 }],
         "quotes": ["error", "single", "avoid-escape"],

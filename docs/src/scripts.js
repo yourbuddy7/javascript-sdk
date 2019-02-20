@@ -1,4 +1,4 @@
-import Client from '../../dist/client';
+import Client from '../../src/client';
 
 document.addEventListener('DOMContentLoaded', () => {
     const output = document.getElementById('output');

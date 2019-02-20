@@ -6,21 +6,31 @@
 
 const gulp = require('gulp');
 const del = require('del');
-const rename = require('gulp-rename');
-const size = require('gulp-size');
+
+// JavaScript
 const rollup = require('gulp-better-rollup');
 const babel = require('rollup-plugin-babel');
 const commonjs = require('rollup-plugin-commonjs');
 const resolve = require('rollup-plugin-node-resolve');
-const rollupReplace = require('rollup-plugin-replace');
 const sourcemaps = require('gulp-sourcemaps');
 const terser = require('gulp-terser');
+
+// Utils
+const log = require('fancy-log');
+const ansi = require('ansi-colors');
+const rename = require('gulp-rename');
 const replace = require('gulp-replace');
+const plumber = require('gulp-plumber');
+const size = require('gulp-size');
+
+// Deployment
 const publish = require('gulp-awspublish');
 const aws = require('aws-sdk');
-const pkg = require('./package.json');
 
-const namespace = 'SelzClient';
+const pkg = require('./package.json');
+const build = require('./build.json');
+
+const { version } = pkg;
 
 // Create publisher instance
 const domain = 'sdk.selzstatic.com';
@@ -32,15 +42,8 @@ const publisher = publish.create({
     credentials: new aws.SharedIniFileCredentials({ profile: 'selz' }),
 });
 
-// Build types
-const builds = {
-    dev: 'development',
-    prod: 'production',
-};
-
 // Set environment to production by default
-const build = process.env.BUILD || builds.prod;
-process.env.NODE_ENV = build;
+process.env.NODE_ENV = process.env.BUILD || 'production';
 
 // Size plugin
 const sizeOptions = { showFiles: true, gzip: true };
@@ -49,6 +52,8 @@ const tasks = {
     clean: 'clean',
     js: [],
 };
+
+// JavaScript
 
 // Babel config
 const babelrc = {
@@ -64,90 +69,40 @@ const babelrc = {
     ],
 };
 
-// JavaScript
-// Formats to build
-const formats = {
-    es: {
-        format: 'es',
-        ext: 'mjs',
-        polyfill: false,
-    },
-    umd: {
-        format: 'umd',
-        ext: 'js',
-        polyfill: false,
-    },
-};
+Object.entries(build.js).forEach(([filename, entry]) => {
+    entry.formats.forEach(format => {
+        const name = `js:${filename}:${format}`;
+        tasks.js.push(name);
 
-Object.entries(formats).forEach(([format, task]) => {
-    const name = `js:${format}`;
-    tasks.js.push(name);
-
-    gulp.task(name, () =>
-        gulp
-            .src('./src/client.js')
-            .on('error', console.log)
-            .pipe(sourcemaps.init())
-            .pipe(
-                rollup(
-                    {
-                        plugins: [
-                            resolve(),
-                            commonjs(),
-                            rollupReplace({
-                                exclude: 'node_modules/**',
-                                ENVIRONMENT: JSON.stringify(build),
-                                VERSION: JSON.stringify(pkg.version),
-                            }),
-                            babel(babelrc),
-                        ],
-                    },
-                    {
-                        name: namespace,
-                        exports: 'named',
-                        format: task.format,
-                    },
-                ),
-            )
-            .pipe(
-                terser({
-                    // keep_classnames: true,
-                }),
-            )
-            .pipe(
-                rename({
-                    extname: `.${task.ext}`,
-                }),
-            )
-            .pipe(size(sizeOptions))
-            .pipe(sourcemaps.write(''))
-            .pipe(gulp.dest('./dist/')),
-    );
+        gulp.task(name, () =>
+            gulp
+                .src(entry.src)
+                .pipe(plumber())
+                .pipe(sourcemaps.init())
+                .pipe(
+                    rollup(
+                        {
+                            plugins: [resolve(), commonjs(), babel(babelrc)],
+                        },
+                        {
+                            name: entry.namespace,
+                            exports: 'named',
+                            format,
+                        },
+                    ),
+                )
+                .pipe(terser())
+                .pipe(
+                    rename({
+                        extname: `.${format === 'es' ? 'mjs' : 'js'}`,
+                    }),
+                )
+                .pipe(size(sizeOptions))
+                .pipe(sourcemaps.write(''))
+                .pipe(gulp.dest(entry.dist)),
+        );
+    });
 });
-
-// Docs JS
-gulp.task('js:demo', () =>
-    gulp
-        .src('./docs/src/*.js')
-        .on('error', console.log)
-        .pipe(sourcemaps.init())
-        .pipe(
-            rollup(
-                {
-                    plugins: [resolve(), commonjs(), babel(babelrc)],
-                },
-                { format: 'es' },
-            ),
-        )
-        .pipe(
-            terser({
-                // keep_classnames: true,
-            }),
-        )
-        .pipe(size(sizeOptions))
-        .pipe(sourcemaps.write(''))
-        .pipe(gulp.dest('./docs/dist')),
-);
 
 // Clean out /dist
 gulp.task('clean', () => del(['dist/**/*']));
@@ -155,11 +110,11 @@ gulp.task('clean', () => del(['dist/**/*']));
 // Watch for file changes
 gulp.task('watch', () => {
     const paths = ['src/**/*.js', 'docs/scripts.js'];
-    return gulp.watch(paths, gulp.parallel(...tasks.js, 'js:demo'));
+    return gulp.watch(paths, gulp.parallel(...tasks.js));
 });
 
 // Default gulp task
-gulp.task('default', gulp.series(tasks.clean, gulp.parallel(...tasks.js), 'js:demo', 'watch'));
+gulp.task('default', gulp.series(tasks.clean, gulp.parallel(...tasks.js), 'watch'));
 
 // Deployment
 const regex =
@@ -167,7 +122,7 @@ const regex =
 const cdnpath = new RegExp(`${domain}/${regex}`, 'gi');
 const paths = {
     local: new RegExp('(../)?dist', 'gi'),
-    cdn: `https://${domain}/${pkg.version}`,
+    cdn: `https://${domain}/${version}`,
 };
 
 // Upload options
@@ -177,11 +132,11 @@ const headers = {
 
 // Publish version to CDN bucket
 gulp.task('upload', () => {
-    console.log(`Uploading ${pkg.version} to ${domain}...`);
+    log(`Updating ${ansi.green.bold(version)} to ${domain}...`);
 
     // Replace versioned files in readme.md
     gulp.src([`${__dirname}/readme.md`])
-        .pipe(replace(cdnpath, `${domain}/${pkg.version}`))
+        .pipe(replace(cdnpath, `${domain}/${version}`))
         .pipe(gulp.dest(__dirname));
 
     // Upload to CDN
@@ -190,7 +145,7 @@ gulp.task('upload', () => {
         .pipe(
             rename(p => {
                 // eslint-disable-next-line
-                p.dirname = p.dirname.replace('.', pkg.version);
+                p.dirname = p.dirname.replace('.', version);
             }),
         )
         .pipe(replace(paths.local, paths.cdn))

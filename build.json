@@ -1,0 +1,16 @@
+{
+    "js": {
+        "client.js": {
+            "src": "./src/client.js",
+            "dist": "./dist/",
+            "formats": ["es", "umd"],
+            "namespace": "Selz"
+        },
+        "docs.js": {
+            "src": "./docs/src/scripts.js",
+            "dist": "./docs/dist/",
+            "formats": ["iife"],
+            "namespace": "Docs"
+        }
+    }
+}
