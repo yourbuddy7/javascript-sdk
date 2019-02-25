@@ -9,7 +9,7 @@ const queue = {};
 const http = {
     /**
      * GET remote URL and parse as JSON
-     * @param {string} url - The endpoint URL
+     * @param {String} url - The endpoint URL
      */
     get(url) {
         // Queue requests to prevent hammering
@@ -29,14 +29,16 @@ const http = {
 
     /**
      * POST to remote URL and parse as JSON
-     * @param {string} url - The endpoint URL
-     * @param {object} data - The POST data payload
+     * @param {String} url - The endpoint URL
+     * @param {Object} data - The POST data payload
      */
     post(url, data = {}) {
         const options = {
             type: 'POST',
             body: data,
         };
+
+        console.warn('POST', data);
 
         return fetch(url, options);
     },

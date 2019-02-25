@@ -110,7 +110,7 @@ gulp.task('clean', () => del(['dist/**/*']));
 
 // Watch for file changes
 gulp.task('watch', () => {
-    const paths = ['src/**/*.js', 'docs/scripts.js'];
+    const paths = ['src/**/*.js', 'docs/src/*.js'];
     return gulp.watch(paths, gulp.parallel(...tasks.js));
 });
 

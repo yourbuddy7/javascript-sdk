@@ -3,6 +3,7 @@
 // ==========================================================================
 
 import is from './is';
+import { cloneDeep } from './objects';
 import { toPascalCase } from './strings';
 
 /**
@@ -12,16 +13,24 @@ import { toPascalCase } from './strings';
  * @param {String} namespace - namespace for FormData
  */
 const buildFormData = (source = {}, form, namespace) => {
-    const data = form || new FormData();
+    const formData = form || new FormData();
     let formKey;
+    let data = null;
+
+    // Parse as an object
+    try {
+        data = cloneDeep(source);
+    } catch (error) {
+        return formData;
+    }
 
     // Source must be an object
-    if (!is.object(source)) {
-        return data;
+    if (!is.object(data)) {
+        return formData;
     }
 
     // Loop through the object to convert
-    Object.keys(source).forEach(key => {
+    Object.keys(data).forEach(key => {
         if (namespace) {
             formKey = `${namespace}[${key}]`;
         } else {
@@ -30,13 +39,13 @@ const buildFormData = (source = {}, form, namespace) => {
 
         // If the property is an object, but not a File, use recursivity
         if (typeof source[key] === 'object' && !(source[key] instanceof File)) {
-            buildFormData(source[key], data, key);
+            buildFormData(source[key], formData, key);
         } else {
-            data.append(toPascalCase(formKey), source[key]);
+            formData.append(toPascalCase(formKey), source[key]);
         }
     });
 
-    return data;
+    return formData;
 };
 
 export default buildFormData;

@@ -2,6 +2,7 @@ import is from '../utils/is';
 import Product from './Product';
 
 let client = null;
+const isProduct = input => !is.empty(input) && input instanceof Product;
 
 export class CartItem {
     constructor(item, cartId) {
@@ -17,21 +18,15 @@ export class CartItem {
 
 export class CartAddItem {
     constructor(item) {
-        this.id = null;
-        this.variant = null;
-        this.price = null;
+        this.productId = null;
+        this.variantId = null;
         this.quantity = 1;
-        this.discount = null;
+        this.discountCode = null;
+        this.buyersUnitPrice = null;
 
-        if (is.product(item)) {
-            this.id = item.id;
-
-            if (is.product(item) && item.hasVariants && is.empty(item.variant)) {
-                const [defaultVariant] = item.variants;
-                this.variant = defaultVariant.id;
-            } else if (is.objectId(item.variant)) {
-                this.variant = item.variant;
-            }
+        if (isProduct(item) || is.object(item)) {
+            this.productId = item.id;
+            this.variantId = is.objectId(item.variant) ? item.variant : null;
         }
     }
 }
@@ -59,15 +54,15 @@ export class Cart {
 
     /**
      * Add a product to this cart
-     * @param {object} product - The product details
+     * @param {Object} item - The cart item
      */
-    add(product) {
-        return client.addToCart(this.id, product);
+    add(item) {
+        return client.addToCart(this.id, item);
     }
 
     /**
      * Remove a product from this cart
-     * @param {string} index
+     * @param {String} index
      */
     remove(index) {
         return client.removeFromCart(this.id, index);

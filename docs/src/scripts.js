@@ -1,4 +1,4 @@
-import Client from '../../src/client';
+import Client, { CartAddItem } from '../../src/client';
 
 document.addEventListener('DOMContentLoaded', () => {
     const output = document.getElementById('output');
@@ -21,13 +21,17 @@ document.addEventListener('DOMContentLoaded', () => {
         window.prettyPrint();
     }
 
-    function fail(label, errors) {
-        if (errors instanceof Error) {
-            // console.error(errors);
-            return log(`${label} (error)`, { error: errors.toString() });
+    function fail(label, error) {
+        if (error instanceof Error) {
+            log(`${label} (error)`, {
+                error: error.toString(),
+                detail: error.errors,
+            });
+
+            return;
         }
 
-        return log(`${label} (failed)`, errors);
+        log(`${label} (failed)`, error);
     }
 
     const client = new Client({
@@ -61,21 +65,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function addToCart(product) {
-        getCart(product.currency_code)
+        getCart(product.currencyCode)
             .then(cart => {
-                let variantId = null;
+                const cartItem = new CartAddItem(product);
+                cartItem.quantity = 2;
 
-                if (typeof product.variant === 'string' && product.variant.length) {
-                    ({ variantId } = product);
-                } else if (product.variants && product.variants.length) {
-                    variantId = product.variants[0].id;
-                }
-
-                cart.add({
-                    id: product.id,
-                    quantity: 2,
-                    variantId,
-                })
+                cart.add(cartItem)
                     .then(updatedCart => {
                         log('Add to cart', updatedCart);
 

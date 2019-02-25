@@ -1,6 +1,6 @@
 {
     "name": "selz-js-sdk",
-    "version": "2.0.0-beta.1",
+    "version": "2.0.0-beta.2",
     "description": "JavaScript SDK for use with the Selz platform.",
     "homepage": "https://github.com/Selz/javascript-sdk",
     "main": "dist/client.js",
@@ -28,7 +28,7 @@
         "lint": "eslint .",
         "build": "gulp",
         "watch": "gulp watch",
-        "deploy": "gulp deploy"
+        "deploy": "yarn lint && gulp deploy"
     },
     "devDependencies": {
         "ansi-colors": "^3.2.3",

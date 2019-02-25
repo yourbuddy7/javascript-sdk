@@ -1,5 +1,5 @@
 import config from './config';
-import { Cart, CartItem } from './models/Cart';
+import { Cart, CartAddItem, CartItem } from './models/Cart';
 import Category from './models/Category';
 import Product from './models/Product';
 import Store from './models/Store';
@@ -425,21 +425,31 @@ class Client {
     /**
      * Add a product to a cart
      * @param {String} id - The cart ID
-     * @param {Object} product - The product details
+     * @param {Object} item - The cart item
      */
-    addToCart(id, product) {
+    addToCart(id, item) {
         return new Promise((resolve, reject) => {
             if (!is.objectId(id)) {
                 reject(new Error('A valid id is required'));
                 return;
             }
 
-            if (is.empty(product)) {
-                reject(new Error('A valid product is required'));
+            if (is.empty(item)) {
+                reject(new Error('A cart item is required'));
                 return;
             }
 
-            http.post(config.urls.addToCart(this.env, id), product)
+            // Map the cart item if required
+            let cartItem = item;
+            if (is.object(item) || item instanceof Product) {
+                cartItem = new CartAddItem(item);
+            }
+
+            if (!(cartItem instanceof CartAddItem)) {
+                reject(new Error('A valid cart item is required'));
+            }
+
+            http.post(config.urls.addToCart(this.env, id), cartItem)
                 .then(json => {
                     const cart = new Cart(this, json, true);
 

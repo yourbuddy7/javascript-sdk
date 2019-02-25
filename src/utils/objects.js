@@ -5,6 +5,14 @@
 import is from './is';
 
 /**
+ * Clone nested objects
+ * @param {object} object
+ */
+export function cloneDeep(object) {
+    return JSON.parse(JSON.stringify(object));
+}
+
+/**
  * Deep extend destination object with N more objects
  * @param {Object} target
  * @param {...Object} sources
