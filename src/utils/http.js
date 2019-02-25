@@ -38,8 +38,6 @@ const http = {
             body: data,
         };
 
-        console.warn('POST', data);
-
         return fetch(url, options);
     },
 };

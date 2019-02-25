@@ -1,6 +1,6 @@
 {
     "name": "selz-js-sdk",
-    "version": "2.0.0-beta.2",
+    "version": "2.0.0-beta.3",
     "description": "JavaScript SDK for use with the Selz platform.",
     "homepage": "https://github.com/Selz/javascript-sdk",
     "main": "dist/client.js",
