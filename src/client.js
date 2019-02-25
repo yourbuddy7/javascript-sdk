@@ -9,10 +9,11 @@ import Storage from './utils/storage';
 
 class Client {
     constructor(props) {
-        const { env, store } = props;
+        const { env, store, source } = props;
 
         this.env = !is.empty(env) ? env : '';
         this.store = store;
+        this.source = source;
 
         if (!is.url(store) && !is.number(store)) {
             throw Error('A store ID or URL is required to create a client');
@@ -190,6 +191,7 @@ class Client {
                     http.post(config.urls.createCart(this.env, id), {
                         currency: currencyCode,
                         discount: !is.empty(discount) ? discount : null,
+                        source: this.source,
                     })
                         .then(json => {
                             const cart = new Cart(this, json);
@@ -532,6 +534,6 @@ class Client {
     }
 }
 
-export { Product, Category, Cart, CartItem, Store };
+export { Product, Category, Cart, CartItem, CartAddItem, Store };
 
 export default Client;

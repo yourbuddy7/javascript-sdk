@@ -2,8 +2,12 @@
 // Fetch
 // ==========================================================================
 
+import pkg from '../../package.json';
 import buildFormData from './form-data';
 import { extend, parseJSON } from './objects';
+import parseUrl from './parseUrl';
+
+const { version } = pkg;
 
 const defaults = {
     type: 'GET',
@@ -13,8 +17,8 @@ const defaults = {
 
 /**
  * Custom immitation fetch using XHR
- * @param {string} url - The URL of the endpoint
- * @param {object} options - Object of options for the request
+ * @param {String} url - The URL of the endpoint
+ * @param {Object} options - Object of options for the request
  */
 export default function(url, options = {}) {
     const { type, body, responseType } = extend({}, defaults, options);
@@ -69,8 +73,15 @@ export default function(url, options = {}) {
             // Request failed
             xhr.addEventListener('error', fail);
 
+            // Add version to URL
+            const endpoint = parseUrl(url);
+            endpoint.searchParams.set('v', version);
+
             // Start the request
-            xhr.open(type, url, true);
+            xhr.open(type, endpoint, true);
+
+            // Add version header
+            // xhr.setRequestHeader('x-sdk-version', version);
 
             // Set the required response type
             // 'json' responseType is much slower, so we parse later

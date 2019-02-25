@@ -1,3 +1,8 @@
+### v2.0.0
+
+-   Using camelCase rather than snake-case. As this is a breaking change, we've bumped the major version
+-   Added a `CartAddItem` class/model for adding items to a cart
+
 ### v1.0.15
 
 -   Allow string (slugs) for category when fetching items

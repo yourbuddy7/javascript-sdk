@@ -63,18 +63,18 @@ document.addEventListener('DOMContentLoaded', () => {
     function addToCart(product) {
         getCart(product.currency_code)
             .then(cart => {
-                let variant = null;
+                let variantId = null;
 
                 if (typeof product.variant === 'string' && product.variant.length) {
-                    ({ variant } = product);
+                    ({ variantId } = product);
                 } else if (product.variants && product.variants.length) {
-                    variant = product.variants[0].id;
+                    variantId = product.variants[0].id;
                 }
 
                 cart.add({
                     id: product.id,
                     quantity: 2,
-                    variant_id: variant,
+                    variantId,
                 })
                     .then(updatedCart => {
                         log('Add to cart', updatedCart);
@@ -92,7 +92,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     client
-        .getProduct(products.GBP)
+        .getProduct(products.USD)
         .then(product => {
             log('Product', product);
 

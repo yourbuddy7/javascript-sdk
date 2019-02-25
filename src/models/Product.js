@@ -96,19 +96,16 @@ class Product {
         }
 
         // Variants
-        if (product.has_variants) {
+        if (product.hasVariants) {
             const selected = !is.empty(variantId) ? variantId : product.variants[0].id;
             this.variants = product.variants.map(variant => new ProductVariant(variant, selected));
         }
-        if (product.has_variant_attributes) {
-            this.variant_attributes = product.variant_attributes.map(
-                attribute => new ProductVariantAttribute(attribute),
-            );
+        if (product.hasVariantAttributes) {
+            this.variantAttributes = product.variantAttributes.map(attribute => new ProductVariantAttribute(attribute));
         }
     }
 
-    // eslint-disable-next-line camelcase
-    get selected_variant() {
+    get selectedVariant() {
         if (is.empty(this.variants)) {
             return null;
         }

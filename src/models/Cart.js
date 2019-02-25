@@ -1,3 +1,4 @@
+import is from '../utils/is';
 import Product from './Product';
 
 let client = null;
@@ -10,7 +11,28 @@ export class CartItem {
         Object.assign(this, item);
 
         // Map product
-        this.product = new Product(client, item.product, item.variant_id);
+        this.product = new Product(client, item.product, item.variantId);
+    }
+}
+
+export class CartAddItem {
+    constructor(item) {
+        this.id = null;
+        this.variant = null;
+        this.price = null;
+        this.quantity = 1;
+        this.discount = null;
+
+        if (is.product(item)) {
+            this.id = item.id;
+
+            if (is.product(item) && item.hasVariants && is.empty(item.variant)) {
+                const [defaultVariant] = item.variants;
+                this.variant = defaultVariant.id;
+            } else if (is.objectId(item.variant)) {
+                this.variant = item.variant;
+            }
+        }
     }
 }
 

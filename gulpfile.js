@@ -12,6 +12,7 @@ const rollup = require('gulp-better-rollup');
 const babel = require('rollup-plugin-babel');
 const commonjs = require('rollup-plugin-commonjs');
 const resolve = require('rollup-plugin-node-resolve');
+const json = require('rollup-plugin-json');
 const sourcemaps = require('gulp-sourcemaps');
 const terser = require('gulp-terser');
 
@@ -82,7 +83,7 @@ Object.entries(build.js).forEach(([filename, entry]) => {
                 .pipe(
                     rollup(
                         {
-                            plugins: [resolve(), commonjs(), babel(babelrc)],
+                            plugins: [resolve(), commonjs(), json(), babel(babelrc)],
                         },
                         {
                             name: entry.namespace,
@@ -132,7 +133,7 @@ const headers = {
 
 // Publish version to CDN bucket
 gulp.task('upload', () => {
-    log(`Updating ${ansi.green.bold(version)} to ${domain}...`);
+    log(`Uploading ${ansi.green.bold(version)} to ${ansi.cyan(domain)}...`);
 
     // Replace versioned files in readme.md
     gulp.src([`${__dirname}/readme.md`])
