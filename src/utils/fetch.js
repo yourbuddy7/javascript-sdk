@@ -2,12 +2,9 @@
 // Fetch
 // ==========================================================================
 
-import pkg from '../../package.json';
+import humps from 'humps';
 import buildFormData from './form-data';
 import { extend, parseJSON } from './objects';
-import parseUrl from './parseUrl';
-
-const { version } = pkg;
 
 const defaults = {
     type: 'GET',
@@ -57,7 +54,8 @@ export default function(url, options = {}) {
                     parseJSON(response)
                         .then(json => {
                             if (json.success) {
-                                resolve(json.data);
+                                const data = humps.camelizeKeys(json.data);
+                                resolve(data);
                             } else {
                                 const error = new Error('Request failed');
                                 error.errors = json.errors;
@@ -73,15 +71,8 @@ export default function(url, options = {}) {
             // Request failed
             xhr.addEventListener('error', fail);
 
-            // Add version to URL
-            const endpoint = parseUrl(url);
-            endpoint.searchParams.set('v', version);
-
             // Start the request
-            xhr.open(type, endpoint, true);
-
-            // Add version header
-            // xhr.setRequestHeader('x-sdk-version', version);
+            xhr.open(type, url, true);
 
             // Set the required response type
             // 'json' responseType is much slower, so we parse later
