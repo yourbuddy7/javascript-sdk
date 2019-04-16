@@ -173,6 +173,41 @@ class Client {
     }
 
     /**
+     * Buy a product
+     * @param {Object} item - The cart item
+     * @returns {Cart}
+     */
+    buy(item) {
+        return new Promise((resolve, reject) => {
+            if (is.empty(item)) {
+                reject(new Error('A cart item is required'));
+                return;
+            }
+
+            // Map the cart item if required
+            let cartItem = item;
+            if (is.object(item) || item instanceof Product) {
+                cartItem = new CartAddItem(item);
+            }
+
+            if (!(cartItem instanceof CartAddItem)) {
+                reject(new Error('A valid cart item is required'));
+            }
+
+            http.post(config.urls.buy(this.env), cartItem)
+                .then(json => {
+                    const cart = new Cart(this, json, true);
+
+                    // Cache store
+                    this.setStore(cart.store);
+
+                    resolve(cart);
+                })
+                .catch(reject);
+        });
+    }
+
+    /**
      * Create a new shopping cart
      * @param {String} currency - ISO currency code
      * @param {String} discount - Discount code

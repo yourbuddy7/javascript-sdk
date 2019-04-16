@@ -2,6 +2,7 @@
 
 -   Using camelCase rather than snake-case. As this is a breaking change, we've bumped the major version
 -   Added a `CartAddItem` class/model for adding items to a cart
+-   Added a `buy` method that creates a cart containing a specified product
 
 ### v1.0.15
 

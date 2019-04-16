@@ -81,6 +81,17 @@ document.addEventListener('DOMContentLoaded', () => {
             .catch(error => fail('Get cart', error));
     }
 
+    /* function buy(product) {
+        client
+            .buy(product)
+            .then(cart => {
+                log('Buy now', cart);
+
+                window.cart = cart;
+            })
+            .catch(error => fail('Buy now', error));
+    } */
+
     const products = {
         GBP: 'http://selz.co/1MaSYRU',
         USD: 'http://selz.co/1rvbhT6',
@@ -93,6 +104,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Expose
             window.product = product;
+
+            // buy(product);
 
             addToCart(product);
         })

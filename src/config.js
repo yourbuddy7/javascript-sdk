@@ -48,6 +48,14 @@ const config = {
         },
 
         /**
+         * Buy a product
+         * @param {String} env - Environment (for internal use)
+         */
+        buy(env) {
+            return `${getBase(env)}cart/buy`;
+        },
+
+        /**
          * Create a new cart
          * @param {String} env - Environment (for internal use)
          * @param {Number} id - Store ID
