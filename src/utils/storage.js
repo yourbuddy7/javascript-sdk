@@ -252,7 +252,6 @@ class Storage {
     setStore(data, url = null) {
         // Strip the protocol from the lookup url
         const key = getKey(url);
-
         // Get current list of stores
         const stores = this.get(this.config.keys.stores) || [];
         let existing = null;

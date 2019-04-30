@@ -6,7 +6,6 @@
 
 const gulp = require('gulp');
 const del = require('del');
-
 // JavaScript
 const rollup = require('gulp-better-rollup');
 const babel = require('rollup-plugin-babel');
@@ -15,7 +14,6 @@ const resolve = require('rollup-plugin-node-resolve');
 const json = require('rollup-plugin-json');
 const sourcemaps = require('gulp-sourcemaps');
 const terser = require('gulp-terser');
-
 // Utils
 const log = require('fancy-log');
 const ansi = require('ansi-colors');
@@ -23,18 +21,13 @@ const rename = require('gulp-rename');
 const replace = require('gulp-replace');
 const plumber = require('gulp-plumber');
 const size = require('gulp-size');
-
 // Deployment
 const publish = require('gulp-awspublish');
 const aws = require('aws-sdk');
-
 const pkg = require('./package.json');
 const build = require('./build.json');
 
-const { version } = pkg;
-
 // Create publisher instance
-const domain = 'sdk.selzstatic.com';
 const publisher = publish.create({
     region: 'us-east-1',
     params: {
@@ -42,6 +35,9 @@ const publisher = publish.create({
     },
     credentials: new aws.SharedIniFileCredentials({ profile: 'selz' }),
 });
+
+const domain = 'sdk.selzstatic.com';
+const { version } = pkg;
 
 // Set environment to production by default
 process.env.NODE_ENV = process.env.BUILD || 'production';
