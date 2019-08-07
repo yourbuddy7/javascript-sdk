@@ -7,11 +7,6 @@
         "es6": true
     },
     "rules": {
-        "indent": ["error", 4, { "SwitchCase": 1 }],
-        "quotes": ["error", "single", "avoid-escape"],
-        "camelcase": ["error", { "properties": "never" }],
-        "no-param-reassign": [2, { "props": false }],
-        "no-underscore-dangle": 0,
         "padding-line-between-statements": [
             "error",
             {

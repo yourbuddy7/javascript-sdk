@@ -10,15 +10,24 @@
             "dist/": true,
             "**/node_modules": true
         },
+
         // Linting
         "javascript.validate.enable": false,
+
         // Prettier
         "prettier.eslintIntegration": true,
+
         // Formatting
         "editor.tabSize": 4,
         "editor.insertSpaces": true,
         "editor.formatOnSave": true,
+
         // Trim on save
-        "files.trimTrailingWhitespace": true
+        "files.trimTrailingWhitespace": true,
+
+        // Special file associations
+        "files.associations": {
+            ".eslintrc": "jsonc"
+        }
     }
 }

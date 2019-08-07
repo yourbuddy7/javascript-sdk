@@ -22,7 +22,7 @@
 
 ### v1.0.11
 
--   Expose `CartItem` class1
+-   Expose `CartItem` class
 
 ### v1.0.10
 
