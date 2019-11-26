@@ -1,6 +1,6 @@
 {
     "name": "selz-js-sdk",
-    "version": "2.0.0-beta.7",
+    "version": "2.0.0-beta.8",
     "description": "JavaScript SDK for use with Selz.",
     "homepage": "https://github.com/Selz/javascript-sdk",
     "main": "dist/client.js",
@@ -28,7 +28,6 @@
         "lint": "eslint .",
         "lint:fix": "eslint --fix .",
         "build": "gulp",
-        "watch": "gulp watch",
         "deploy": "yarn lint && gulp deploy"
     },
     "devDependencies": {
