@@ -1,6 +1,6 @@
-import is from '../utils/is';
+import is from '../../utils/is';
 
-class Category {
+export default class Category {
     constructor(category = null) {
         if (!is.object(category)) {
             return;
@@ -10,5 +10,3 @@ class Category {
         Object.assign(this, category);
     }
 }
-
-export default Category;

@@ -1,67 +1,14 @@
-import is from '../utils/is';
+import is from '../../utils/is';
+import ProductFile from './ProductFile';
+import ProductImage from './ProductImage';
+import ProductMedia from './ProductMedia';
+import ProductUrls from './ProductUrls';
+import ProductVariant from './ProductVariant';
+import ProductVariantAttribute from './ProductVariantAttribute';
 
 let client = null;
 
-class ProductUrls {
-    constructor(urls) {
-        // Take all properties by default
-        Object.assign(this, urls);
-    }
-}
-
-class ProductImage {
-    constructor(image) {
-        // Take all properties by default
-        Object.assign(this, image);
-    }
-}
-
-class ProductMedia {
-    constructor(media) {
-        // Take all properties by default
-        Object.assign(this, media);
-
-        // Map cover image
-        this.cover = new ProductImage(media.cover);
-    }
-}
-
-class ProductFile {
-    constructor(file) {
-        // Take all properties by default
-        Object.assign(this, file);
-    }
-}
-
-class ProductVariant {
-    constructor(variant, selected = '') {
-        // Take all properties by default
-        Object.assign(this, variant);
-
-        this.selected = variant.id === selected;
-    }
-}
-
-class ProductVariantAttributeOption {
-    constructor(id, label) {
-        this.id = id;
-        this.label = label;
-    }
-}
-
-class ProductVariantAttribute {
-    constructor(variant) {
-        // Take all properties by default
-        Object.assign(this, variant);
-
-        // Map options
-        this.options = Object.keys(variant.options).map(
-            id => new ProductVariantAttributeOption(id, variant.options[id]),
-        );
-    }
-}
-
-class Product {
+export default class Product {
     constructor(instance, product, variantId = '') {
         if (!is.object(product)) {
             return;
@@ -113,5 +60,3 @@ class Product {
         return this.variants.find(variant => variant.selected);
     }
 }
-
-export default Product;

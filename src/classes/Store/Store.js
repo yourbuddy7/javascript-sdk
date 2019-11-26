@@ -1,6 +1,6 @@
-import is from '../utils/is';
+import is from '../../utils/is';
 
-class Store {
+export default class Store {
     constructor(store = null) {
         if (!is.object(store)) {
             return;
@@ -10,5 +10,3 @@ class Store {
         Object.assign(this, store);
     }
 }
-
-export default Store;

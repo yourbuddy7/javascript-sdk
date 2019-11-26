@@ -1,8 +1,8 @@
+import { Cart, CartAddItem, CartItem } from './classes/Cart';
+import Category from './classes/Category';
+import { Product } from './classes/Product';
+import Store from './classes/Store';
 import config from './config';
-import { Cart, CartAddItem, CartItem } from './models/Cart';
-import Category from './models/Category';
-import Product from './models/Product';
-import Store from './models/Store';
 import http from './utils/http';
 import is from './utils/is';
 import Storage from './utils/storage';
@@ -139,11 +139,10 @@ class Client {
                         ),
                     )
                         .then(json => {
-                            resolve(
-                                Object.assign({}, json, {
-                                    products: json.products.map(p => new Product(this, p)),
-                                }),
-                            );
+                            resolve({
+                                ...json,
+                                products: json.products.map(p => new Product(this, p)),
+                            });
                         })
                         .catch(reject);
                 })
@@ -160,11 +159,10 @@ class Client {
                 .then(id => {
                     http.get(config.urls.categories(this.env, id))
                         .then(json => {
-                            resolve(
-                                Object.assign({}, json, {
-                                    categories: json.categories.map(c => new Category(c)),
-                                }),
-                            );
+                            resolve({
+                                ...json,
+                                categories: json.categories.map(c => new Category(c)),
+                            });
                         })
                         .catch(reject);
                 })

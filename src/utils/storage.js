@@ -3,7 +3,7 @@
 // TODO: methods should return promises?
 // ==========================================================================
 
-import Store from '../models/Store';
+import Store from '../classes/Store/Store';
 import { dedupe } from './arrays';
 import is from './is';
 import { extend } from './objects';
@@ -27,18 +27,17 @@ const getKey = url => {
 
 class Storage {
     constructor(config) {
-        this.config = Object.assign(
-            {
-                keys: {
-                    root: 'selz-js-sdk',
-                    carts: 'carts',
-                    stores: 'stores',
-                },
-                ttl: 3600, // 1 hour
-                schema: new Date('2018-07-02').getTime(), // Schema version (allowing us to change data schema and invalidate storage)
+        this.config = {
+            keys: {
+                root: 'selz-js-sdk',
+                carts: 'carts',
+                stores: 'stores',
             },
-            config,
-        );
+            ttl: 3600, // 1 hour
+            schema: new Date('2018-07-02').getTime(), // Schema version (allowing us to change data schema and invalidate storage)
+
+            ...config,
+        };
 
         this.purge();
     }
