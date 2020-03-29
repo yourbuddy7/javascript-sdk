@@ -36,7 +36,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const client = new Client({
         store: 'local.sampotts.me',
-        env: 'local-selz.com',
+        env: 'app.local-selz.com',
     });
 
     // Expose
