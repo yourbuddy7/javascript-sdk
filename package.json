@@ -65,5 +65,8 @@
     },
     "dependencies": {
         "humps": "^2.0.1"
+    },
+    "resolutions": {
+        "yargs-parser": "^13.1.2"
     }
 }
