@@ -1,3 +1,7 @@
+### v2.0.1
+
+-   Version bump for dependency updates
+
 ### v2.0.0
 
 -   Using camelCase rather than snake-case. As this is a breaking change, we've bumped the major version
