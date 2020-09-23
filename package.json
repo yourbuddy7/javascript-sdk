@@ -25,6 +25,7 @@
         "> 1%"
     ],
     "scripts": {
+        "preinstall": "npx npm-force-resolutions",
         "lint": "eslint .",
         "lint:fix": "eslint --fix .",
         "build": "gulp",
