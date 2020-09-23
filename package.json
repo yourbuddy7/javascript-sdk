@@ -31,10 +31,11 @@
         "deploy": "yarn lint && gulp deploy"
     },
     "devDependencies": {
-        "ansi-colors": "^4.1.1",
-        "aws-sdk": "^2.579.0",
         "@babel/core": "^7.7.4",
         "@babel/preset-env": "^7.7.4",
+        "@selz/eslint-config": "^0.0.7",
+        "ansi-colors": "^4.1.1",
+        "aws-sdk": "^2.579.0",
         "babel-eslint": "^10.0.3",
         "babel-preset-minify": "^0.5.1",
         "del": "^5.1.0",
@@ -54,13 +55,12 @@
         "gulp-sourcemaps": "^2.6.5",
         "gulp-terser": "^1.2.0",
         "prettier": "^1.19.1",
-        "prettier-eslint": "^9.0.1",
+        "prettier-eslint": "^11.0.0",
         "rollup": "^1.27.5",
         "rollup-plugin-babel": "^4.3.3",
         "rollup-plugin-commonjs": "^10.1.0",
         "rollup-plugin-json": "^4.0.0",
-        "rollup-plugin-node-resolve": "^5.2.0",
-        "@selz/eslint-config": "^0.0.7"
+        "rollup-plugin-node-resolve": "^5.2.0"
     },
     "dependencies": {
         "humps": "^2.0.1"
