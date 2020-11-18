@@ -499,6 +499,60 @@ class Client {
                 .catch(reject);
         });
     }
+    /**
+     * Add a product with a flexable price to a cart
+     * @param {String} id - The cart ID
+     * @param {Object} item - The cart item
+     * @param {Number} price - The user decided price
+     */
+    addToCartFlexPrice(id, item, price=0) {
+        return new Promise((resolve, reject) => {
+            if (!is.objectId(id)) {
+                reject(new Error('A valid id is required'));
+                return;
+            }
+
+            if (is.empty(item)) {
+                reject(new Error('A cart item is required'));
+                return;
+            }
+
+            if (!item.isPriceFlexible){
+                reject(new Error('This product\'s price is not flexible. Please use "addToCart" instead.'))
+            }
+
+            if (typeof price != 'number'){
+                reject(new Error(`The price must be a number. It is currently ${typeof price}`))
+            }
+
+            // Map the cart item if required
+            let cartItem = item;
+            if (is.object(item) || item instanceof Product) {
+                cartItem = new CartAddItem(item);
+                cartItem.buyersUnitPrice = price;
+            }
+
+            if (!(cartItem instanceof CartAddItem)) {
+                reject(new Error('A valid cart item is required'));
+            }
+
+            http.post(config.urls.addToCart(this.env, id), cartItem)
+                .then(json => {
+                    const cart = new Cart(this, json, true);
+
+                    // Update store
+                    this.setStore(cart.store);
+
+                    // Set the active cart
+                    this.setActiveCart(cart.id)
+                        .then(() => {
+                            resolve(cart);
+                        })
+                        .catch(reject);
+                })
+                .catch(reject);
+        });
+    }
 
     /**
      * Update an items quantity in the shopping cart
